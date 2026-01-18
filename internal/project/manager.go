@@ -249,17 +249,18 @@ func (m *Manager) ReopenProject(projectID, authorID, comment string) error {
 	// Update status
 	project.Status = models.ProjectStatusReopened
 	project.ClosedAt = nil
-	project.UpdatedAt = time.Now()
+	now := time.Now()
+	project.UpdatedAt = now
 
 	// Add reopen comment
 	if comment != "" {
-		commentID := fmt.Sprintf("comment-%d", time.Now().UnixNano())
+		commentID := fmt.Sprintf("comment-%d", now.UnixNano())
 		projectComment := models.ProjectComment{
 			ID:        commentID,
 			ProjectID: projectID,
 			AuthorID:  authorID,
 			Comment:   comment,
-			Timestamp: time.Now(),
+			Timestamp: now,
 		}
 		project.Comments = append(project.Comments, projectComment)
 	}
@@ -277,17 +278,18 @@ func (m *Manager) AddComment(projectID, authorID, comment string) (*models.Proje
 		return nil, fmt.Errorf("project not found: %s", projectID)
 	}
 
-	commentID := fmt.Sprintf("comment-%d", time.Now().UnixNano())
+	now := time.Now()
+	commentID := fmt.Sprintf("comment-%d", now.UnixNano())
 	projectComment := models.ProjectComment{
 		ID:        commentID,
 		ProjectID: projectID,
 		AuthorID:  authorID,
 		Comment:   comment,
-		Timestamp: time.Now(),
+		Timestamp: now,
 	}
 
 	project.Comments = append(project.Comments, projectComment)
-	project.UpdatedAt = time.Now()
+	project.UpdatedAt = now
 
 	return &projectComment, nil
 }
