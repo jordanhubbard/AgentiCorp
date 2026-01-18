@@ -83,6 +83,7 @@ type ProjectConfig struct {
 	GitRepo     string            `yaml:"git_repo"`
 	Branch      string            `yaml:"branch"`
 	BeadsPath   string            `yaml:"beads_path"`
+	IsPerpetual bool              `yaml:"is_perpetual"` // If true, project never closes
 	Context     map[string]string `yaml:"context"`
 }
 
