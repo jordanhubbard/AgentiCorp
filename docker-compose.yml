@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  arbiter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: arbiter:latest
+    container_name: arbiter
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=UTC
+    networks:
+      - arbiter-network
+    volumes:
+      # Mount configuration if needed (create ./config directory first)
+      # - ./config:/app/config:ro
+    healthcheck:
+      test: ["CMD", "/app/arbiter", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  arbiter-network:
+    driver: bridge

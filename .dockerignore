@@ -1,0 +1,33 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+*.md
+LICENSE
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Build artifacts
+bin/
+
+# Test coverage
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependencies (will be downloaded during build)
+vendor/
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+tmp/
+temp/
