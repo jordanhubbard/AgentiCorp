@@ -3,6 +3,7 @@ package arbiter
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/jordanhubbard/arbiter/internal/agent"
