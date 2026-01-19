@@ -54,7 +54,7 @@ func (r *Registry) Register(config *ProviderConfig) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if config.Status == "" {
-		config.Status = "active"
+		config.Status = "pending"
 	}
 
 	// Check if provider already exists
@@ -86,7 +86,7 @@ func (r *Registry) Upsert(config *ProviderConfig) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if config.Status == "" {
-		config.Status = "active"
+		config.Status = "pending"
 	}
 
 	var protocol Protocol
@@ -147,7 +147,7 @@ func (r *Registry) ListActive() []*RegisteredProvider {
 
 	providers := make([]*RegisteredProvider, 0, len(r.providers))
 	for _, provider := range r.providers {
-		if provider != nil && provider.Config != nil && provider.Config.Status == "active" {
+		if provider != nil && provider.Config != nil && isProviderHealthy(provider.Config.Status) {
 			providers = append(providers, provider)
 		}
 	}
@@ -164,7 +164,7 @@ func (r *Registry) IsActive(providerID string) bool {
 	if !exists || provider == nil || provider.Config == nil {
 		return false
 	}
-	return provider.Config.Status == "active"
+	return isProviderHealthy(provider.Config.Status)
 }
 
 // SendChatCompletion sends a chat completion request to a provider
@@ -173,7 +173,7 @@ func (r *Registry) SendChatCompletion(ctx context.Context, providerID string, re
 	if err != nil {
 		return nil, err
 	}
-	if provider.Config != nil && provider.Config.Status != "active" {
+	if provider.Config != nil && !isProviderHealthy(provider.Config.Status) {
 		return nil, fmt.Errorf("provider %s is disabled", providerID)
 	}
 
@@ -193,4 +193,13 @@ func (r *Registry) GetModels(ctx context.Context, providerID string) ([]Model, e
 	}
 
 	return provider.Protocol.GetModels(ctx)
+}
+
+func isProviderHealthy(status string) bool {
+	switch status {
+	case "healthy", "active":
+		return true
+	default:
+		return false
+	}
 }

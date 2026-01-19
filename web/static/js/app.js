@@ -1007,7 +1007,7 @@ function showRegisterProviderModal(preset = {}) {
 async function bootstrapProviders() {
     const ok = await confirmModal({
         title: 'Bootstrap providers?',
-        body: 'This will register puck.local and spark.local using vLLM default port 8000 and model NVIDIA-Nemotron-3-Nano-30B-A3B-BF16.',
+        body: 'This will register puck.local and sparky.local using vLLM default port 8000 and model NVIDIA-Nemotron-3-Nano-30B-A3B-BF16.',
         confirmText: 'Bootstrap',
         cancelText: 'Cancel'
     });
@@ -1015,7 +1015,7 @@ async function bootstrapProviders() {
 
     const presets = [
         { id: 'puck', name: 'puck.local', type: 'local', endpoint: 'http://puck.local:8000', model: 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' },
-        { id: 'spark', name: 'spark.local', type: 'local', endpoint: 'http://spark.local:8000', model: 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' }
+        { id: 'sparky', name: 'sparky.local', type: 'local', endpoint: 'http://sparky.local:8000', model: 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' }
     ];
 
     for (const p of presets) {

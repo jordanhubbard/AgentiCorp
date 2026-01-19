@@ -310,10 +310,6 @@ func (a *Arbiter) Initialize(ctx context.Context) error {
 		}
 	}
 
-	if err := a.ensureBootstrapProvider(); err != nil {
-		return err
-	}
-
 	// Ensure default agents are assigned for each project.
 	for _, p := range projectValues {
 		if p.ID == "" {
@@ -468,43 +464,6 @@ func (a *Arbiter) ensureDefaultAgents(ctx context.Context, projectID string) err
 		}
 	}
 
-	return nil
-}
-
-func (a *Arbiter) ensureBootstrapProvider() error {
-	if len(a.providerRegistry.List()) > 0 {
-		return nil
-	}
-	model := ""
-	if a.modelCatalog != nil {
-		if list := a.modelCatalog.List(); len(list) > 0 {
-			model = list[0].Name
-		}
-	}
-	config := &provider.ProviderConfig{
-		ID:       "bootstrap-local",
-		Name:     "Bootstrap Local",
-		Type:     "local",
-		Endpoint: "http://localhost:8000/v1",
-		Model:    model,
-		Status:   "active",
-	}
-	if err := a.providerRegistry.Upsert(config); err != nil {
-		return fmt.Errorf("failed to register bootstrap provider: %w", err)
-	}
-	if a.database != nil {
-		_ = a.database.UpsertProvider(&internalmodels.Provider{
-			ID:              config.ID,
-			Name:            config.Name,
-			Type:            config.Type,
-			Endpoint:        config.Endpoint,
-			Model:           config.Model,
-			ConfiguredModel: config.ConfiguredModel,
-			SelectedModel:   config.SelectedModel,
-			Description:     "Auto-registered provider to populate default agents.",
-			Status:          "active",
-		})
-	}
 	return nil
 }
 
