@@ -1,71 +1,4 @@
-.PHONY: help build run test clean docker-build docker-run docker-stop docker-clean lint
-
-# Default target
-help:
-	@echo "Arbiter - Makefile Commands"
-	@echo ""
-	@echo "Development:"
-	@echo "  make build        - Build the Go binary"
-	@echo "  make run          - Run the application locally"
-	@echo "  make test         - Run tests"
-	@echo "  make lint         - Run linters"
-	@echo "  make clean        - Clean build artifacts"
-	@echo ""
-	@echo "Docker:"
-	@echo "  make docker-build - Build Docker image"
-	@echo "  make docker-run   - Run application in Docker"
-	@echo "  make docker-stop  - Stop Docker containers"
-	@echo "  make docker-clean - Clean Docker resources"
-	@echo ""
-
-# Build the Go binary
-build:
-	@echo "Building arbiter..."
-	@go build -o bin/arbiter ./cmd/arbiter
-
-# Run the application locally
-run: build
-	@echo "Running arbiter..."
-	@./bin/arbiter
-
-# Run tests
-test:
-	@echo "Running tests..."
-	@go test -v ./...
-
-# Run linters
-lint:
-	@echo "Running linters..."
-	@go fmt ./...
-	@go vet ./...
-
-# Clean build artifacts
-clean:
-	@echo "Cleaning build artifacts..."
-	@rm -rf bin/
-	@go clean
-
-# Build Docker image
-docker-build:
-	@echo "Building Docker image..."
-	@docker build -t arbiter:latest .
-
-# Run application in Docker using docker-compose
-docker-run:
-	@echo "Starting arbiter in Docker..."
-	@docker-compose up -d
-
-# Stop Docker containers
-docker-stop:
-	@echo "Stopping Docker containers..."
-	@docker-compose down
-
-# Clean Docker resources
-docker-clean: docker-stop
-	@echo "Cleaning Docker resources..."
-	@docker-compose down -v
-	@docker rmi arbiter:latest || true
-.PHONY: all build clean run test fmt vet install
+.PHONY: all build build-all run test coverage fmt vet deps clean install config dev-setup docker-build docker-run docker-stop docker-clean help lint
 
 # Build variables
 BINARY_NAME=arbiter
@@ -121,6 +54,9 @@ clean:
 	rm -f coverage.out coverage.html
 	rm -f *.db
 
+# Run linters
+lint: fmt vet
+
 # Install the binary to $GOPATH/bin
 install: build
 	@echo "Installing $(BINARY_NAME) to $(GOPATH)/bin..."
@@ -144,18 +80,44 @@ dev-setup: deps config
 docker-build:
 	docker build -t $(BINARY_NAME):$(VERSION) .
 
+# Run application in Docker using docker-compose
+docker-run:
+	@echo "Starting arbiter in Docker..."
+	@docker-compose up -d
+
+# Stop Docker containers
+docker-stop:
+	@echo "Stopping Docker containers..."
+	@docker-compose down
+
+# Clean Docker resources
+docker-clean: docker-stop
+	@echo "Cleaning Docker resources..."
+	@docker-compose down -v
+	@docker rmi $(BINARY_NAME):$(VERSION) || true
+
 help:
-	@echo "Available targets:"
-	@echo "  build       - Build the application"
-	@echo "  build-all   - Build for multiple platforms"
-	@echo "  run         - Build and run the application"
-	@echo "  test        - Run tests"
-	@echo "  coverage    - Run tests with coverage report"
-	@echo "  fmt         - Format code"
-	@echo "  vet         - Run go vet"
-	@echo "  deps        - Download and tidy dependencies"
-	@echo "  clean       - Clean build artifacts"
-	@echo "  install     - Install binary to GOPATH/bin"
-	@echo "  config      - Create config.yaml from example"
-	@echo "  dev-setup   - Set up development environment"
-	@echo "  help        - Show this help message"
+	@echo "Arbiter - Makefile Commands"
+	@echo ""
+	@echo "Development:"
+	@echo "  make build        - Build the application"
+	@echo "  make build-all    - Build for multiple platforms"
+	@echo "  make run          - Build and run the application"
+	@echo "  make test         - Run tests"
+	@echo "  make coverage     - Run tests with coverage report"
+	@echo "  make fmt          - Format code"
+	@echo "  make vet          - Run go vet"
+	@echo "  make lint         - Run linters"
+	@echo "  make deps         - Download and tidy dependencies"
+	@echo "  make clean        - Clean build artifacts"
+	@echo "  make install      - Install binary to GOPATH/bin"
+	@echo "  make config       - Create config.yaml from example"
+	@echo "  make dev-setup    - Set up development environment"
+	@echo ""
+	@echo "Docker:"
+	@echo "  make docker-build - Build Docker image"
+	@echo "  make docker-run   - Run application in Docker"
+	@echo "  make docker-stop  - Stop Docker containers"
+	@echo "  make docker-clean - Clean Docker resources"
+	@echo ""
+	@echo "  make help         - Show this help message"
