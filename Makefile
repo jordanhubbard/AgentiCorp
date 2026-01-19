@@ -4,13 +4,66 @@
 BINARY_NAME=arbiter
 VERSION?=dev
 LDFLAGS=-ldflags "-X main.version=$(VERSION)"
+BEADS_DIR=.beads/beads
+
+define run_with_failure_bead
+	@set -e; \
+	target="$(1)"; \
+	cmd='$(2)'; \
+	output=$$(mktemp); \
+	if sh -c "$$cmd" >$$output 2>&1; then \
+		cat $$output; \
+		rm -f $$output; \
+	else \
+		status=$$?; \
+		cat $$output; \
+		bead_id="bd-$${target}-failure-$$(date -u +%Y%m%d%H%M%S)"; \
+		bead_file="$(BEADS_DIR)/$${bead_id}.yaml"; \
+		timestamp=$$(date -u +%Y-%m-%dT%H:%M:%SZ); \
+		output_body=$$(sed 's/^/    /' "$$output"); \
+		mkdir -p "$(BEADS_DIR)"; \
+		printf "%s\n" \
+			"id: $${bead_id}" \
+			"type: task" \
+			"title: \"P0 - $${target} failed\"" \
+			"description: |" \
+			"  Command: $${cmd}" \
+			"  Exit code: $${status}" \
+			"" \
+			"  Output:" \
+			"$${output_body}" \
+			"" \
+			"status: open" \
+			"priority: 0" \
+			"project_id: arbiter" \
+			"assigned_to: null" \
+			"blocked_by: []" \
+			"blocks: []" \
+			"parent: null" \
+			"children: []" \
+			"tags:" \
+			"  - p0" \
+			"  - failure" \
+			"  - $${target}" \
+			"created_at: $${timestamp}" \
+			"updated_at: $${timestamp}" \
+			"closed_at: null" \
+			"context:" \
+			"  source: makefile" \
+			"  target: $${target}" \
+			> "$$bead_file"; \
+		rm -f $$output; \
+		exit $$status; \
+	fi
+endef
 
 all: build
 
 # Build the application
-build: lint-yaml
+build:
 	@echo "Building $(BINARY_NAME)..."
-	go build $(LDFLAGS) -o $(BINARY_NAME) ./cmd/arbiter
+	$(call run_with_failure_bead,build,go run ./cmd/yaml-lint)
+	$(call run_with_failure_bead,build,go build $(LDFLAGS) -o $(BINARY_NAME) ./cmd/arbiter)
 
 # Build for multiple platforms
 build-all: lint-yaml
@@ -22,11 +75,11 @@ build-all: lint-yaml
 
 # Run the application
 run: build
-	./$(BINARY_NAME) -config config.yaml
+	$(call run_with_failure_bead,run,./$(BINARY_NAME) -config config.yaml)
 
 # Run tests
 test:
-	go test -v ./...
+	$(call run_with_failure_bead,test,go test -v ./...)
 
 # Run tests with coverage
 coverage:
