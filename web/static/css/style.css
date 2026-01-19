@@ -211,6 +211,7 @@ section h2 {
     border-left: 4px solid var(--primary-color);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    color: var(--text-color);
 
     display: block;
     width: 100%;

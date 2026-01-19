@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -193,7 +195,9 @@ func (a *Arbiter) Initialize(ctx context.Context) error {
 		if p == nil {
 			continue
 		}
-		projectValues = append(projectValues, *p)
+		copy := *p
+		copy.BeadsPath = normalizeBeadsPath(copy.BeadsPath)
+		projectValues = append(projectValues, copy)
 	}
 	if len(projectValues) == 0 && len(a.config.Projects) > 0 {
 		for _, p := range a.config.Projects {
@@ -202,7 +206,7 @@ func (a *Arbiter) Initialize(ctx context.Context) error {
 				Name:        p.Name,
 				GitRepo:     p.GitRepo,
 				Branch:      p.Branch,
-				BeadsPath:   p.BeadsPath,
+				BeadsPath:   normalizeBeadsPath(p.BeadsPath),
 				IsPerpetual: p.IsPerpetual,
 				IsSticky:    p.IsSticky,
 				Context:     p.Context,
@@ -216,7 +220,7 @@ func (a *Arbiter) Initialize(ctx context.Context) error {
 			Name:        "Arbiter",
 			GitRepo:     ".",
 			Branch:      "main",
-			BeadsPath:   ".beads",
+			BeadsPath:   normalizeBeadsPath(".beads"),
 			IsPerpetual: true,
 			IsSticky:    true,
 			Context: map[string]string{
@@ -512,6 +516,37 @@ func roleFromPersonaName(personaName string) string {
 		return parts[len(parts)-1]
 	}
 	return personaName
+}
+
+func normalizeBeadsPath(path string) string {
+	trimmed := strings.TrimSpace(path)
+	if trimmed == "" {
+		return ".beads"
+	}
+	if beadsPathExists(trimmed) {
+		return trimmed
+	}
+	if !strings.HasPrefix(trimmed, ".") {
+		candidate := "." + strings.TrimPrefix(trimmed, "/")
+		if beadsPathExists(candidate) {
+			return candidate
+		}
+	}
+	if beadsPathExists(".beads") {
+		return ".beads"
+	}
+	return trimmed
+}
+
+func beadsPathExists(path string) bool {
+	if path == "" {
+		return false
+	}
+	beadsDir := filepath.Join(path, "beads")
+	if _, err := os.Stat(beadsDir); err == nil {
+		return true
+	}
+	return false
 }
 
 // CloneAgentPersona clones a default persona into a project-specific persona and spawns a new agent.
