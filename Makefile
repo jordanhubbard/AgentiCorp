@@ -12,7 +12,7 @@ define run_with_failure_bead
 	cmd='$(2)'; \
 	output=$$(mktemp); \
 	echo "[make] $$target: $$cmd"; \
-	if bash -c 'set -o pipefail; $(2) 2>&1 | tee "$$output"'; then \
+	if OUTPUT="$$output" CMD="$$cmd" bash -c 'set -o pipefail; eval "$$CMD" 2>&1 | tee "$$OUTPUT"'; then \
 		rm -f $$output; \
 	else \
 		status=$$?; \
