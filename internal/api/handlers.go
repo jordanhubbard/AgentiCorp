@@ -211,4 +211,3 @@ func (s *Server) handleProject(w http.ResponseWriter, r *http.Request) {
 		s.respondError(w, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 }
-
