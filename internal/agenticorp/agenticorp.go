@@ -327,12 +327,17 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 	if a.temporalManager != nil {
 		a.temporalManager.RegisterActivity(temporalactivities.NewDispatchActivities(a.dispatcher))
 		a.temporalManager.RegisterActivity(temporalactivities.NewProviderActivities(a.providerRegistry, a.database, a.eventBus, a.modelCatalog))
+		a.temporalManager.RegisterActivity(temporalactivities.NewAgentiCorpActivities(a.database))
+		
 		if err := a.temporalManager.Start(); err != nil {
 			return fmt.Errorf("failed to start temporal: %w", err)
 		}
 
-		// Start the Temporal-controlled dispatch loop for all projects.
-		_ = a.temporalManager.StartDispatcherWorkflow(ctx, "", 10*time.Second)
+		// Start the master heartbeat (10 second interval) - timing/coordination
+		_ = a.temporalManager.StartAgentiCorpHeartbeatWorkflow(ctx, 10*time.Second)
+		// Start the dispatcher (triggers work distribution)
+		_ = a.temporalManager.StartDispatcherWorkflow(ctx, "", 5*time.Second)
+		// Start provider heartbeats (monitor provider health)
 		_ = a.startProviderHeartbeats(ctx)
 	}
 
@@ -426,6 +431,11 @@ func (a *AgentiCorp) GetTemporalManager() *temporal.Manager {
 
 func (a *AgentiCorp) GetEventBus() *eventbus.EventBus {
 	return a.eventBus
+}
+
+// GetDatabase returns the database instance
+func (a *AgentiCorp) GetDatabase() *database.Database {
+	return a.database
 }
 
 // GetAgentManager returns the agent manager
@@ -942,6 +952,9 @@ func (a *AgentiCorp) RegisterProvider(ctx context.Context, p *internalmodels.Pro
 		})
 	}
 	_ = a.ensureProviderHeartbeat(ctx, p.ID)
+	
+	// Immediately attempt to get models from the provider to validate and update status
+	go a.checkProviderHealthAndActivate(p.ID)
 
 	return p, nil
 }
@@ -1268,6 +1281,7 @@ func (a *AgentiCorp) NegotiateProviderModel(ctx context.Context, providerID stri
 		ConfiguredModel: providerRecord.ConfiguredModel,
 		SelectedModel:   providerRecord.SelectedModel,
 		SelectedGPU:     providerRecord.SelectedGPU,
+		Status:          "active",
 	})
 	if a.eventBus != nil {
 		_ = a.eventBus.Publish(&eventbus.Event{
@@ -1694,4 +1708,73 @@ func (a *AgentiCorp) StartDispatchLoop(ctx context.Context, interval time.Durati
 			_, _ = a.dispatcher.DispatchOnce(ctx, "")
 		}
 	}
+}
+
+// checkProviderHealthAndActivate checks if a newly registered provider has models available
+// and immediately activates it if so, without waiting for the heartbeat workflow
+func (a *AgentiCorp) checkProviderHealthAndActivate(providerID string) {
+	time.Sleep(300 * time.Millisecond)
+	
+	models, err := a.GetProviderModels(context.Background(), providerID)
+	if err == nil && len(models) > 0 {
+		// Update provider status to active in both database and registry
+		if dbProvider, err := a.database.GetProvider(providerID); err == nil && dbProvider != nil {
+			dbProvider.Status = "active"
+			_ = a.database.UpsertProvider(dbProvider)
+			// Sync to registry so UI sees the updated status
+			a.providerRegistry.Upsert(&provider.ProviderConfig{
+				ID:                     dbProvider.ID,
+				Name:                   dbProvider.Name,
+				Type:                   dbProvider.Type,
+				Endpoint:               dbProvider.Endpoint,
+				Model:                  dbProvider.SelectedModel,
+				ConfiguredModel:        dbProvider.ConfiguredModel,
+				SelectedModel:          dbProvider.SelectedModel,
+				SelectedGPU:            dbProvider.SelectedGPU,
+				Status:                 "active",
+				LastHeartbeatAt:        dbProvider.LastHeartbeatAt,
+				LastHeartbeatLatencyMs: dbProvider.LastHeartbeatLatencyMs,
+			})
+		}
+	}
+}
+
+// TODO: Implement perpetual tasks for each org chart role:
+// - CFO: Monthly budget reviews, financial reporting
+// - PR Manager: Poll GitHub for new issues/PRs
+// - Documentation Manager: Automated documentation updates
+// - QA Engineer: Run automated test suites
+// These will be created as beads by the dispatcher when in idle mode
+
+// ResumeAgentsWaitingForProvider resumes agents that were paused waiting for a provider to become healthy
+func (a *AgentiCorp) ResumeAgentsWaitingForProvider(ctx context.Context, providerID string) error {
+	if a.agentManager == nil || a.database == nil {
+		return nil
+	}
+
+	// Get all agents using this provider
+	agents := a.agentManager.ListAgents()
+	if agents == nil {
+		return nil
+	}
+
+	for _, agent := range agents {
+		if agent == nil || agent.ProviderID != providerID || agent.Status != "paused" {
+			continue
+		}
+		// Resume the paused agent
+		agent.Status = "idle"
+		agent.LastActive = time.Now()
+		if err := a.database.UpsertAgent(agent); err != nil {
+			fmt.Printf("Warning: failed to resume agent %s: %v\n", agent.ID, err)
+			continue
+		}
+	}
+
+	// Trigger dispatch to pick up any waiting beads
+	if a.dispatcher != nil {
+		_, _ = a.dispatcher.DispatchOnce(ctx, "")
+	}
+
+	return nil
 }

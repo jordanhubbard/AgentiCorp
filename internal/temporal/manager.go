@@ -59,6 +59,7 @@ func NewManager(cfg *config.TemporalConfig) (*Manager, error) {
 	w.RegisterWorkflow(eventbus.EventAggregatorWorkflow)
 	w.RegisterWorkflow(workflows.ProviderHeartbeatWorkflow)
 	w.RegisterWorkflow(workflows.ProviderQueryWorkflow)
+	w.RegisterWorkflow(workflows.AgentiCorpHeartbeatWorkflow) // Master clock
 
 	// Register activities
 	if eventBus != nil {
@@ -267,6 +268,36 @@ func (m *Manager) StartProviderHeartbeatWorkflow(ctx context.Context, providerID
 	}
 
 	log.Printf("Started provider heartbeat workflow for %s", providerID)
+	return nil
+}
+
+// StartAgentiCorpHeartbeatWorkflow starts the master clock heartbeat workflow
+func (m *Manager) StartAgentiCorpHeartbeatWorkflow(ctx context.Context, interval time.Duration) error {
+	if interval == 0 {
+		interval = 10 * time.Second
+	}
+	
+	workflowID := "agenticorp-heartbeat-master"
+	workflowOptions := client.StartWorkflowOptions{
+		ID:                  workflowID,
+		TaskQueue:           m.config.TaskQueue,
+		WorkflowTaskTimeout: m.config.WorkflowTaskTimeout,
+		WorkflowRunTimeout:  0, // Infinite duration for master clock
+	}
+
+	input := workflows.AgentiCorpHeartbeatWorkflowInput{
+		Interval: interval,
+	}
+
+	_, err := m.client.ExecuteWorkflow(ctx, workflowOptions, workflows.AgentiCorpHeartbeatWorkflow, input)
+	if err != nil {
+		if _, ok := err.(*serviceerror.WorkflowExecutionAlreadyStarted); ok {
+			return nil // Already running
+		}
+		return fmt.Errorf("failed to start agenticorp heartbeat workflow: %w", err)
+	}
+
+	log.Printf("Started AgentiCorp master heartbeat workflow with %v interval", interval)
 	return nil
 }
 

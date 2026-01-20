@@ -265,3 +265,45 @@ func SendEventActivity(ctx workflow.Context, event *eventbus.Event) error {
 	logger.Info("Sending event", "type", event.Type, "id", event.ID)
 	return nil
 }
+
+// AgentiCorpHeartbeatWorkflowInput controls the master heartbeat
+type AgentiCorpHeartbeatWorkflowInput struct {
+	Interval time.Duration // How often to beat (default 10s)
+}
+
+// AgentiCorpHeartbeatWorkflow is the master clock that keeps the entire state machine running
+// It pulses periodically to trigger work dispatch, provider heartbeats, and housekeeping tasks
+func AgentiCorpHeartbeatWorkflow(ctx workflow.Context, input AgentiCorpHeartbeatWorkflowInput) error {
+	logger := workflow.GetLogger(ctx)
+	if input.Interval == 0 {
+		input.Interval = 10 * time.Second
+	}
+
+	logger.Info("AgentiCorp master heartbeat workflow started", "interval", input.Interval)
+
+	activityOptions := workflow.ActivityOptions{
+		StartToCloseTimeout: 30 * time.Second,
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 1, // Don't retry heartbeat activities
+		},
+	}
+	ctx = workflow.WithActivityOptions(ctx, activityOptions)
+
+	beatCount := 0
+	for {
+		// Sleep until next beat
+		_ = workflow.Sleep(ctx, input.Interval)
+		beatCount++
+
+		// Execute heartbeat activity which will:
+		// 1. Check for available work (ready beads, paused agents waiting for providers)
+		// 2. If work exists: trigger dispatch
+		// 3. If no work: run idle mode tasks (CFO budgets, PR monitoring, etc.)
+		err := workflow.ExecuteActivity(ctx, "AgentiCorpHeartbeatActivity", beatCount).Get(ctx, nil)
+		if err != nil {
+			logger.Warn("Heartbeat activity failed", "beat", beatCount, "error", err)
+		} else {
+			logger.Debug("AgentiCorp heartbeat pulse", "beat", beatCount)
+		}
+	}
+}

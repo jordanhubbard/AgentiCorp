@@ -78,11 +78,15 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - AGENTICORP_PASSWORD=test-new-password-12345
       - TZ=UTC
       - TEMPORAL_HOST=temporal:7233
       - TEMPORAL_NAMESPACE=agenticorp-default
     networks:
       - agenticorp-network
+    extra_hosts:
+      - "puck.local:10.11.101.250"
+      - "sparky.local:10.11.100.116"
     volumes:
       # Mount entire source directory for hot-reload and bead access
       - .:/app/src:rw
