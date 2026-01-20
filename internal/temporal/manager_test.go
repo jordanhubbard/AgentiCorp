@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
 func temporalTestConfig(enableEventBus bool) *config.TemporalConfig {

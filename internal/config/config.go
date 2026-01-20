@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 )
 
-// Config holds the arbiter configuration
+// Config holds the agenticorp configuration
 type Config struct {
 	DatabasePath string
 	KeyStorePath string
@@ -28,7 +28,7 @@ func Default() (*Config, error) {
 		dataHome = filepath.Join(home, ".local", "share")
 	}
 
-	dataDir := filepath.Join(dataHome, "arbiter")
+	dataDir := filepath.Join(dataHome, "agenticorp")
 
 	// Ensure data directory exists
 	if err := os.MkdirAll(dataDir, 0700); err != nil {
@@ -36,17 +36,17 @@ func Default() (*Config, error) {
 	}
 
 	return &Config{
-		DatabasePath: filepath.Join(dataDir, "arbiter.db"),
+		DatabasePath: filepath.Join(dataDir, "agenticorp.db"),
 		KeyStorePath: filepath.Join(dataDir, "keystore.json"),
 		DataDir:      dataDir,
 	}, nil
 }
 
 // GetPassword retrieves the unlock password from environment or prompts the user
-// Environment variable takes precedence: ARBITER_PASSWORD
+// Environment variable takes precedence: AGENTICORP_PASSWORD
 func GetPassword() (string, error) {
 	// Check environment variable first
-	if password := os.Getenv("ARBITER_PASSWORD"); password != "" {
+	if password := os.Getenv("AGENTICORP_PASSWORD"); password != "" {
 		return password, nil
 	}
 

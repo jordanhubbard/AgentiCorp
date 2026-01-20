@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: temporal
       POSTGRES_DB: temporal
     networks:
-      - arbiter-network
+      - agenticorp-network
     volumes:
       - temporal-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -39,7 +39,7 @@ services:
     ports:
       - "7233:7233"  # gRPC port
     networks:
-      - arbiter-network
+      - agenticorp-network
     volumes:
       - ./config/temporal:/etc/temporal/config/dynamicconfig
     healthcheck:
@@ -61,16 +61,16 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
       - TEMPORAL_CORS_ORIGINS=http://localhost:3000
     ports:
-      - "8088:8080"  # Temporal UI on different port to avoid conflict with arbiter
+      - "8088:8080"  # Temporal UI on different port to avoid conflict with agenticorp
     networks:
-      - arbiter-network
+      - agenticorp-network
 
-  arbiter:
+  agenticorp:
     build:
       context: .
       dockerfile: Dockerfile
-    image: arbiter:latest
-    container_name: arbiter
+    image: agenticorp:latest
+    container_name: agenticorp
     restart: unless-stopped
     depends_on:
       temporal:
@@ -80,26 +80,26 @@ services:
     environment:
       - TZ=UTC
       - TEMPORAL_HOST=temporal:7233
-      - TEMPORAL_NAMESPACE=arbiter-default
+      - TEMPORAL_NAMESPACE=agenticorp-default
     networks:
-      - arbiter-network
+      - agenticorp-network
     # Mount configuration if needed (create ./config directory first)
     # volumes:
     #   - ./config:/app/config:ro
     volumes: []
     healthcheck:
-      test: ["CMD", "/app/arbiter", "-version"]
+      test: ["CMD", "/app/agenticorp", "-version"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  arbiter-test:
+  agenticorp-test:
     build:
       context: .
       dockerfile: Dockerfile
       target: builder
-    container_name: arbiter-test
+    container_name: agenticorp-test
     depends_on:
       temporal:
         condition: service_healthy
@@ -107,11 +107,11 @@ services:
       - TEMPORAL_HOST=temporal:7233
       - TEMPORAL_REQUIRED=true
     networks:
-      - arbiter-network
+      - agenticorp-network
     command: ["go", "test", "-v", "./..."]
 
 networks:
-  arbiter-network:
+  agenticorp-network:
     driver: bridge
 
 volumes:

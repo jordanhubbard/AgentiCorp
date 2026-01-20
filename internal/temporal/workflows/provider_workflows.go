@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/jordanhubbard/arbiter/internal/temporal/activities"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/activities"
 )
 
 // ProviderHeartbeatWorkflowInput controls provider heartbeat scheduling.

@@ -1,8 +1,8 @@
-# Arbiter Architecture
+# AgentiCorp Architecture
 
 ## Overview
 
-The Arbiter is a secure orchestration system that manages interactions between AI agents and providers. It maintains its own database and is the sole reader/writer to ensure data integrity.
+The AgentiCorp is a secure orchestration system that manages interactions between AI agents and providers. It maintains its own database and is the sole reader/writer to ensure data integrity.
 
 ## Core Concepts
 
@@ -25,7 +25,7 @@ flowchart LR
     Browser[Browser]
   end
 
-  subgraph Arbiter[Arbiter (Go)]
+  subgraph AgentiCorp[AgentiCorp (Go)]
     API[HTTP API]
     SSE[SSE /api/v1/events/stream]
     EB[Event Bus]
@@ -84,7 +84,7 @@ flowchart LR
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Arbiter                               │
+│                        AgentiCorp                               │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │              Main Orchestrator                       │   │
 │  │  - Manages Agent/Provider lifecycle                  │   │
@@ -114,9 +114,9 @@ flowchart LR
 
 ### 1. Initialization
 ```
-User starts Arbiter
+User starts AgentiCorp
   ↓
-Check ARBITER_PASSWORD env variable
+Check AGENTICORP_PASSWORD env variable
   ↓
 If not found, prompt user (hidden input)
   ↓
@@ -131,7 +131,7 @@ Ready to orchestrate
 ```
 User creates provider with API key
   ↓
-Arbiter encrypts API key with key manager
+AgentiCorp encrypts API key with key manager
   ↓
 Store encrypted key with unique ID
   ↓
@@ -144,7 +144,7 @@ Provider ready for use
 ```
 User creates agent with provider reference
   ↓
-Arbiter verifies provider exists
+AgentiCorp verifies provider exists
   ↓
 Store agent record in database
   ↓
@@ -199,7 +199,7 @@ Response returned with provider/model metadata
 
 ### Password Handling
 - **Never stored**: Password exists only in memory
-- **Environment variable**: `ARBITER_PASSWORD` (for automation)
+- **Environment variable**: `AGENTICORP_PASSWORD` (for automation)
 - **Interactive prompt**: Hidden input using `golang.org/x/term`
 - **Memory clearing**: Password cleared when key manager locks
 
@@ -281,7 +281,7 @@ provider := &models.Provider{
 }
 
 apiKey := "sk-..."
-err := arbiter.CreateProvider(provider, apiKey)
+err := agenticorp.CreateProvider(provider, apiKey)
 ```
 
 ### Creating an Agent
@@ -295,12 +295,12 @@ agent := &models.Agent{
     Config:      `{"model": "gpt-4", "temperature": 0.7}`,
 }
 
-err := arbiter.CreateAgent(agent)
+err := agenticorp.CreateAgent(agent)
 ```
 
 ### Using an Agent
 ```go
-agent, provider, apiKey, err := arbiter.GetAgentWithProvider("coding-agent")
+agent, provider, apiKey, err := agenticorp.GetAgentWithProvider("coding-agent")
 if err != nil {
     log.Fatal(err)
 }
@@ -312,8 +312,8 @@ if err != nil {
 ## Directory Structure
 
 ```
-arbiter/
-├── cmd/arbiter/              # Main application
+agenticorp/
+├── cmd/agenticorp/              # Main application
 │   └── main.go              # Entry point and orchestrator
 ├── internal/
 │   ├── config/              # Configuration management
@@ -392,15 +392,15 @@ arbiter/
 
 ### Overview
 
-Arbiter uses [Temporal](https://temporal.io) as its workflow orchestration engine. Temporal provides durable execution, automatic retries, and a complete audit trail for all workflows.
+AgentiCorp uses [Temporal](https://temporal.io) as its workflow orchestration engine. Temporal provides durable execution, automatic retries, and a complete audit trail for all workflows.
 
 ### Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Arbiter                               │
+│                        AgentiCorp                               │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │         Arbiter Orchestrator                         │   │
+│  │         AgentiCorp Orchestrator                         │   │
 │  │  - Spawns agents with personas                       │   │
 │  │  - Creates beads (work items)                        │   │
 │  │  - Manages decisions                                 │   │
@@ -419,7 +419,7 @@ Arbiter uses [Temporal](https://temporal.io) as its workflow orchestration engin
 ┌───────────▼──────────────────────▼──────────────────────────┐
 │                     Temporal Server                          │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Temporal Worker (in Arbiter process)                 │  │
+│  │  Temporal Worker (in AgentiCorp process)                 │  │
 │  │  - AgentLifecycleWorkflow                            │  │
 │  │  - BeadProcessingWorkflow                            │  │
 │  │  - DecisionWorkflow                                  │  │

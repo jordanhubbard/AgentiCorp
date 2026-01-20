@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jordanhubbard/arbiter/internal/temporal/eventbus"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
 )
 
-// Activities provides Temporal activities for arbiter operations
+// Activities provides Temporal activities for agenticorp operations
 type Activities struct {
 	eventBus *eventbus.EventBus
 }

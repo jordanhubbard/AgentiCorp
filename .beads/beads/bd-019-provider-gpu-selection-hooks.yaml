@@ -2,44 +2,49 @@ id: bd-019
 type: task
 title: P2 - Provider GPU selection hooks (optional, when provider exposes GPU choice)
 description: |
-  Add optional GPU selection support for providers that expose GPU topology and
-  selection controls (e.g., vendor OpenAPI extensions).
+    Add optional GPU selection support for providers that expose GPU topology and
+    selection controls (e.g., vendor OpenAPI extensions).
 
-  Requirements
-  - Extend provider config/state to optionally include:
-    - gpu_constraints (min_vram_gb, required_gpu_arch, allowed_gpu_ids)
-    - selected_gpu (effective)
-  - During negotiation:
-    - use model-name-derived size/format + catalog GPU heuristics to filter GPUs
-    - pick a GPU that can serve the selected model
-    - record selected_gpu (if provider supports it)
+    Requirements
+    - Extend provider config/state to optionally include:
+      - gpu_constraints (min_vram_gb, required_gpu_arch, allowed_gpu_ids)
+      - selected_gpu (effective)
+    - During negotiation:
+      - use model-name-derived size/format + catalog GPU heuristics to filter GPUs
+      - pick a GPU that can serve the selected model
+      - record selected_gpu (if provider supports it)
 
-  Notes
-  - This must be provider-specific and only enabled if the provider exposes the
-    necessary endpoints/fields.
+    Notes
+    - This must be provider-specific and only enabled if the provider exposes the
+      necessary endpoints/fields.
 
-  Acceptance Criteria
-  - When provider exposes GPU selection, Arbiter can record constraints and
-    selected GPU alongside selected model.
-  - If provider does not expose GPU selection, negotiation still works.
-
-status: open
+    Acceptance Criteria
+    - When provider exposes GPU selection, AgentiCorp can record constraints and
+      selected GPU alongside selected model.
+    - If provider does not expose GPU selection, negotiation still works.
+status: in_progress
 priority: 2
-project_id: arbiter
-assigned_to: null
-blocked_by:
-  - bd-015
-  - bd-016
+projectid: ""
+assignedto: agent-1768861966-documentation-manager
+blockedby: []
 blocks: []
+relatedto: []
 parent: bd-014
 children: []
 tags:
-  - p2
-  - providers
-  - gpu
-  - negotiation
-created_at: 2026-01-19T08:29:00Z
-updated_at: 2026-01-19T08:29:00Z
-closed_at: null
+    - p2
+    - providers
+    - gpu
+    - negotiation
 context:
-  source: user-request
+    agent_id: agent-1768861966-documentation-manager
+    dispatch_history: '["agent-1768861966-documentation-manager"]'
+    last_run_at: "2026-01-20T00:45:06Z"
+    last_run_error: 'task execution failed: failed to get completion: failed to send request: Post "http://localhost:8000/v1/chat/completions": dial tcp [::1]:8000: connect: connection refused'
+    loop_detected: "false"
+    provider_id: bootstrap-local
+    redispatch_requested: "false"
+    source: user-request
+createdat: 0001-01-01T00:00:00Z
+updatedat: 2026-01-19T16:45:06.00055-08:00
+closedat: null

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jordanhubbard/arbiter/pkg/types"
+	"github.com/jordanhubbard/agenticorp/pkg/types"
 )
 
 // BaseAgent implements the basic agent functionality

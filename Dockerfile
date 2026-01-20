@@ -20,8 +20,8 @@ COPY . .
 # Build the application with CGO enabled for sqlite3
 RUN CGO_ENABLED=1 GOOS=linux go build \
     -ldflags="-w -s" \
-    -o arbiter \
-    ./cmd/arbiter
+    -o agenticorp \
+    ./cmd/agenticorp
 
 # Runtime stage
 FROM alpine:latest
@@ -30,14 +30,14 @@ FROM alpine:latest
 RUN apk add --no-cache ca-certificates tzdata
 
 # Create non-root user
-RUN addgroup -g 1000 arbiter && \
-    adduser -D -u 1000 -G arbiter arbiter
+RUN addgroup -g 1000 agenticorp && \
+    adduser -D -u 1000 -G agenticorp agenticorp
 
 # Set working directory
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /build/arbiter /app/arbiter
+COPY --from=builder /build/agenticorp /app/agenticorp
 
 # Copy config file
 COPY --from=builder /build/config.yaml /app/config.yaml
@@ -46,13 +46,13 @@ COPY --from=builder /build/config.yaml /app/config.yaml
 COPY --from=builder /build/personas /app/personas
 
 # Change ownership
-RUN chown -R arbiter:arbiter /app
+RUN chown -R agenticorp:agenticorp /app
 
 # Switch to non-root user
-USER arbiter
+USER agenticorp
 
 # Expose port (if needed in future)
 EXPOSE 8080
 
 # Set entrypoint
-ENTRYPOINT ["/app/arbiter"]
+ENTRYPOINT ["/app/agenticorp"]

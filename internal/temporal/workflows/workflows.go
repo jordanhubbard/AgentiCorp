@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/jordanhubbard/arbiter/internal/temporal/eventbus"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
 )
 
 // AgentLifecycleWorkflowInput contains input for agent lifecycle workflow

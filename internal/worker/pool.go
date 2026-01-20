@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/provider"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // Pool manages a pool of workers

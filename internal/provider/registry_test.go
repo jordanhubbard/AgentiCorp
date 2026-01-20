@@ -3,7 +3,7 @@ package provider_test
 import (
 	"testing"
 
-	"github.com/jordanhubbard/arbiter/internal/provider"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
 )
 
 func TestProviderRegistry(t *testing.T) {

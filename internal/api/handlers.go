@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 	"net/http"
 	"strings"
 )
@@ -14,7 +14,7 @@ func (s *Server) handlePersonas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas, err := s.arbiter.GetPersonaManager().ListPersonas()
+	personas, err := s.agenticorp.GetPersonaManager().ListPersonas()
 	if err != nil {
 		s.respondError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -23,7 +23,7 @@ func (s *Server) handlePersonas(w http.ResponseWriter, r *http.Request) {
 	// Load full persona details
 	fullPersonas := make([]*models.Persona, 0, len(personas))
 	for _, name := range personas {
-		persona, err := s.arbiter.GetPersonaManager().LoadPersona(name)
+		persona, err := s.agenticorp.GetPersonaManager().LoadPersona(name)
 		if err != nil {
 			continue
 		}
@@ -39,7 +39,7 @@ func (s *Server) handlePersona(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		persona, err := s.arbiter.GetPersonaManager().LoadPersona(name)
+		persona, err := s.agenticorp.GetPersonaManager().LoadPersona(name)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, "Persona not found")
 			return
@@ -54,7 +54,7 @@ func (s *Server) handlePersona(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Load existing persona
-		existing, err := s.arbiter.GetPersonaManager().LoadPersona(name)
+		existing, err := s.agenticorp.GetPersonaManager().LoadPersona(name)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, "Persona not found")
 			return
@@ -67,13 +67,13 @@ func (s *Server) handlePersona(w http.ResponseWriter, r *http.Request) {
 		persona.CreatedAt = existing.CreatedAt
 
 		// Save
-		if err := s.arbiter.GetPersonaManager().SavePersona(&persona); err != nil {
+		if err := s.agenticorp.GetPersonaManager().SavePersona(&persona); err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		// Invalidate cache
-		s.arbiter.GetPersonaManager().InvalidateCache(name)
+		s.agenticorp.GetPersonaManager().InvalidateCache(name)
 
 		s.respondJSON(w, http.StatusOK, &persona)
 
@@ -86,7 +86,7 @@ func (s *Server) handlePersona(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleAgents(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		agents := s.arbiter.GetAgentManager().ListAgents()
+		agents := s.agenticorp.GetAgentManager().ListAgents()
 		s.respondJSON(w, http.StatusOK, agents)
 
 	case http.MethodPost:
@@ -106,7 +106,7 @@ func (s *Server) handleAgents(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		agent, err := s.arbiter.SpawnAgent(context.Background(), req.Name, req.PersonaName, req.ProjectID, req.ProviderID)
+		agent, err := s.agenticorp.SpawnAgent(context.Background(), req.Name, req.PersonaName, req.ProjectID, req.ProviderID)
 		if err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -133,7 +133,7 @@ func (s *Server) handleAgent(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		agent, err := s.arbiter.GetAgentManager().GetAgent(id)
+		agent, err := s.agenticorp.GetAgentManager().GetAgent(id)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, "Agent not found")
 			return
@@ -141,7 +141,7 @@ func (s *Server) handleAgent(w http.ResponseWriter, r *http.Request) {
 		s.respondJSON(w, http.StatusOK, agent)
 
 	case http.MethodDelete:
-		if err := s.arbiter.StopAgent(context.Background(), id); err != nil {
+		if err := s.agenticorp.StopAgent(context.Background(), id); err != nil {
 			s.respondError(w, http.StatusNotFound, "Agent not found")
 			return
 		}
@@ -187,7 +187,7 @@ func (s *Server) handleCloneAgent(w http.ResponseWriter, r *http.Request, id str
 		replace = *req.Replace
 	}
 
-	agent, err := s.arbiter.CloneAgentPersona(context.Background(), id, req.NewPersonaName, req.NewAgentName, req.SourcePersona, replace)
+	agent, err := s.agenticorp.CloneAgentPersona(context.Background(), id, req.NewPersonaName, req.NewAgentName, req.SourcePersona, replace)
 	if err != nil {
 		s.respondError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -200,7 +200,7 @@ func (s *Server) handleCloneAgent(w http.ResponseWriter, r *http.Request, id str
 func (s *Server) handleProjects(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		projects := s.arbiter.GetProjectManager().ListProjects()
+		projects := s.agenticorp.GetProjectManager().ListProjects()
 		s.respondJSON(w, http.StatusOK, projects)
 
 	case http.MethodPost:
@@ -222,16 +222,16 @@ func (s *Server) handleProjects(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		project, err := s.arbiter.CreateProject(req.Name, req.GitRepo, req.Branch, req.BeadsPath, req.Context)
+		project, err := s.agenticorp.CreateProject(req.Name, req.GitRepo, req.Branch, req.BeadsPath, req.Context)
 		if err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		if req.IsSticky != nil {
 			updates := map[string]interface{}{"is_sticky": *req.IsSticky}
-			if err := s.arbiter.GetProjectManager().UpdateProject(project.ID, updates); err == nil {
-				s.arbiter.PersistProject(project.ID)
-				project, _ = s.arbiter.GetProjectManager().GetProject(project.ID)
+			if err := s.agenticorp.GetProjectManager().UpdateProject(project.ID, updates); err == nil {
+				s.agenticorp.PersistProject(project.ID)
+				project, _ = s.agenticorp.GetProjectManager().GetProject(project.ID)
 			}
 		}
 
@@ -258,7 +258,7 @@ func (s *Server) handleProject(w http.ResponseWriter, r *http.Request) {
 	// Default GET behavior
 	switch r.Method {
 	case http.MethodGet:
-		project, err := s.arbiter.GetProjectManager().GetProject(id)
+		project, err := s.agenticorp.GetProjectManager().GetProject(id)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, "Project not found")
 			return
@@ -306,16 +306,16 @@ func (s *Server) handleProject(w http.ResponseWriter, r *http.Request) {
 			updates["is_sticky"] = *req.IsSticky
 		}
 
-		if err := s.arbiter.GetProjectManager().UpdateProject(id, updates); err != nil {
+		if err := s.agenticorp.GetProjectManager().UpdateProject(id, updates); err != nil {
 			s.respondError(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		s.arbiter.PersistProject(id)
-		project, _ := s.arbiter.GetProjectManager().GetProject(id)
+		s.agenticorp.PersistProject(id)
+		project, _ := s.agenticorp.GetProjectManager().GetProject(id)
 		s.respondJSON(w, http.StatusOK, project)
 
 	case http.MethodDelete:
-		if err := s.arbiter.DeleteProject(id); err != nil {
+		if err := s.agenticorp.DeleteProject(id); err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

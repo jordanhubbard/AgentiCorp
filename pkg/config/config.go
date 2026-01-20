@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/pkg/secrets"
+	"github.com/jordanhubbard/agenticorp/pkg/secrets"
 	"gopkg.in/yaml.v3"
 )
 
-const configFileName = ".arbiter.json"
+const configFileName = ".agenticorp.json"
 
 // Provider represents an AI service provider configuration (user-specific JSON config).
 type Provider struct {
@@ -19,7 +19,7 @@ type Provider struct {
 	Endpoint string `json:"endpoint"`
 }
 
-// Config represents the main configuration for the arbiter system.
+// Config represents the main configuration for the agenticorp system.
 // It supports both YAML-based configuration (for file-based config using LoadConfigFromFile)
 // and JSON-based configuration (for user-specific config using LoadConfig).
 type Config struct {
@@ -133,7 +133,7 @@ func LoadConfigFromFile(path string) (*Config, error) {
 
 // LoadConfig loads user-specific configuration from the default JSON config file.
 // This is typically used for loading user preferences and provider settings.
-// The config file is stored at ~/.arbiter.json
+// The config file is stored at ~/.agenticorp.json
 func LoadConfig() (*Config, error) {
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -173,7 +173,7 @@ func DefaultConfig() *Config {
 		},
 		Database: DatabaseConfig{
 			Type: "sqlite",
-			Path: "./arbiter.db",
+			Path: "./agenticorp.db",
 		},
 		Beads: BeadsConfig{
 			BDPath:         "bd",
@@ -195,8 +195,8 @@ func DefaultConfig() *Config {
 		},
 		Temporal: TemporalConfig{
 			Host:                     "localhost:7233",
-			Namespace:                "arbiter-default",
-			TaskQueue:                "arbiter-tasks",
+			Namespace:                "agenticorp-default",
+			TaskQueue:                "agenticorp-tasks",
 			WorkflowExecutionTimeout: 24 * time.Hour,
 			WorkflowTaskTimeout:      10 * time.Second,
 			EnableEventBus:           true,

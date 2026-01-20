@@ -7,14 +7,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/agent"
-	"github.com/jordanhubbard/arbiter/internal/provider"
-	"github.com/jordanhubbard/arbiter/internal/worker"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/internal/agent"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
+	"github.com/jordanhubbard/agenticorp/internal/worker"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 func main() {
-	fmt.Println("=== Arbiter Worker System Demo ===")
+	fmt.Println("=== AgentiCorp Worker System Demo ===")
 	fmt.Println()
 
 	// Check if API key is set

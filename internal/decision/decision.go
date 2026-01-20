@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jordanhubbard/arbiter/pkg/types"
+	"github.com/jordanhubbard/agenticorp/pkg/types"
 )
 
 // SimpleMaker implements a simple decision making algorithm

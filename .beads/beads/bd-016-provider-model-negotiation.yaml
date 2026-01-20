@@ -3,7 +3,7 @@ type: task
 title: P1 - Provider model negotiation (configured vs selected model)
 description: |
   Make providers “negotiate” for the best model they can serve, guided by the
-  Arbiter recommended model catalog.
+  AgentiCorp recommended model catalog.
 
   Requirements
   - Extend provider state to track:
@@ -13,8 +13,8 @@ description: |
     - optional selected_gpu (if provider supports GPU selection)
   - Add a negotiation routine that:
     1) calls provider’s OpenAI-compatible `/models`
-    2) intersects discovered models with Arbiter recommended catalog
-    3) ranks candidates by Arbiter scoring (initial scoring can be heuristic)
+    2) intersects discovered models with AgentiCorp recommended catalog
+    3) ranks candidates by AgentiCorp scoring (initial scoring can be heuristic)
     4) writes back selected_model and reason into provider state
   - Run negotiation:
     - on provider create/update
@@ -33,7 +33,7 @@ description: |
 
 status: closed
 priority: 1
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by:
   - bd-015

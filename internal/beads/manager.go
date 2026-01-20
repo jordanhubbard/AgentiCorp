@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 	"gopkg.in/yaml.v3"
 )
 

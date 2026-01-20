@@ -1,42 +1,47 @@
 id: bd-020
 type: task
-title: "P2 - Tests: model-name parsing + negotiation ranking + scoring"
+title: 'P2 - Tests: model-name parsing + negotiation ranking + scoring'
 description: |
-  Add tests to prevent regressions in model parsing and selection.
+    Add tests to prevent regressions in model parsing and selection.
 
-  Requirements
-  - Unit tests for model-name parser:
-    - verify correct extraction for:
-      - Qwen/Qwen3-Coder-480B-A35B-Instruct
-      - Qwen/Qwen3-Coder-30B-A3B-Instruct
-      - NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
-  - Unit tests for ranking/scoring logic (deterministic inputs).
-  - Integration-style test using a mock OpenAI-compatible provider:
-    - /models returns a mix of recommended and non-recommended models
-    - negotiation selects the highest-scoring recommended model
+    Requirements
+    - Unit tests for model-name parser:
+      - verify correct extraction for:
+        - Qwen/Qwen3-Coder-480B-A35B-Instruct
+        - Qwen/Qwen3-Coder-30B-A3B-Instruct
+        - NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
+    - Unit tests for ranking/scoring logic (deterministic inputs).
+    - Integration-style test using a mock OpenAI-compatible provider:
+      - /models returns a mix of recommended and non-recommended models
+      - negotiation selects the highest-scoring recommended model
 
-  Acceptance Criteria
-  - Tests cover the required model names and negotiation behavior.
-  - CI remains green.
-
-status: open
+    Acceptance Criteria
+    - Tests cover the required model names and negotiation behavior.
+    - CI remains green.
+status: in_progress
 priority: 2
-project_id: arbiter
-assigned_to: null
-blocked_by:
-  - bd-015
-  - bd-016
+projectid: ""
+assignedto: agent-1768861966-decision-maker
+blockedby: []
 blocks: []
+relatedto: []
 parent: bd-014
 children: []
 tags:
-  - p2
-  - tests
-  - models
-  - providers
-  - negotiation
-created_at: 2026-01-19T08:30:00Z
-updated_at: 2026-01-19T08:30:00Z
-closed_at: null
+    - p2
+    - tests
+    - models
+    - providers
+    - negotiation
 context:
-  source: user-request
+    agent_id: agent-1768861966-decision-maker
+    dispatch_history: '["agent-1768861966-decision-maker"]'
+    last_run_at: "2026-01-20T00:44:45Z"
+    last_run_error: 'task execution failed: failed to get completion: failed to send request: Post "http://localhost:8000/v1/chat/completions": dial tcp [::1]:8000: connect: connection refused'
+    loop_detected: "false"
+    provider_id: bootstrap-local
+    redispatch_requested: "false"
+    source: user-request
+createdat: 0001-01-01T00:00:00Z
+updatedat: 2026-01-19T16:44:45.999874-08:00
+closedat: null

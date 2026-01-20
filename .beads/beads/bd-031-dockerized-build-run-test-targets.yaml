@@ -2,7 +2,7 @@ id: bd-031
 type: task
 title: P0 - Make build/run/test targets exercise full Docker stack
 description: |
-  The current Makefile build/run/test targets run the arbiter binary directly.
+  The current Makefile build/run/test targets run the agenticorp binary directly.
   We need these targets to build, run, and test the full Docker stack (including
   Temporal and any required services) so we are not running in a crippled mode.
 
@@ -20,7 +20,7 @@ description: |
 
 status: closed
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

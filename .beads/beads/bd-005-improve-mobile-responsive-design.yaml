@@ -2,7 +2,7 @@ id: bd-005
 type: task
 title: Improve mobile responsive design and touch targets
 description: |
-  Enhance the mobile experience of the Arbiter web interface with better
+  Enhance the mobile experience of the AgentiCorp web interface with better
   responsive design and appropriate touch targets.
   
   Current issues:
@@ -24,7 +24,7 @@ description: |
   - web/static/css/style.css (responsive styles and breakpoints)
 status: closed
 priority: 2
-project_id: arbiter
+project_id: agenticorp
 assigned_to: droid
 blocked_by: []
 blocks: []

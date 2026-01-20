@@ -10,28 +10,28 @@ description: |
   - Track provider spend and forecast monthly burn.
   - Request/confirm a monthly budget with the CEO.
   - If spend is trending toward early budget exhaustion:
-    - Recommend cost controls to Arbiter:
+    - Recommend cost controls to AgentiCorp:
       - prefer on-prem providers
       - throttle work rate
       - apply other cost-saving controls
   - If staying within budget is not possible:
     - Ask CEO to decide: increase budget OR temporarily pause all work.
-    - Convey the CEO decision to Arbiter and to the CFO persona.
+    - Convey the CEO decision to AgentiCorp and to the CFO persona.
 
   Implementation Notes
   - Add persona files: personas/examples/cfo/{PERSONA.md,AI_START_HERE.md}
   - Define CFO coordination workflow with CEO (decision beads or explicit policy)
-  - Ensure CFO guidance can be surfaced to Arbiter policies for routing/throttling
+  - Ensure CFO guidance can be surfaced to AgentiCorp policies for routing/throttling
 
   Acceptance Criteria
   - CFO persona exists and is discoverable via personas listing.
   - CFO behavior includes cost monitoring, budget requests, and cost controls.
   - CFO can trigger a CEO decision when budget cannot be met.
-  - CFO communicates approved decision back to Arbiter.
+  - CFO communicates approved decision back to AgentiCorp.
 
 status: closed
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

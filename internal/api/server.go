@@ -5,20 +5,20 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jordanhubbard/arbiter/internal/arbiter"
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
 // Server represents the HTTP API server
 type Server struct {
-	arbiter *arbiter.Arbiter
+	agenticorp *agenticorp.AgentiCorp
 	config  *config.Config
 }
 
 // NewServer creates a new API server
-func NewServer(arb *arbiter.Arbiter, cfg *config.Config) *Server {
+func NewServer(arb *agenticorp.AgentiCorp, cfg *config.Config) *Server {
 	return &Server{
-		arbiter: arb,
+		agenticorp: arb,
 		config:  cfg,
 	}
 }

@@ -1,6 +1,6 @@
 # Beads Workflow Guide
 
-This guide explains how to use the beads system for tracking work in the Arbiter project.
+This guide explains how to use the beads system for tracking work in the AgentiCorp project.
 
 ## What are Beads?
 
@@ -26,7 +26,7 @@ Beads are work items that represent tasks, decisions, features, or bugs. The bea
      Detailed description of what needs to be done
    status: open  # open, in_progress, blocked, closed
    priority: 2  # 0=P0/critical, 1=P1/high, 2=P2/medium, 3=P3/low
-   project_id: arbiter
+   project_id: agenticorp
    assigned_to: your-name-or-agent-id
    blocked_by: []
    blocks: []
@@ -69,7 +69,7 @@ bd update bd-XXX --status in_progress
 bd close bd-XXX
 ```
 
-### Using the Arbiter API
+### Using the AgentiCorp API
 
 ```bash
 # Create a bead
@@ -79,12 +79,12 @@ curl -X POST http://localhost:8080/api/v1/beads \
     "title": "Title of work",
     "description": "Description",
     "priority": 2,
-    "project_id": "arbiter",
+    "project_id": "agenticorp",
     "type": "task"
   }'
 
 # List beads
-curl http://localhost:8080/api/v1/beads?project_id=arbiter
+curl http://localhost:8080/api/v1/beads?project_id=agenticorp
 
 # Update a bead
 curl -X PATCH http://localhost:8080/api/v1/beads/bd-XXX \
@@ -174,4 +174,4 @@ When you are assigned work:
 
 ## Questions?
 
-See the main README.md or QUICKSTART.md for more information about the Arbiter system.
+See the main README.md or QUICKSTART.md for more information about the AgentiCorp system.

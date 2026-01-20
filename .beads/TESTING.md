@@ -2,14 +2,14 @@
 
 ## Testing the Beads System
 
-The beads system has been initialized and integrated into the Arbiter repository. Here's how to test it:
+The beads system has been initialized and integrated into the AgentiCorp repository. Here's how to test it:
 
 ### Automatic Testing
 
-The beads system is automatically tested during Arbiter startup. When you run:
+The beads system is automatically tested during AgentiCorp startup. When you run:
 
 ```bash
-./arbiter
+./agenticorp
 ```
 
 The initialization process will:
@@ -28,29 +28,29 @@ You can verify beads are loaded correctly by:
    ```
    You should see YAML files like `bd-001-initialize-beads-system.yaml`
 
-2. **Start Arbiter and check logs**:
+2. **Start AgentiCorp and check logs**:
    ```bash
-   ./arbiter 2>&1 | grep -i bead
+   ./agenticorp 2>&1 | grep -i bead
    ```
    You should see messages like "Loaded N bead(s) from .beads/beads"
 
 3. **Use the API to list beads**:
    ```bash
-   curl http://localhost:8080/api/v1/beads?project_id=arbiter
+   curl http://localhost:8080/api/v1/beads?project_id=agenticorp
    ```
 
 ### Verification Checklist
 
 - [x] `.beads/` directory structure created
 - [x] `bd-001` bead file exists
-- [x] `config.yaml` configured with arbiter project
-- [x] Beads loading integrated into `arbiter.Initialize()`
+- [x] `config.yaml` configured with agenticorp project
+- [x] Beads loading integrated into `agenticorp.Initialize()`
 - [x] Error logging added to LoadBeadsFromFilesystem
 - [x] Documentation created (BEADS_WORKFLOW.md)
 
 ### Expected Behavior
 
-When Arbiter initializes:
+When AgentiCorp initializes:
 1. It reads config.yaml
 2. For each project with a `beads_path`, it calls `LoadBeadsFromFilesystem()`
 3. The function scans `.beads/beads/` for YAML files

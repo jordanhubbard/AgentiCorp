@@ -207,7 +207,7 @@ echo "All authentication tests passed!"
 
 To use the QA Engineer persona:
 
-1. **Load the persona** in the Arbiter system
+1. **Load the persona** in the AgentiCorp system
 2. **Point to project** being tested
 3. **QA monitors** for completed engineering work
 4. **QA creates** test beads and develops test scenarios

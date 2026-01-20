@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/provider"
-	"github.com/jordanhubbard/arbiter/internal/temporal/eventbus"
-	"github.com/jordanhubbard/arbiter/internal/worker"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/agenticorp/internal/worker"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // WorkerManager manages agents with worker pool integration

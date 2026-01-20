@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Arbiter API
+  title: AgentiCorp API
   description: |
-    The Arbiter API provides programmatic access to the agent orchestration system.
+    The AgentiCorp API provides programmatic access to the agent orchestration system.
     
     ## Authentication
     
@@ -16,8 +16,8 @@ info:
     
   version: 1.0.0
   contact:
-    name: Arbiter Support
-    url: https://github.com/jordanhubbard/arbiter
+    name: AgentiCorp Support
+    url: https://github.com/jordanhubbard/agenticorp
 
 servers:
   - url: https://localhost:8443

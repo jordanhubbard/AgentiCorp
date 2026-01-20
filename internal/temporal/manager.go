@@ -10,14 +10,14 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/jordanhubbard/arbiter/internal/temporal/activities"
-	temporalclient "github.com/jordanhubbard/arbiter/internal/temporal/client"
-	"github.com/jordanhubbard/arbiter/internal/temporal/eventbus"
-	"github.com/jordanhubbard/arbiter/internal/temporal/workflows"
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/activities"
+	temporalclient "github.com/jordanhubbard/agenticorp/internal/temporal/client"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/workflows"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
-// Manager manages Temporal integration for the arbiter
+// Manager manages Temporal integration for the agenticorp
 type Manager struct {
 	client   *temporalclient.Client
 	eventBus *eventbus.EventBus

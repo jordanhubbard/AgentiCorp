@@ -1,4 +1,4 @@
-module github.com/jordanhubbard/arbiter
+module github.com/jordanhubbard/agenticorp
 
 go 1.24.11
 

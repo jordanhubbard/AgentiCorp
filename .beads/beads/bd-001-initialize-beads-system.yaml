@@ -2,16 +2,16 @@ id: bd-001
 type: task
 title: Initialize beads system for repository
 description: |
-  Set up the beads work tracking system for the Arbiter repository to enable
+  Set up the beads work tracking system for the AgentiCorp repository to enable
   systematic tracking of all work items, decisions, and tasks. This includes:
   - Creating the .beads directory structure
   - Setting up initial configuration
   - Creating documentation for beads usage
   - Filing the first beads for ongoing work
-  - Integrating beads loading into arbiter initialization
+  - Integrating beads loading into agenticorp initialization
 status: closed
 priority: 1
-project_id: arbiter
+project_id: agenticorp
 assigned_to: copilot-agent
 blocked_by: []
 blocks: []

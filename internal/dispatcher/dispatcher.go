@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/jordanhubbard/arbiter/pkg/types"
+	"github.com/jordanhubbard/agenticorp/pkg/types"
 )
 
 // TaskDispatcher manages task distribution to agents

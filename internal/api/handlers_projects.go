@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // handleProjectStateEndpoints handles project state management endpoints
@@ -51,12 +51,12 @@ func (s *Server) handleProjectAgents(w http.ResponseWriter, r *http.Request, id 
 
 	switch req.Action {
 	case "assign":
-		if err := s.arbiter.AssignAgentToProject(req.AgentID, id); err != nil {
+		if err := s.agenticorp.AssignAgentToProject(req.AgentID, id); err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 	case "unassign":
-		if err := s.arbiter.UnassignAgentFromProject(req.AgentID, id); err != nil {
+		if err := s.agenticorp.UnassignAgentFromProject(req.AgentID, id); err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -65,7 +65,7 @@ func (s *Server) handleProjectAgents(w http.ResponseWriter, r *http.Request, id 
 		return
 	}
 
-	project, _ := s.arbiter.GetProjectManager().GetProject(id)
+	project, _ := s.agenticorp.GetProjectManager().GetProject(id)
 	s.respondJSON(w, http.StatusOK, project)
 }
 
@@ -91,7 +91,7 @@ func (s *Server) handleCloseProject(w http.ResponseWriter, r *http.Request, id s
 	}
 
 	// Check if project has open work
-	openBeads, err := s.arbiter.GetReadyBeads(id)
+	openBeads, err := s.agenticorp.GetReadyBeads(id)
 	if err != nil {
 		s.respondError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -100,7 +100,7 @@ func (s *Server) handleCloseProject(w http.ResponseWriter, r *http.Request, id s
 	hasOpenWork := len(openBeads) > 0
 	if hasOpenWork {
 		// Create a decision bead for closure
-		decision, err := s.arbiter.CreateDecisionBead(
+		decision, err := s.agenticorp.CreateDecisionBead(
 			fmt.Sprintf("Should project '%s' be closed despite having %d open beads?", id, len(openBeads)),
 			"",
 			req.AuthorID,
@@ -123,13 +123,13 @@ func (s *Server) handleCloseProject(w http.ResponseWriter, r *http.Request, id s
 	}
 
 	// No open work, close directly
-	if err := s.arbiter.GetProjectManager().CloseProject(id, req.AuthorID, req.Comment); err != nil {
+	if err := s.agenticorp.GetProjectManager().CloseProject(id, req.AuthorID, req.Comment); err != nil {
 		s.respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	s.arbiter.PersistProject(id)
+	s.agenticorp.PersistProject(id)
 
-	project, _ := s.arbiter.GetProjectManager().GetProject(id)
+	project, _ := s.agenticorp.GetProjectManager().GetProject(id)
 	s.respondJSON(w, http.StatusOK, project)
 }
 
@@ -154,13 +154,13 @@ func (s *Server) handleReopenProject(w http.ResponseWriter, r *http.Request, id 
 		return
 	}
 
-	if err := s.arbiter.GetProjectManager().ReopenProject(id, req.AuthorID, req.Comment); err != nil {
+	if err := s.agenticorp.GetProjectManager().ReopenProject(id, req.AuthorID, req.Comment); err != nil {
 		s.respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	s.arbiter.PersistProject(id)
+	s.agenticorp.PersistProject(id)
 
-	project, _ := s.arbiter.GetProjectManager().GetProject(id)
+	project, _ := s.agenticorp.GetProjectManager().GetProject(id)
 	s.respondJSON(w, http.StatusOK, project)
 }
 
@@ -168,7 +168,7 @@ func (s *Server) handleReopenProject(w http.ResponseWriter, r *http.Request, id 
 func (s *Server) handleProjectComments(w http.ResponseWriter, r *http.Request, id string) {
 	switch r.Method {
 	case http.MethodGet:
-		comments, err := s.arbiter.GetProjectManager().GetComments(id)
+		comments, err := s.agenticorp.GetProjectManager().GetComments(id)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, err.Error())
 			return
@@ -190,12 +190,12 @@ func (s *Server) handleProjectComments(w http.ResponseWriter, r *http.Request, i
 			return
 		}
 
-		comment, err := s.arbiter.GetProjectManager().AddComment(id, req.AuthorID, req.Comment)
+		comment, err := s.agenticorp.GetProjectManager().AddComment(id, req.AuthorID, req.Comment)
 		if err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		s.arbiter.PersistProject(id)
+		s.agenticorp.PersistProject(id)
 
 		s.respondJSON(w, http.StatusCreated, comment)
 
@@ -211,16 +211,16 @@ func (s *Server) handleProjectState(w http.ResponseWriter, r *http.Request, id s
 		return
 	}
 
-	project, err := s.arbiter.GetProjectManager().GetProject(id)
+	project, err := s.agenticorp.GetProjectManager().GetProject(id)
 	if err != nil {
 		s.respondError(w, http.StatusNotFound, "Project not found")
 		return
 	}
 
 	// Check for open work
-	openBeads, _ := s.arbiter.GetReadyBeads(id)
+	openBeads, _ := s.agenticorp.GetReadyBeads(id)
 	hasOpenWork := len(openBeads) > 0
-	canClose := s.arbiter.GetProjectManager().CanClose(id, hasOpenWork)
+	canClose := s.agenticorp.GetProjectManager().CanClose(id, hasOpenWork)
 
 	state := map[string]interface{}{
 		"id":             project.ID,
@@ -254,7 +254,7 @@ func updateHandleProject(s *Server, w http.ResponseWriter, r *http.Request) {
 
 	// Default GET behavior
 	if r.Method == http.MethodGet {
-		project, err := s.arbiter.GetProjectManager().GetProject(id)
+		project, err := s.agenticorp.GetProjectManager().GetProject(id)
 		if err != nil {
 			s.respondError(w, http.StatusNotFound, "Project not found")
 			return

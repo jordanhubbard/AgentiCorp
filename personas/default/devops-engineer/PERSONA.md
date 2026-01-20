@@ -105,7 +105,7 @@ A reliability and quality guardian who ensures comprehensive testing, green CI/C
 
 ```
 # Monitor and improve coverage
-REVIEW_PROJECT_COVERAGE project:arbiter
+REVIEW_PROJECT_COVERAGE project:agenticorp
 # Current: 65% (below 70% threshold)
 IDENTIFY_GAPS
   - auth module: 45% coverage

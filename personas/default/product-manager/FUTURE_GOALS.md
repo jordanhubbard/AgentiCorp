@@ -1,13 +1,13 @@
-# Future Goals for Arbiter Project
+# Future Goals for AgentiCorp Project
 
-This document represents the strategic beads that should be filed for Arbiter's future development, as identified by the Product Manager persona.
+This document represents the strategic beads that should be filed for AgentiCorp's future development, as identified by the Product Manager persona.
 
 ## Priority 1 (High Priority) - Core Value Delivery
 
 ### BEAD-001: Implement Streaming Support for Real-time Responses
 **Type**: feature  
 **Priority**: P1  
-**User Story**: As an Arbiter user, I want to see AI responses stream in real-time so that I can get faster feedback and better user experience.
+**User Story**: As an AgentiCorp user, I want to see AI responses stream in real-time so that I can get faster feedback and better user experience.
 
 **Problem**: Currently, users must wait for complete responses before seeing any output, leading to poor perceived performance.
 
@@ -32,9 +32,9 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-002: Implement Authentication and Authorization
 **Type**: feature  
 **Priority**: P1  
-**User Story**: As an Arbiter administrator, I want to control who can access my Arbiter instance so that I can secure my API keys and prevent unauthorized usage.
+**User Story**: As an AgentiCorp administrator, I want to control who can access my AgentiCorp instance so that I can secure my API keys and prevent unauthorized usage.
 
-**Problem**: Arbiter currently has no authentication, making it unsafe to expose beyond localhost. This limits deployment options and prevents team usage.
+**Problem**: AgentiCorp currently has no authentication, making it unsafe to expose beyond localhost. This limits deployment options and prevents team usage.
 
 **Proposed Solution**:
 - Add API key authentication for REST endpoints
@@ -59,7 +59,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-003: Advanced Provider Routing Logic
 **Type**: feature  
 **Priority**: P1  
-**User Story**: As an Arbiter user, I want intelligent provider selection based on cost, latency, and capabilities so that I get the best results at the lowest cost.
+**User Story**: As an AgentiCorp user, I want intelligent provider selection based on cost, latency, and capabilities so that I get the best results at the lowest cost.
 
 **Problem**: Current provider selection is manual and doesn't optimize for cost or performance. Users may unknowingly use expensive providers for simple tasks.
 
@@ -88,7 +88,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-004: Request/Response Logging and Analytics
 **Type**: feature  
 **Priority**: P2  
-**User Story**: As an Arbiter user, I want to see my usage patterns and costs so that I can optimize my AI provider spending and understand my usage.
+**User Story**: As an AgentiCorp user, I want to see my usage patterns and costs so that I can optimize my AI provider spending and understand my usage.
 
 **Problem**: Users have no visibility into their usage patterns, costs, or provider performance over time.
 
@@ -115,9 +115,9 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-005: Custom Provider Plugin System
 **Type**: feature  
 **Priority**: P2  
-**User Story**: As an Arbiter power user, I want to add support for custom AI providers so that I can use Arbiter with any LLM service.
+**User Story**: As an AgentiCorp power user, I want to add support for custom AI providers so that I can use AgentiCorp with any LLM service.
 
-**Problem**: Users can't easily add new providers without modifying Arbiter's source code, limiting flexibility.
+**Problem**: Users can't easily add new providers without modifying AgentiCorp's source code, limiting flexibility.
 
 **Proposed Solution**:
 - Define provider plugin interface
@@ -131,9 +131,9 @@ This document represents the strategic beads that should be filed for Arbiter's 
 - Plugin API is well-documented
 - Example plugins exist for common providers
 - Plugins can handle streaming, auth, and errors
-- Plugin crashes don't crash Arbiter
+- Plugin crashes don't crash AgentiCorp
 
-**User Impact**: Extends Arbiter to any LLM provider without waiting for official support.
+**User Impact**: Extends AgentiCorp to any LLM provider without waiting for official support.
 
 **Tags**: #extensibility #plugins #providers #architecture
 
@@ -142,7 +142,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-006: Response Caching Layer
 **Type**: feature  
 **Priority**: P2  
-**User Story**: As an Arbiter user, I want common responses cached so that I can save money on duplicate requests and get faster responses.
+**User Story**: As an AgentiCorp user, I want common responses cached so that I can save money on duplicate requests and get faster responses.
 
 **Problem**: Identical or similar requests result in redundant API calls, wasting money and time.
 
@@ -170,9 +170,9 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-007: Load Balancing and High Availability
 **Type**: feature  
 **Priority**: P2  
-**User Story**: As an Arbiter operator, I want to run multiple Arbiter instances so that I can handle high load and provide redundancy.
+**User Story**: As an AgentiCorp operator, I want to run multiple AgentiCorp instances so that I can handle high load and provide redundancy.
 
-**Problem**: Single Arbiter instance becomes a bottleneck and single point of failure.
+**Problem**: Single AgentiCorp instance becomes a bottleneck and single point of failure.
 
 **Proposed Solution**:
 - Support distributed deployment
@@ -189,7 +189,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 - Zero-downtime deployments possible
 - Scales horizontally under load
 
-**User Impact**: Enterprise users can deploy Arbiter at scale with high availability.
+**User Impact**: Enterprise users can deploy AgentiCorp at scale with high availability.
 
 **Tags**: #scalability #high-availability #distributed #enterprise
 
@@ -200,9 +200,9 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-008: IDE Integration Plugins
 **Type**: epic  
 **Priority**: P3  
-**User Story**: As a developer, I want to use Arbiter directly from my IDE so that I don't have to switch contexts.
+**User Story**: As a developer, I want to use AgentiCorp directly from my IDE so that I don't have to switch contexts.
 
-**Problem**: Users must leave their IDE to interact with Arbiter through web UI or separate tools.
+**Problem**: Users must leave their IDE to interact with AgentiCorp through web UI or separate tools.
 
 **Proposed Solution**:
 - Create VS Code extension
@@ -212,11 +212,11 @@ This document represents the strategic beads that should be filed for Arbiter's 
 
 **Sub-features**:
 - [ ] VS Code extension with AI chat panel
-- [ ] Inline code suggestions from Arbiter
+- [ ] Inline code suggestions from AgentiCorp
 - [ ] JetBrains plugin
 - [ ] Vim/Neovim integration
 
-**Success Criteria**: Developers can access Arbiter features without leaving their editor.
+**Success Criteria**: Developers can access AgentiCorp features without leaving their editor.
 
 **Tags**: #ide #integration #developer-experience #vscode #jetbrains
 
@@ -225,7 +225,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-009: Advanced Persona Editor UI
 **Type**: feature  
 **Priority**: P3  
-**User Story**: As an Arbiter user, I want a visual editor for creating and customizing personas so that I don't have to manually edit YAML/Markdown files.
+**User Story**: As an AgentiCorp user, I want a visual editor for creating and customizing personas so that I don't have to manually edit YAML/Markdown files.
 
 **Problem**: Creating custom personas requires understanding file formats and manual editing.
 
@@ -253,7 +253,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 **Priority**: P3  
 **User Story**: As a team lead, I want my team to collaborate on agent workflows so that we can work together on complex projects.
 
-**Problem**: Arbiter is currently single-user focused, limiting team collaboration.
+**Problem**: AgentiCorp is currently single-user focused, limiting team collaboration.
 
 **Proposed Solution**:
 - Shared workspaces
@@ -278,7 +278,7 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ### BEAD-011: Cost Optimization Recommendations
 **Type**: feature  
 **Priority**: P3  
-**User Story**: As an Arbiter user, I want suggestions on how to reduce my AI costs so that I can optimize my spending.
+**User Story**: As an AgentiCorp user, I want suggestions on how to reduce my AI costs so that I can optimize my spending.
 
 **Problem**: Users may not know they're using expensive providers when cheaper alternatives exist.
 
@@ -304,13 +304,13 @@ This document represents the strategic beads that should be filed for Arbiter's 
 ## Strategic Themes
 
 ### Near-term Focus (Next 3-6 months)
-- **Streaming & Real-time**: Make Arbiter feel fast and responsive
+- **Streaming & Real-time**: Make AgentiCorp feel fast and responsive
 - **Security & Auth**: Enable production deployments
 - **Smart Routing**: Deliver cost savings through intelligence
 
 ### Mid-term Focus (6-12 months)
 - **Observability**: Give users visibility into usage and costs
-- **Extensibility**: Enable community to extend Arbiter
+- **Extensibility**: Enable community to extend AgentiCorp
 - **Performance**: Add caching and optimization
 
 ### Long-term Vision (12+ months)
@@ -329,4 +329,4 @@ This document represents the strategic beads that should be filed for Arbiter's 
 
 ---
 
-*This roadmap represents the Product Manager persona's analysis of Arbiter's future direction. Priorities should be validated with users and adjusted based on feedback and changing needs.*
+*This roadmap represents the Product Manager persona's analysis of AgentiCorp's future direction. Priorities should be validated with users and adjusted based on feedback and changing needs.*

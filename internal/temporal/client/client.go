@@ -8,10 +8,10 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
-// Client wraps the Temporal client with arbiter-specific functionality
+// Client wraps the Temporal client with agenticorp-specific functionality
 type Client struct {
 	temporal  client.Client
 	config    *config.TemporalConfig

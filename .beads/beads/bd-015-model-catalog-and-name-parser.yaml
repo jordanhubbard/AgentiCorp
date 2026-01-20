@@ -2,7 +2,7 @@ id: bd-015
 type: task
 title: P1 - Model catalog + model-name parser (size/active params/format/instruct)
 description: |
-  Implement Arbiter’s recommended model catalog and model-name decoding.
+  Implement AgentiCorp’s recommended model catalog and model-name decoding.
 
   Scope
   - Add an internal ModelCatalog component that stores:
@@ -37,7 +37,7 @@ description: |
 
 status: closed
 priority: 1
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

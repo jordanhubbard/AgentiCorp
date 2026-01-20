@@ -1,8 +1,8 @@
-# Arbiter
+# AgentiCorp
 
 An agentic-based coding orchestrator for both on-prem and off-prem development.
 
-Arbiter is a lightweight AI coding agent orchestration system that manages workflows, handles agent lifecycle, and provides real-time event streaming for monitoring and coordination.
+AgentiCorp is a lightweight AI coding agent orchestration system that manages workflows, handles agent lifecycle, and provides real-time event streaming for monitoring and coordination.
 
 ## Features
 
@@ -18,7 +18,7 @@ Arbiter is a lightweight AI coding agent orchestration system that manages workf
 
 Default personas are available under `./personas/`:
 
-- `personas/arbiter` — Arbiter-specific system persona(s)
+- `personas/agenticorp` — AgentiCorp-specific system persona(s)
 - `personas/default/ceo` — Human CEO decision maker (tie-breaks / approvals)
 - `personas/default/project-manager` — Plans work, files beads, drives delivery
 - `personas/default/product-manager` — Identifies feature gaps and writes PRDs for epics
@@ -52,9 +52,9 @@ Example:
 
 ```yaml
 projects:
-  - id: arbiter
-    name: Arbiter
-    git_repo: https://github.com/jordanhubbard/arbiter
+  - id: agenticorp
+    name: AgentiCorp
+    git_repo: https://github.com/jordanhubbard/agenticorp
     branch: main
     beads_path: .beads
     is_perpetual: true
@@ -63,11 +63,11 @@ projects:
       vet: go vet ./...
 ```
 
-Arbiter “dogfoods” itself by registering this repo as a project and loading beads from the project’s `.beads/` directory.
+AgentiCorp “dogfoods” itself by registering this repo as a project and loading beads from the project’s `.beads/` directory.
 
 ## Architecture
 
-Arbiter is built with the following principles:
+AgentiCorp is built with the following principles:
 
 - **Go-First Implementation**: All primary functionality is implemented in Go for performance and maintainability
 - **Containerized Everything**: Every component runs in containers for consistency across environments
@@ -86,7 +86,7 @@ Arbiter is built with the following principles:
 ### Running with Docker (Recommended)
 
 The Docker setup includes:
-- Arbiter application server (port 8080)
+- AgentiCorp application server (port 8080)
 - Temporal server (port 7233)
 - Temporal UI (port 8088)
 - PostgreSQL database for Temporal
@@ -96,7 +96,7 @@ The Docker setup includes:
 docker compose up -d
 
 # View logs
-docker compose logs -f arbiter
+docker compose logs -f agenticorp
 
 # View Temporal UI
 open http://localhost:8088
@@ -123,7 +123,7 @@ make docker-clean
 
 ## Temporal Workflow Engine
 
-Arbiter uses [Temporal](https://temporal.io) for reliable workflow orchestration. Temporal provides:
+AgentiCorp uses [Temporal](https://temporal.io) for reliable workflow orchestration. Temporal provides:
 
 - **Durable Execution**: Workflows survive crashes and restarts
 - **Event History**: Complete audit trail of all workflow executions
@@ -149,7 +149,7 @@ For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 An AI Coding Agent Orchestrator for both on-prem and off-prem development.
 ### Workflows
 
-Arbiter implements several key workflows:
+AgentiCorp implements several key workflows:
 
 #### Agent Lifecycle Workflow
 Manages the complete lifecycle of an agent from spawn to shutdown:
@@ -271,8 +271,8 @@ server:
 
 temporal:
   host: localhost:7233              # Temporal server address
-  namespace: arbiter-default        # Temporal namespace
-  task_queue: arbiter-tasks         # Task queue name
+  namespace: agenticorp-default        # Temporal namespace
+  task_queue: agenticorp-tasks         # Task queue name
   workflow_execution_timeout: 24h   # Max workflow duration
   workflow_task_timeout: 10s        # Workflow task timeout
   enable_event_bus: true            # Enable event bus
@@ -286,14 +286,14 @@ agents:
 
 - [x] Project state management (open, closed, reopened)
 - [x] Project comments and closure workflow
-- [x] Arbiter persona for self-improvement
+- [x] AgentiCorp persona for self-improvement
 - [x] Perpetual projects that never close
 - [ ] Implement actual HTTP forwarding to providers
 - [ ] Add streaming support for real-time responses
 - [ ] Implement request/response logging and analytics
 - [ ] Add support for provider-specific features
 - [ ] Implement load balancing and failover
-- [ ] Add authentication for Arbiter API
+- [ ] Add authentication for AgentiCorp API
 - [ ] Support for custom provider plugins
 - [ ] Add metrics and monitoring endpoints
 - [ ] Implement rate limiting per provider
@@ -301,7 +301,7 @@ agents:
 
 ## Project State Management
 
-Arbiter supports sophisticated project lifecycle management:
+AgentiCorp supports sophisticated project lifecycle management:
 
 ### Project States
 - **Open**: Active project with ongoing work
@@ -312,7 +312,7 @@ Arbiter supports sophisticated project lifecycle management:
 - **Comments**: Add timestamped comments to track project decisions
 - **Closure Workflow**: Close projects only when no open work remains
 - **Agent Consensus**: If open work exists, requires agent agreement to close
-- **Perpetual Projects**: Mark projects (like Arbiter itself) that never close
+- **Perpetual Projects**: Mark projects (like AgentiCorp itself) that never close
 
 ### API Endpoints
 
@@ -342,16 +342,16 @@ POST /api/v1/projects/{id}/comments
 GET /api/v1/projects/{id}/state
 ```
 
-## The Arbiter Persona
+## The AgentiCorp Persona
 
-The Arbiter system includes a special **arbiter** persona that works on improving the Arbiter platform itself:
+The AgentiCorp system includes a special **agenticorp** persona that works on improving the AgentiCorp platform itself:
 
 - **Self-Improving**: Continuously enhances the platform
 - **Collaborative**: Works with UX, Engineering, PM, and Product personas
-- **Perpetual**: The arbiter project never closes
+- **Perpetual**: The agenticorp project never closes
 - **Meta-Circular**: An AI orchestrator that orchestrates its own improvement
 
-See `personas/arbiter/` for the complete persona definition.
+See `personas/agenticorp/` for the complete persona definition.
 
 ## Support
 
@@ -364,10 +364,10 @@ See `personas/arbiter/` for the complete persona definition.
 go mod download
 
 # Build the binary
-go build -o arbiter ./cmd/arbiter
+go build -o agenticorp ./cmd/agenticorp
 
 # Run the application
-./arbiter
+./agenticorp
 ```
 
 ### Running Tests
@@ -393,10 +393,10 @@ For local development with Temporal:
 docker compose up -d temporal temporal-postgresql temporal-ui
 ```
 
-2. Build and run arbiter locally:
+2. Build and run agenticorp locally:
 ```bash
-go build -o arbiter ./cmd/arbiter
-./arbiter
+go build -o agenticorp ./cmd/agenticorp
+./agenticorp
 ```
 
 3. Access Temporal UI:
@@ -407,12 +407,12 @@ open http://localhost:8088
 ## Project Structure
 
 ```
-arbiter/
-├── cmd/arbiter/              # Main application entry point
+agenticorp/
+├── cmd/agenticorp/              # Main application entry point
 │   └── main.go
 ├── internal/
 │   ├── agent/               # Agent management
-│   ├── arbiter/             # Core orchestrator
+│   ├── agenticorp/             # Core orchestrator
 │   ├── beads/               # Work item management
 │   ├── decision/            # Decision framework
 │   ├── temporal/            # Temporal integration
@@ -464,7 +464,7 @@ View service logs:
 docker compose logs -f
 
 # Specific service
-docker compose logs -f arbiter
+docker compose logs -f agenticorp
 docker compose logs -f temporal
 ```
 
@@ -472,7 +472,7 @@ docker compose logs -f temporal
 
 ### Temporal Connection Issues
 
-If arbiter can't connect to Temporal:
+If agenticorp can't connect to Temporal:
 
 1. Check Temporal is running:
 ```bash
@@ -486,7 +486,7 @@ docker compose logs temporal
 
 3. Verify connectivity:
 ```bash
-docker exec arbiter nc -zv temporal 7233
+docker exec agenticorp nc -zv temporal 7233
 ```
 
 ### Workflow Not Starting
@@ -495,7 +495,7 @@ If workflows aren't starting:
 
 1. Check worker is running:
 ```bash
-docker compose logs arbiter | grep "Temporal worker"
+docker compose logs agenticorp | grep "Temporal worker"
 ```
 
 2. Verify task queue in Temporal UI
@@ -508,7 +508,7 @@ If event stream endpoint returns errors:
 1. Verify Temporal is enabled in config
 2. Check event bus initialization:
 ```bash
-docker compose logs arbiter | grep "event bus"
+docker compose logs agenticorp | grep "event bus"
 ```
 
 ## Development Guidelines

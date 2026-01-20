@@ -1,12 +1,12 @@
-# Arbiter UX Review - Web Designer Persona Findings
+# AgentiCorp UX Review - Web Designer Persona Findings
 
 **Reviewer**: Web Designer Persona
 **Date**: 2026-01-18
-**Scope**: Arbiter Web Interface (web/static/)
+**Scope**: AgentiCorp Web Interface (web/static/)
 
 ## Executive Summary
 
-The Arbiter web interface provides a functional foundation for agent orchestration with a clean, modern design. However, there are several opportunities to improve usability, accessibility, and visual polish. Key areas for improvement include:
+The AgentiCorp web interface provides a functional foundation for agent orchestration with a clean, modern design. However, there are several opportunities to improve usability, accessibility, and visual polish. Key areas for improvement include:
 
 1. Enhanced visual feedback for user actions
 2. Improved accessibility and keyboard navigation

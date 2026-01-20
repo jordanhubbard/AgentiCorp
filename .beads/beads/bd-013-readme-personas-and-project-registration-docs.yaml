@@ -10,11 +10,11 @@ description: |
      - Link to their persona definitions under ./personas
 
   2) Project registration model
-     - Explain how a project is registered with Arbiter
+     - Explain how a project is registered with AgentiCorp
        - Via config.yaml projects[]
        - Required fields: id, name, git_repo, branch, beads_path
        - Optional fields: is_perpetual, context (build/test/lint commands)
-     - Explain that Arbiter dogfoods itself by registering the Arbiter repo as a project
+     - Explain that AgentiCorp dogfoods itself by registering the AgentiCorp repo as a project
      - Describe how beads are discovered/loaded from .beads for registered projects
 
   Rationale
@@ -28,7 +28,7 @@ description: |
 
 status: closed
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

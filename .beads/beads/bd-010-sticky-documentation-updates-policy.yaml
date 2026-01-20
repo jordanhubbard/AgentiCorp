@@ -1,11 +1,11 @@
 id: bd-010
 type: task
-title: P0 (sticky) Documentation update policy for Arbiter
+title: P0 (sticky) Documentation update policy for AgentiCorp
 description: |
-  This is a sticky, always-on bead for the Arbiter project.
+  This is a sticky, always-on bead for the AgentiCorp project.
 
   Goal
-  - Keep user documentation accurate and current for the Arbiter project.
+  - Keep user documentation accurate and current for the AgentiCorp project.
 
   Rules
   1) README.md (high-level only)
@@ -25,7 +25,7 @@ description: |
 
 status: open
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

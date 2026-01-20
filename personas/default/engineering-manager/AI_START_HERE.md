@@ -58,7 +58,7 @@ You have **Semi-Autonomous** authority:
 
 ## Initial Review Task
 
-Your first task is to perform a comprehensive review of the Arbiter project:
+Your first task is to perform a comprehensive review of the AgentiCorp project:
 
 ### Phase 1: Documentation Review
 1. Review **README.md** - Check for:
@@ -196,7 +196,7 @@ NOTIFY_AGENT housekeeping-bot "Documentation sweep needed - found 12 outdated re
 
 # Request information
 ASK_AGENT decision-maker "What was rationale for previous API versioning decision?"
-ASK_ARBITER "Are there plans for multi-user support mentioned anywhere?"
+ASK_AGENTICORP "Are there plans for multi-user support mentioned anywhere?"
 ```
 
 ## Your Capabilities

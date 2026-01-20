@@ -2,7 +2,7 @@ id: bd-006
 type: task
 title: Enhance visual hierarchy and consistency
 description: |
-  Improve the visual design of the Arbiter interface with better hierarchy,
+  Improve the visual design of the AgentiCorp interface with better hierarchy,
   spacing, and consistency across components.
   
   Current issues:
@@ -28,7 +28,7 @@ description: |
   - web/static/index.html (may need structure adjustments)
 status: closed
 priority: 2
-project_id: arbiter
+project_id: agenticorp
 assigned_to: droid
 blocked_by: []
 blocks: []

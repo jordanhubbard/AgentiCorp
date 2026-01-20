@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/worker"
+	"github.com/jordanhubbard/agenticorp/internal/worker"
 )
 
 // handleWork handles POST /api/v1/work for non-bead work (simple prompts).
@@ -45,7 +45,7 @@ func (s *Server) handleWork(w http.ResponseWriter, r *http.Request) {
 		ProjectID:   req.ProjectID,
 	}
 
-	result, err := s.arbiter.GetAgentManager().ExecuteTask(ctx, req.AgentID, task)
+	result, err := s.agenticorp.GetAgentManager().ExecuteTask(ctx, req.AgentID, task)
 	if err != nil {
 		s.respondError(w, http.StatusBadGateway, err.Error())
 		return

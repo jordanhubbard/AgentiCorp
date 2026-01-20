@@ -1,6 +1,6 @@
-# Arbiter User Guide
+# AgentiCorp User Guide
 
-This guide helps new users run Arbiter, register projects, and work with agents and beads.
+This guide helps new users run AgentiCorp, register projects, and work with agents and beads.
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ This guide helps new users run Arbiter, register projects, and work with agents 
 - Docker Compose 1.29+
 - Go 1.24+ (optional for local development)
 
-### Start Arbiter
+### Start AgentiCorp
 
 ```bash
 docker compose up -d
@@ -22,7 +22,7 @@ For local development with the full container stack, you can also use:
 make run
 ```
 
-Once running, Arbiter serves the API on `:8080` and the Temporal UI on `:8088`.
+Once running, AgentiCorp serves the API on `:8080` and the Temporal UI on `:8088`.
 
 ## Project Registration
 
@@ -44,9 +44,9 @@ Example:
 
 ```yaml
 projects:
-  - id: arbiter
-    name: Arbiter
-    git_repo: https://github.com/jordanhubbard/arbiter
+  - id: agenticorp
+    name: AgentiCorp
+    git_repo: https://github.com/jordanhubbard/agenticorp
     branch: main
     beads_path: .beads
     is_perpetual: true
@@ -56,12 +56,12 @@ projects:
       test_command: "make test"
 ```
 
-Arbiter loads beads from each project’s `beads_path` and uses them to build the work graph.
+AgentiCorp loads beads from each project’s `beads_path` and uses them to build the work graph.
 
 ## Personas and Agents
 
 Default personas live under `personas/default/`. The system persona(s) live under
-`personas/arbiter/`.
+`personas/agenticorp/`.
 
 Agents are created from personas and attached to projects. The Project Viewer UI
 shows agent assignments and bead progress in real time.
@@ -80,14 +80,14 @@ Key fields:
 ## Operational Workflow
 
 1. Register projects in `config.yaml`.
-2. Start Arbiter (docker compose or binary).
+2. Start AgentiCorp (docker compose or binary).
 3. Confirm beads are loaded in the UI and API.
 4. Assign agents to projects and monitor progress.
 5. Use decisions/approvals for escalations (e.g., CEO workflow).
 
 ## Testing
 
-Arbiter’s default `make test` runs the full Docker stack with Temporal:
+AgentiCorp’s default `make test` runs the full Docker stack with Temporal:
 
 ```bash
 make test
@@ -105,9 +105,9 @@ Changes are applied immediately and reflected across the UI.
 
 ## CEO REPL
 
-The CEO REPL lets you send high-priority questions directly to Arbiter. It uses
+The CEO REPL lets you send high-priority questions directly to AgentiCorp. It uses
 Temporal to route the request through the best available provider (quality and
-latency weighted) with the Arbiter persona context.
+latency weighted) with the AgentiCorp persona context.
 
 1. Navigate to the **CEO REPL** section.
 2. Enter your question and click **Send**.

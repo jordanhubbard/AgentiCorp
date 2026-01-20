@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/agent"
-	"github.com/jordanhubbard/arbiter/internal/persona"
-	"github.com/jordanhubbard/arbiter/internal/provider"
-	"github.com/jordanhubbard/arbiter/internal/worker"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/internal/agent"
+	"github.com/jordanhubbard/agenticorp/internal/persona"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
+	"github.com/jordanhubbard/agenticorp/internal/worker"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // TestWorkerSystemIntegration tests the complete workflow:

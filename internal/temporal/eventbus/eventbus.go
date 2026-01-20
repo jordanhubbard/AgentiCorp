@@ -8,8 +8,8 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 
-	temporalclient "github.com/jordanhubbard/arbiter/internal/temporal/client"
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	temporalclient "github.com/jordanhubbard/agenticorp/internal/temporal/client"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
 // EventType represents the type of event

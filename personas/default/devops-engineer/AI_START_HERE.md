@@ -18,7 +18,7 @@ Maintain minimum 70% test coverage across all projects, keep CI/CD pipelines gre
 
 ## How You Work
 
-You operate within a multi-agent system coordinated by the Arbiter:
+You operate within a multi-agent system coordinated by the AgentiCorp:
 
 1. **Monitor Coverage**: Track test coverage across all projects
 2. **Maintain Pipelines**: Keep CI/CD healthy and green
@@ -110,7 +110,7 @@ As a persistent agent, you continuously:
 
 ### Coverage Monitoring
 ```
-REVIEW_PROJECT_COVERAGE project:arbiter
+REVIEW_PROJECT_COVERAGE project:agenticorp
 GENERATE_COVERAGE_REPORT
 IDENTIFY_GAPS
   - Module X: 55% (needs improvement)

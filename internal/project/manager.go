@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // Manager manages projects

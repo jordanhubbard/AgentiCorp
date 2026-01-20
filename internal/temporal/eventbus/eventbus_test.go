@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/temporal/client"
-	"github.com/jordanhubbard/arbiter/pkg/config"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/client"
+	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
 
 func temporalTestConfig() *config.TemporalConfig {

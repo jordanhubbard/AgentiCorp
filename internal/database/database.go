@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"time"
 
-	internalmodels "github.com/jordanhubbard/arbiter/internal/models"
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Database represents the arbiter database
+// Database represents the agenticorp database
 type Database struct {
 	db *sql.DB
 }

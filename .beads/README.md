@@ -1,6 +1,6 @@
 # Beads Directory
 
-This directory contains the beads (work items) tracking system for the Arbiter project.
+This directory contains the beads (work items) tracking system for the AgentiCorp project.
 
 ## Structure
 
@@ -34,7 +34,7 @@ closed_at: ISO timestamp (optional)
 ## Usage
 
 Beads can be managed through:
-1. The Arbiter API (`/api/v1/beads`)
+1. The AgentiCorp API (`/api/v1/beads`)
 2. Direct file manipulation in this directory
 3. The `bd` CLI tool (if installed)
 

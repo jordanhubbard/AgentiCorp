@@ -1,10 +1,10 @@
-# Arbiter
+# AgentiCorp
 
 An agentic based coding orchestrator for both on-prem and off-prem development.
 
 ## Architecture
 
-Arbiter is built with the following principles:
+AgentiCorp is built with the following principles:
 
 - **Go-First Implementation**: All primary functionality is implemented in Go for performance, maintainability, and minimal host footprint
 - **Containerized Everything**: Every component runs in containers with no exceptions, ensuring consistency across environments
@@ -29,7 +29,7 @@ make docker-run
 docker compose up -d
 
 # View logs
-docker compose logs -f arbiter
+docker compose logs -f agenticorp
 
 # Stop the service
 make docker-stop
@@ -41,7 +41,7 @@ make docker-stop
 make docker-build
 
 # Or manually
-docker build -t arbiter:latest .
+docker build -t agenticorp:latest .
 ```
 
 ### Local Development
@@ -64,22 +64,22 @@ make lint
 
 ## Usage
 
-Once running, Arbiter provides an orchestration service for coding tasks:
+Once running, AgentiCorp provides an orchestration service for coding tasks:
 
 ```bash
 # Check version
-docker exec arbiter /app/arbiter version
+docker exec agenticorp /app/agenticorp version
 
 # Get help
-docker exec arbiter /app/arbiter help
+docker exec agenticorp /app/agenticorp help
 ```
 
 ## Project Structure
 
 ```
-arbiter/
+agenticorp/
 ├── cmd/
-│   └── arbiter/          # Main application entry point
+│   └── agenticorp/          # Main application entry point
 │       └── main.go
 ├── Dockerfile            # Multi-stage Docker build
 ├── docker-compose.yml    # Container orchestration
@@ -106,7 +106,7 @@ When contributing to this project:
 4. Run tests and linters before submitting changes
 An AI Coding Agent Orchestrator for both on-prem and off-prem development.
 
-Arbiter is a lightweight AI coding agent orchestrator, dispatcher, and automatic decision maker. Instead of being just another frontend to systems like Claude or Cursor, Arbiter intelligently routes requests to multiple AI providers and presents a unified OpenAI-compatible API.
+AgentiCorp is a lightweight AI coding agent orchestrator, dispatcher, and automatic decision maker. Instead of being just another frontend to systems like Claude or Cursor, AgentiCorp intelligently routes requests to multiple AI providers and presents a unified OpenAI-compatible API.
 
 ## Features
 
@@ -126,25 +126,25 @@ Arbiter is a lightweight AI coding agent orchestrator, dispatcher, and automatic
 ### Build from Source
 
 ```bash
-git clone https://github.com/jordanhubbard/arbiter.git
-cd arbiter
+git clone https://github.com/jordanhubbard/agenticorp.git
+cd agenticorp
 go build
 ```
 
-This will create an `arbiter` binary in the current directory.
+This will create an `agenticorp` binary in the current directory.
 
 ## Quick Start
 
-1. **Run Arbiter**:
+1. **Run AgentiCorp**:
    ```bash
-   ./arbiter
+   ./agenticorp
    ```
 
-2. **First-time Setup**: On first run, Arbiter will interactively guide you through configuring your AI providers:
+2. **First-time Setup**: On first run, AgentiCorp will interactively guide you through configuring your AI providers:
    - Enter the names of providers you have access to (e.g., `claude, openai, cursor`)
    - For each provider, either:
      - Provide a specific API endpoint URL, or
-     - Let Arbiter look up the standard endpoint for known providers
+     - Let AgentiCorp look up the standard endpoint for known providers
    - Enter your API key for each provider
 
 3. **Access the Interfaces**:
@@ -154,16 +154,16 @@ This will create an `arbiter` binary in the current directory.
 
 ## Configuration
 
-Arbiter stores configuration in two files in your home directory:
+AgentiCorp stores configuration in two files in your home directory:
 
-- `~/.arbiter.json`: Provider configurations (endpoints, names)
-- `~/.arbiter_secrets`: Encrypted API keys (machine-specific encryption)
+- `~/.agenticorp.json`: Provider configurations (endpoints, names)
+- `~/.agenticorp_secrets`: Encrypted API keys (machine-specific encryption)
 
 **Security Note**: These files are never committed to git. The secrets file uses AES-GCM encryption with a machine-specific key derived from hostname and user directory.
 
 ## API Endpoints
 
-Arbiter provides an OpenAI-compatible API:
+AgentiCorp provides an OpenAI-compatible API:
 
 ### Chat Completions
 ```bash
@@ -226,10 +226,10 @@ curl http://localhost:8080/health
 ```python
 from openai import OpenAI
 
-# Point the client to Arbiter
+# Point the client to AgentiCorp
 client = OpenAI(
     base_url="http://localhost:8080/v1",
-    api_key="not-needed"  # Arbiter manages keys
+    api_key="not-needed"  # AgentiCorp manages keys
 )
 
 response = client.chat.completions.create(
@@ -242,7 +242,7 @@ print(response.choices[0].message.content)
 
 ## Supported Providers
 
-Arbiter has built-in support for the following providers with automatic endpoint lookup:
+AgentiCorp has built-in support for the following providers with automatic endpoint lookup:
 
 - **Claude** (Anthropic): `https://api.anthropic.com/v1`
 - **OpenAI**: `https://api.openai.com/v1`
@@ -268,7 +268,7 @@ For any other provider, you can manually specify the API endpoint during setup.
                 │ OpenAI-compatible API
                 │
 ┌───────────────▼─────────────────────────┐
-│           Arbiter Server                │
+│           AgentiCorp Server                │
 │  ┌─────────────────────────────────┐   │
 │  │  Request Router & Dispatcher    │   │
 │  └─────────────────────────────────┘   │
@@ -296,13 +296,13 @@ go build
 ### Running
 
 ```bash
-./arbiter
+./agenticorp
 ```
 
 ### Project Structure
 
 ```
-arbiter/
+agenticorp/
 ├── main.go                    # Application entry point
 ├── pkg/
 │   ├── config/
@@ -340,7 +340,7 @@ See LICENSE file for details.
 - [ ] Implement request/response logging and analytics
 - [ ] Add support for provider-specific features
 - [ ] Implement load balancing and failover
-- [ ] Add authentication for Arbiter API
+- [ ] Add authentication for AgentiCorp API
 - [ ] Support for custom provider plugins
 - [ ] Add metrics and monitoring endpoints
 - [ ] Implement rate limiting per provider
@@ -349,10 +349,10 @@ See LICENSE file for details.
 ## Support
 
 For issues, questions, or contributions, please use the GitHub issue tracker.
-# arbiter
+# agenticorp
 An agentic based coding orchestrator for both on-prem and off-prem development
 
-Arbiter is a web-based service that helps orchestrate and monitor AI agents working on coding tasks. It provides:
+AgentiCorp is a web-based service that helps orchestrate and monitor AI agents working on coding tasks. It provides:
 - Work queue management for tracking tasks
 - Agent communication monitoring
 - Service endpoint tracking with cost analysis
@@ -392,8 +392,8 @@ Arbiter is a web-based service that helps orchestrate and monitor AI agents work
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/jordanhubbard/arbiter.git
-cd arbiter
+git clone https://github.com/jordanhubbard/agenticorp.git
+cd agenticorp
 ```
 
 2. Install dependencies:
@@ -403,17 +403,17 @@ go mod download
 
 3. Build the application:
 ```bash
-go build -o arbiter ./cmd/arbiter
+go build -o agenticorp ./cmd/agenticorp
 ```
 
 4. Run the server:
 ```bash
-./arbiter
+./agenticorp
 ```
 
 The server will start on port 8080 by default. You can change this by setting the `PORT` environment variable:
 ```bash
-PORT=3000 ./arbiter
+PORT=3000 ./agenticorp
 ```
 
 ### Web UI
@@ -526,8 +526,8 @@ go test ./... -v
 
 ### Project Structure
 ```
-arbiter/
-├── cmd/arbiter/          # Main application
+agenticorp/
+├── cmd/agenticorp/          # Main application
 │   ├── main.go          # Entry point
 │   └── web/             # Web UI files
 │       ├── index.html   # Dashboard UI
@@ -543,7 +543,7 @@ arbiter/
 
 ## Service Priority System
 
-The arbiter automatically prioritizes services based on their cost model:
+The agenticorp automatically prioritizes services based on their cost model:
 
 1. **Fixed-cost services** (e.g., self-hosted Ollama/vLLM): Highest priority
    - Zero or fixed monthly cost

@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get Arbiter up and running in 5 minutes.
+Get AgentiCorp up and running in 5 minutes.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ Get Arbiter up and running in 5 minutes.
 
 ```bash
 # Clone the repository
-git clone https://github.com/jordanhubbard/arbiter.git
-cd arbiter
+git clone https://github.com/jordanhubbard/agenticorp.git
+cd agenticorp
 
 # Set up development environment
 make dev-setup
@@ -26,11 +26,11 @@ make run
 
 ### Option 2: Pre-built Binary
 
-Download the latest release from [GitHub Releases](https://github.com/jordanhubbard/arbiter/releases).
+Download the latest release from [GitHub Releases](https://github.com/jordanhubbard/agenticorp/releases).
 
 ```bash
 # Extract and run
-./arbiter -config config.yaml
+./agenticorp -config config.yaml
 ```
 
 ## First Steps
@@ -39,10 +39,10 @@ Download the latest release from [GitHub Releases](https://github.com/jordanhubb
 
 ```bash
 # With default configuration
-./arbiter
+./agenticorp
 
 # With custom config
-./arbiter -config /path/to/config.yaml
+./agenticorp -config /path/to/config.yaml
 ```
 
 The server will start on:
@@ -173,7 +173,7 @@ Monitor in real-time via the Web UI!
 
 1. **Spawn multiple agents** on different branches
 2. **Or same branch** with file coordination
-3. **Arbiter coordinates** file locks
+3. **AgentiCorp coordinates** file locks
 4. **Decision maker agent** resolves conflicts
 5. **Work flows autonomously**
 
@@ -315,7 +315,7 @@ Check:
 3. Git repo path is correct
 4. Agent has access to files
 
-View logs in terminal where arbiter is running.
+View logs in terminal where agenticorp is running.
 
 ### Web UI Not Loading
 
@@ -337,9 +337,9 @@ web_ui:
 
 ## Getting Help
 
-- **Issues**: https://github.com/jordanhubbard/arbiter/issues
-- **Discussions**: https://github.com/jordanhubbard/arbiter/discussions
-- **Documentation**: https://github.com/jordanhubbard/arbiter/wiki
+- **Issues**: https://github.com/jordanhubbard/agenticorp/issues
+- **Discussions**: https://github.com/jordanhubbard/agenticorp/discussions
+- **Documentation**: https://github.com/jordanhubbard/agenticorp/wiki
 
 ## Quick Reference
 

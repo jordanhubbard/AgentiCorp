@@ -1,0 +1,487 @@
+id: bd-run-failure-20260120005624
+type: task
+title: "P0 - run failed"
+description: |
+  Command: docker compose up --build
+  Exit code: 1
+
+  Output:
+    time="2026-01-19T16:56:07-08:00" level=warning msg="/Users/jkh/Src/agenticorp/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+     Image agenticorp-agenticorp-test Building 
+     Image agenticorp:latest Building 
+    #1 [internal] load local bake definitions
+    #1 reading from stdin 959B done
+    #1 DONE 0.0s
+    
+    #2 [agenticorp-test internal] load build definition from Dockerfile
+    #2 transferring dockerfile: 1.12kB done
+    #2 DONE 0.0s
+    
+    #3 [agenticorp internal] load metadata for docker.io/library/golang:1.24-alpine
+    #3 DONE 0.3s
+    
+    #4 [agenticorp internal] load metadata for docker.io/library/alpine:latest
+    #4 DONE 0.3s
+    
+    #5 [agenticorp internal] load .dockerignore
+    #5 transferring context: 353B done
+    #5 DONE 0.0s
+    
+    #6 [agenticorp builder 1/8] FROM docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986
+    #6 resolve docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986 0.0s done
+    #6 DONE 0.0s
+    
+    #7 [agenticorp stage-1 1/7] FROM docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+    #7 resolve docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 0.0s done
+    #7 DONE 0.0s
+    
+    #8 [agenticorp-test internal] load build context
+    #8 transferring context: 12.15kB 0.0s done
+    #8 DONE 0.0s
+    
+    #9 [agenticorp-test builder 6/8] RUN go mod download
+    #9 CACHED
+    
+    #10 [agenticorp-test builder 2/8] RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+    #10 CACHED
+    
+    #11 [agenticorp-test builder 3/8] WORKDIR /build
+    #11 CACHED
+    
+    #12 [agenticorp-test builder 7/8] COPY . .
+    #12 CACHED
+    
+    #13 [agenticorp-test builder 4/8] COPY go.mod ./
+    #13 CACHED
+    
+    #14 [agenticorp-test builder 5/8] COPY go.sum ./
+    #14 CACHED
+    
+    #15 [agenticorp-test builder 8/8] RUN CGO_ENABLED=1 GOOS=linux go build     -ldflags="-w -s"     -o agenticorp     ./cmd/agenticorp
+    #15 CACHED
+    
+    #16 [agenticorp stage-1 2/7] RUN apk add --no-cache ca-certificates tzdata
+    #16 CACHED
+    
+    #17 [agenticorp stage-1 4/7] WORKDIR /app
+    #17 CACHED
+    
+    #18 [agenticorp stage-1 3/7] RUN addgroup -g 1000 agenticorp &&     adduser -D -u 1000 -G agenticorp agenticorp
+    #18 CACHED
+    
+    #19 [agenticorp stage-1 6/7] COPY --from=builder /build/config.yaml /app/config.yaml
+    #19 CACHED
+    
+    #20 [agenticorp stage-1 5/7] COPY --from=builder /build/agenticorp /app/agenticorp
+    #20 CACHED
+    
+    #21 [agenticorp stage-1 7/7] RUN chown -R agenticorp:agenticorp /app
+    #21 CACHED
+    
+    #22 [agenticorp] exporting to image
+    #22 exporting layers done
+    #22 exporting manifest sha256:8cd4c974c5c4966071408c66e69fecc3bf372b4eddab7a9ad75ad199f840c4d8 done
+    #22 exporting config sha256:9f593e41aad2b651f80b79a70b41cd15d2fed5e703bf06572e10f63204b4377f done
+    #22 exporting attestation manifest sha256:dcc199cc7d7a938cb3ee13ca497e8dc693714a89f2d684fb31789010ed696fba 0.0s done
+    #22 exporting manifest list sha256:38c401a6add8635192230f2ba620ef8287b1b443bb1a35e901d75dd459e7c9e0 done
+    #22 naming to docker.io/library/agenticorp:latest done
+    #22 unpacking to docker.io/library/agenticorp:latest done
+    #22 DONE 0.0s
+    
+    #23 [agenticorp-test] exporting to image
+    #23 exporting layers done
+    #23 exporting manifest sha256:87325ead5a176f551c7a4948971abb52c94d48185e7545602c7c1cd368dc25e3 done
+    #23 exporting config sha256:c6f22051f912f8d1ed36c1e44e611e68011285613c93e1d8fc40b953ed019d6b done
+    #23 exporting attestation manifest sha256:be909604a27523d7edc3e8c36240eedc91a71566e6124b74c00fa69908533e30 0.0s done
+    #23 exporting manifest list sha256:29c52a6914b7ca44574614c11cdb91c3c686927ae05200d5ad119848c3f39d0a done
+    #23 naming to docker.io/library/agenticorp-agenticorp-test:latest done
+    #23 unpacking to docker.io/library/agenticorp-agenticorp-test:latest done
+    #23 DONE 0.1s
+    
+    #24 [agenticorp] resolving provenance for metadata file
+    #24 DONE 0.0s
+    
+    #25 [agenticorp-test] resolving provenance for metadata file
+    #25 DONE 0.0s
+     Image agenticorp:latest Built 
+     Image agenticorp-agenticorp-test Built 
+     Network agenticorp_agenticorp-network Creating 
+     Network agenticorp_agenticorp-network Created 
+     Container temporal-postgresql Creating 
+     Container temporal-postgresql Created 
+     Container temporal Creating 
+     Container temporal Created 
+     Container agenticorp Creating 
+     Container temporal-ui Creating 
+     Container agenticorp-test Creating 
+     Container agenticorp Created 
+     Container agenticorp-test Created 
+     Container temporal-ui Created 
+    Attaching to agenticorp, agenticorp-test, temporal, temporal-postgresql, temporal-ui
+     Container temporal-postgresql Starting 
+     Container temporal-postgresql Started 
+     Container temporal-postgresql Waiting 
+    temporal-postgresql  | 
+    temporal-postgresql  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+    temporal-postgresql  | 
+    temporal-postgresql  | 2026-01-20 00:56:08.713 UTC [1] LOG:  starting PostgreSQL 15.15 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+    temporal-postgresql  | 2026-01-20 00:56:08.713 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+    temporal-postgresql  | 2026-01-20 00:56:08.713 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+    temporal-postgresql  | 2026-01-20 00:56:08.714 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+    temporal-postgresql  | 2026-01-20 00:56:08.717 UTC [29] LOG:  database system was shut down at 2026-01-20 00:55:00 UTC
+    temporal-postgresql  | 2026-01-20 00:56:08.720 UTC [1] LOG:  database system is ready to accept connections
+    [Kagenticorp has been recreated
+    [Kagenticorp-test has been recreated
+    temporal             | TEMPORAL_ADDRESS is not set, setting it to 172.19.0.3:7233
+    temporal             | PostgreSQL started.
+    temporal             | Setup PostgreSQL schema.
+    temporal             | 2026-01-20T00:56:19.027Z[34mINFO[0mStarting schema setup{"config": {"SchemaFilePath":"","InitialVersion":"0.0","Overwrite":false,"DisableVersioning":false}, "logging-call-at": "setuptask.go:58"}
+    temporal             | 2026-01-20T00:56:19.028Z[35mDEBUG[0mSetting up version tables{"logging-call-at": "setuptask.go:68"}
+    temporal             | 2026-01-20T00:56:19.030Z[35mDEBUG[0mCurrent database schema version 1.10 is greater than initial schema version 0.0. Skip version upgrade{"logging-call-at": "setuptask.go:117"}
+    temporal             | 2026-01-20T00:56:19.030Z[34mINFO[0mSchema setup complete{"logging-call-at": "setuptask.go:132"}
+    temporal             | 2026-01-20T00:56:19.041Z[34mINFO[0mUpdateSchemeTask started{"config": {"DBName":"","TargetVersion":"","SchemaDir":"/etc/temporal/schema/postgresql/v96/temporal/versioned","IsDryRun":false}, "logging-call-at": "updatetask.go:97"}
+    temporal             | 2026-01-20T00:56:19.042Z[35mDEBUG[0mSchema Dirs: []{"logging-call-at": "updatetask.go:195"}
+    temporal             | 2026-01-20T00:56:19.042Z[35mDEBUG[0mfound zero updates from current version 1.10{"logging-call-at": "updatetask.go:127"}
+    temporal             | 2026-01-20T00:56:19.042Z[34mINFO[0mUpdateSchemeTask done{"logging-call-at": "updatetask.go:120"}
+    temporal-postgresql  | 2026-01-20 00:56:19.055 UTC [42] ERROR:  database "temporal_visibility" already exists
+    temporal-postgresql  | 2026-01-20 00:56:19.055 UTC [42] STATEMENT:  CREATE DATABASE temporal_visibility
+    temporal             | 2026-01-20T00:56:19.069Z[34mINFO[0mStarting schema setup{"config": {"SchemaFilePath":"","InitialVersion":"0.0","Overwrite":false,"DisableVersioning":false}, "logging-call-at": "setuptask.go:58"}
+    temporal             | 2026-01-20T00:56:19.070Z[35mDEBUG[0mSetting up version tables{"logging-call-at": "setuptask.go:68"}
+    temporal             | 2026-01-20T00:56:19.072Z[35mDEBUG[0mCurrent database schema version 1.1 is greater than initial schema version 0.0. Skip version upgrade{"logging-call-at": "setuptask.go:117"}
+    temporal             | 2026-01-20T00:56:19.072Z[34mINFO[0mSchema setup complete{"logging-call-at": "setuptask.go:132"}
+    temporal             | 2026-01-20T00:56:19.083Z[34mINFO[0mUpdateSchemeTask started{"config": {"DBName":"","TargetVersion":"","SchemaDir":"/etc/temporal/schema/postgresql/v96/visibility/versioned","IsDryRun":false}, "logging-call-at": "updatetask.go:97"}
+    temporal             | 2026-01-20T00:56:19.084Z[35mDEBUG[0mSchema Dirs: []{"logging-call-at": "updatetask.go:195"}
+    temporal             | 2026-01-20T00:56:19.084Z[35mDEBUG[0mfound zero updates from current version 1.1{"logging-call-at": "updatetask.go:127"}
+    temporal             | 2026-01-20T00:56:19.084Z[34mINFO[0mUpdateSchemeTask done{"logging-call-at": "updatetask.go:120"}
+    temporal             | Temporal CLI address: 172.19.0.3:7233.
+    temporal             | 2026/01/20 00:56:19 Loading config; env=docker,zone=,configDir=config
+    temporal             | 2026/01/20 00:56:19 Loading config files=[config/docker.yaml]
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.112Z","msg":"Build info.","git-time":"2024-01-12T20:57:30.000Z","git-revision":"ca74b18c7257fdb8a87a27afc89827901e152d15","git-modified":true,"go-arch":"arm64","go-os":"linux","go-version":"go1.20.10","cgo-enabled":false,"server-version":"1.22.4","debug-mode":false,"logging-call-at":"main.go:148"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: system.defaultworkflowretentionperiod oldValue: nil newValue: { constraints: {} value: 168h }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: matching.numtaskqueuereadpartitions oldValue: nil newValue: { constraints: {} value: 4 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: worker.replicatorconcurrency oldValue: nil newValue: { constraints: {} value: 1000 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: history.maxautoresetpoints oldValue: nil newValue: { constraints: {} value: 20 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: system.enablenamespacenotactiveautoforwarding oldValue: nil newValue: { constraints: {} value: true }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: frontend.enableclientversioncheck oldValue: nil newValue: { constraints: {} value: false }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: matching.numtaskqueuewritepartitions oldValue: nil newValue: { constraints: {} value: 4 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: limit.maxidlength oldValue: nil newValue: { constraints: {} value: 255 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"dynamic config changed for the key: system.advancedvisibilitywritingmode oldValue: nil newValue: { constraints: {} value: off }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.113Z","msg":"Updated dynamic config","logging-call-at":"file_based_client.go:195"}
+    temporal             | {"level":"warn","ts":"2026-01-20T00:56:19.113Z","msg":"Not using any authorizer and flag `--allow-no-auth` not detected. Future versions will require using the flag `--allow-no-auth` if you do not want to set an authorizer.","logging-call-at":"main.go:178"}
+    temporal             | Error: unable to health check "temporal.api.workflowservice.v1.WorkflowService" service: connection error: desc = "transport: Error while dialing: dial tcp 172.19.0.3:7233: connect: connection refused"
+    temporal             | ('export TEMPORAL_CLI_SHOW_STACKS=1' to see stack traces)
+    temporal             | Waiting for Temporal server to start...
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.128Z","msg":"Use rpc address 127.0.0.1:7233 for cluster active.","component":"metadata-initializer","logging-call-at":"fx.go:732"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.135Z","msg":"historyClient: ownership caching disabled","service":"history","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.139Z","msg":"Created gRPC listener","service":"history","address":"172.19.0.3:7234","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.146Z","msg":"Created gRPC listener","service":"matching","address":"172.19.0.3:7235","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.146Z","msg":"historyClient: ownership caching disabled","service":"matching","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.154Z","msg":"historyClient: ownership caching disabled","service":"frontend","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.154Z","msg":"Created gRPC listener","service":"frontend","address":"172.19.0.3:7233","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.157Z","msg":"Service is not requested, skipping initialization.","service":"internal-frontend","logging-call-at":"fx.go:477"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.162Z","msg":"historyClient: ownership caching disabled","service":"worker","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.165Z","msg":"PProf not started due to port not set","logging-call-at":"pprof.go:67"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.165Z","msg":"Starting server for services","value":{"frontend":{},"history":{},"matching":{},"worker":{}},"logging-call-at":"server_impl.go:94"}
+    temporal-postgresql  | 2026-01-20 00:56:19.169 UTC [56] ERROR:  duplicate key value violates unique constraint "namespaces_pkey"
+    temporal-postgresql  | 2026-01-20 00:56:19.169 UTC [56] DETAIL:  Key (partition_id, id)=(54321, \x32049b68787240948e63d0dd59896a83) already exists.
+    temporal-postgresql  | 2026-01-20 00:56:19.169 UTC [56] STATEMENT:  INSERT INTO 
+    temporal-postgresql  |  namespaces (partition_id, id, name, is_global, data, data_encoding, notification_version)
+    temporal-postgresql  |  VALUES($1, $2, $3, $4, $5, $6, $7)
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.173Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.173Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"RuntimeMetricsReporter started","service":"matching","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"matching starting","service":"matching","logging-call-at":"service.go:91"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"Starting to serve on matching listener","service":"matching","logging-call-at":"service.go:104"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"fifo scheduler started","service":"history","component":"memory-scheduled-queue-processor","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"RuntimeMetricsReporter started","service":"frontend","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.174Z","msg":"frontend starting","service":"frontend","logging-call-at":"service.go:336"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"RuntimeMetricsReporter started","service":"worker","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"worker starting","service":"worker","component":"worker","logging-call-at":"service.go:379"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"Starting to serve on frontend listener","service":"frontend","logging-call-at":"service.go:355"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.175Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.176Z","msg":"Membership heartbeat upserted successfully","address":"172.19.0.3","port":6935,"hostId":"d4bdbe3c-f59a-11f0-a5d7-327d6f0c1c87","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.177Z","msg":"Membership heartbeat upserted successfully","address":"172.19.0.3","port":6933,"hostId":"d4bf050d-f59a-11f0-a5d7-327d6f0c1c87","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.177Z","msg":"Membership heartbeat upserted successfully","address":"172.19.0.3","port":6939,"hostId":"d4c0494a-f59a-11f0-a5d7-327d6f0c1c87","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.177Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.19.0.3:6935,172.19.0.3:6933,172.19.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.19.0.3:6939,172.19.0.3:6935,172.19.0.3:6933","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"RuntimeMetricsReporter started","service":"history","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"history starting","service":"history","logging-call-at":"service.go:91"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"Replication task fetchers started.","logging-call-at":"task_fetcher.go:142"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","lifecycle":"Started","logging-call-at":"controller_impl.go:136"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.19.0.3:6935,172.19.0.3:6933,172.19.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.178Z","msg":"Starting to serve on history listener","service":"history","logging-call-at":"service.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.179Z","msg":"sequential scheduler started","logging-call-at":"sequential_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.180Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.19.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.180Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.19.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.180Z","msg":"Frontend is now healthy","service":"frontend","logging-call-at":"workflow_handler.go:219"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.181Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.19.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.181Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.19.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.181Z","msg":"Membership heartbeat upserted successfully","address":"172.19.0.3","port":6934,"hostId":"d4bc1d09-f59a-11f0-a5d7-327d6f0c1c87","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.182Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.19.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.182Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.19.0.3:6935,172.19.0.3:6933,172.19.0.3:6939,172.19.0.3:6934","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.183Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.19.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.183Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.19.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.19.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.19.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","component":"shard-controller","address":"172.19.0.3:7234","shard-update":"RingMembershipChangedEvent","number-processed":1,"number-deleted":0,"logging-call-at":"ownership.go:116"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","numShards":1,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.184Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","numShards":2,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.185Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.185Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","numShards":3,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.185Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.19.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.185Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.185Z","msg":"none","component":"shard-controller","address":"172.19.0.3:7234","numShards":4,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.186Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.19.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.188Z","msg":"Range updated for shardID","shard-id":1,"address":"172.19.0.3:7234","shard-range-id":6,"previous-shard-range-id":5,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"Acquired shard","shard-id":1,"address":"172.19.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.189Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"none","shard-id":1,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"queue reader started","shard-id":1,"address":"172.19.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"queue reader started","shard-id":1,"address":"172.19.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"queue reader started","shard-id":1,"address":"172.19.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.190Z","msg":"queue reader started","shard-id":1,"address":"172.19.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+     Container temporal-postgresql Healthy 
+     Container temporal Starting 
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Range updated for shardID","shard-id":3,"address":"172.19.0.3:7234","shard-range-id":6,"previous-shard-range-id":5,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Acquired shard","shard-id":3,"address":"172.19.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"error","ts":"2026-01-20T00:56:19.193Z","msg":"Unable to process new range","shard-id":3,"address":"172.19.0.3:7234","component":"archival-queue-processor","error":"shard status unknown","logging-call-at":"queue_base.go:316","stacktrace":"go.temporal.io/server/common/log.(*zapLogger).Error\n\t/home/builder/temporal/common/log/zap_logger.go:156\ngo.temporal.io/server/service/history/queues.(*queueBase).processNewRange\n\t/home/builder/temporal/service/history/queues/queue_base.go:316\ngo.temporal.io/server/service/history/queues.(*scheduledQueue).processEventLoop\n\t/home/builder/temporal/service/history/queues/queue_scheduled.go:218"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"none","shard-id":3,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"queue reader started","shard-id":3,"address":"172.19.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"queue reader started","shard-id":3,"address":"172.19.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"queue reader started","shard-id":3,"address":"172.19.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.193Z","msg":"queue reader started","shard-id":3,"address":"172.19.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Range updated for shardID","shard-id":4,"address":"172.19.0.3:7234","shard-range-id":6,"previous-shard-range-id":5,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Acquired shard","shard-id":4,"address":"172.19.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"none","shard-id":4,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"queue reader started","shard-id":4,"address":"172.19.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.194Z","msg":"queue reader started","shard-id":4,"address":"172.19.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":4,"address":"172.19.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":4,"address":"172.19.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Range updated for shardID","shard-id":2,"address":"172.19.0.3:7234","shard-range-id":6,"previous-shard-range-id":5,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Acquired shard","shard-id":2,"address":"172.19.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":2,"address":"172.19.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":2,"address":"172.19.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"none","shard-id":2,"address":"172.19.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":2,"address":"172.19.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.195Z","msg":"queue reader started","shard-id":2,"address":"172.19.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+     Container temporal Started 
+     Container temporal Waiting 
+     Container temporal Waiting 
+     Container temporal Waiting 
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.208Z","msg":"temporal-sys-history-scanner-workflow workflow successfully started","service":"worker","logging-call-at":"scanner.go:292"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.210Z","msg":"temporal-sys-tq-scanner-workflow workflow successfully started","service":"worker","logging-call-at":"scanner.go:292"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.219Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.19.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.244Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.19.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.244Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.19.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.244Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.19.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.345Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-tq-scanner-taskqueue-0","WorkerID":"1@161a7a32689e@","logging-call-at":"scanner.go:239"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.345Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-tq-scanner-taskqueue-0","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.345Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-tq-scanner-taskqueue-0","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.345Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:1a3b177c-f817-462c-a049-d972f9f22d7a","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.346Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-history-scanner-taskqueue-0","WorkerID":"1@161a7a32689e@","logging-call-at":"scanner.go:239"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.346Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:3b4e025a-26e5-4089-826f-d48420862405","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.346Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-history-scanner-taskqueue-0","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.346Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.347Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.347Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.348Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-history-scanner-taskqueue-0","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.348Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:79121f6f-e62a-4b34-bd33-72e768403bb1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.348Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-archival-tq","WorkerID":"1@161a7a32689e@","logging-call-at":"client_worker.go:137"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.348Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.350Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-archival-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.351Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.352Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.353Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.353Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.354Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-archival-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.355Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-processor-parent-close-policy","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.355Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-processor-parent-close-policy","WorkerID":"1@161a7a32689e@","logging-call-at":"processor.go:98"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.359Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:dccd9518-8d23-41e0-a7ad-80dcd9a7c669","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.359Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.360Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.361Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.362Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.362Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:f0c14718-a7a1-4d62-8c0f-e1cf12175396","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.362Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-batcher-taskqueue","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.363Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-batcher-taskqueue","WorkerID":"1@161a7a32689e@","logging-call-at":"batcher.go:98"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.363Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.364Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:df553d4e-92c9-4d11-a761-c035d1e8a3a7","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"default-worker-tq","WorkerID":"1@161a7a32689e@","logging-call-at":"worker.go:101"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"none","component":"worker-manager","lifecycle":"Started","logging-call-at":"worker.go:106"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"none","component":"perns-worker-manager","lifecycle":"Starting","logging-call-at":"pernamespaceworker.go:166"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"none","component":"perns-worker-manager","lifecycle":"Started","logging-call-at":"pernamespaceworker.go:177"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"worker service started","service":"worker","component":"worker","address":"172.19.0.3:7239","logging-call-at":"service.go:418"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.365Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-batcher-taskqueue","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.366Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.366Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"default-worker-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.366Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.366Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:e6ade2e9-868c-488b-bc66-81a631b5597f","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.367Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.367Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.367Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-per-ns-tq","WorkerID":"server-worker@1@161a7a32689e@temporal-system","logging-call-at":"pernamespaceworker.go:483"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.367Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.369Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-processor-parent-close-policy","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.369Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"161a7a32689e:a79bdcc1-d2e3-4852-a8d8-479a57e382ac","wf-task-queue-type":"Workflow","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.369Z","msg":"Started Worker","service":"worker","Namespace":"default","TaskQueue":"temporal-sys-per-ns-tq","WorkerID":"server-worker@1@161a7a32689e@default","logging-call-at":"pernamespaceworker.go:483"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.369Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Workflow","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.370Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Activity","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T00:56:19.372Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"default-worker-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | Temporal server started.
+    temporal             | Registering default namespace: default.
+    temporal             |   NamespaceInfo.Name                    default                                           
+    temporal             |   NamespaceInfo.Id                      340e0616-74ec-45a1-b0b8-36c973e83945              
+    temporal             |   NamespaceInfo.Description             Default namespace for Temporal                    
+    temporal             |                                         Server.                                           
+    temporal             |   NamespaceInfo.OwnerEmail                                                                
+    temporal             |   NamespaceInfo.State                   Registered                                        
+    temporal             |   NamespaceInfo.Data                    map[]                                             
+    temporal             |   Config.WorkflowExecutionRetentionTtl  24h0m0s                                           
+    temporal             |   ReplicationConfig.ActiveClusterName   active                                            
+    temporal             |   ReplicationConfig.Clusters            [&ClusterReplicationConfig{ClusterName:active,}]  
+    temporal             |   Config.HistoryArchivalState           Disabled                                          
+    temporal             |   Config.VisibilityArchivalState        Disabled                                          
+    temporal             |   IsGlobalNamespace                     false                                             
+    temporal             |   FailoverVersion                                                                      0  
+    temporal             |   FailoverHistory                       []                                                
+    temporal             | 
+    temporal             | Default namespace default already registered.
+    temporal             |   [95m           Name           [0m  [95m   Type    [0m  
+    temporal             |   BatcherNamespace            Keyword      
+    temporal             |   BatcherUser                 Keyword      
+    temporal             |   BinaryChecksums             KeywordList  
+    temporal             |   BuildIds                    KeywordList  
+    temporal             |   CloseTime                   Datetime     
+    temporal             |   CustomBoolField             Bool         
+    temporal             |   CustomDatetimeField         Datetime     
+    temporal             |   CustomDoubleField           Double       
+    temporal             |   CustomIntField              Int          
+    temporal             |   CustomKeywordField          Keyword      
+    temporal             |   CustomStringField           Text         
+    temporal             |   CustomTextField             Text         
+    temporal             |   ExecutionDuration           Int          
+    temporal             |   ExecutionStatus             Keyword      
+    temporal             |   ExecutionTime               Datetime     
+    temporal             |   HistoryLength               Int          
+    temporal             |   HistorySizeBytes            Int          
+    temporal             |   RunId                       Keyword      
+    temporal             |   StartTime                   Datetime     
+    temporal             |   StateTransitionCount        Int          
+    temporal             |   TaskQueue                   Keyword      
+    temporal             |   TemporalChangeVersion       KeywordList  
+    temporal             |   TemporalNamespaceDivision   Keyword      
+    temporal             |   TemporalSchedulePaused      Bool         
+    temporal             |   TemporalScheduledById       Keyword      
+    temporal             |   TemporalScheduledStartTime  Datetime     
+    temporal             |   WorkflowId                  Keyword      
+    temporal             |   WorkflowType                Keyword      
+    temporal             | Namespace cache refreshed.
+    temporal             | Adding Custom*Field search attributes.
+    temporal             | Search attributes already exist
+     Container temporal Healthy 
+     Container temporal Healthy 
+     Container agenticorp Starting 
+     Container temporal-ui Starting 
+     Container temporal Healthy 
+     Container agenticorp-test Starting 
+     Container temporal-ui Started 
+    Error response from daemon: No such container: a4f666fc711448bb5d04ca3d3b1ccfc402c93c3bd2e9bd00f4196c91e2e9d524
+
+status: open
+priority: 0
+project_id: agenticorp
+assigned_to: null
+blocked_by: []
+blocks: []
+parent: null
+children: []
+tags:
+  - p0
+  - failure
+  - run
+created_at: 2026-01-20T00:56:24Z
+updated_at: 2026-01-20T00:56:24Z
+closed_at: null
+context:
+  source: makefile
+  target: run

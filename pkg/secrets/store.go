@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	secretsFileName = ".arbiter_secrets"
+	secretsFileName = ".agenticorp_secrets"
 )
 
 // Store manages encrypted secrets

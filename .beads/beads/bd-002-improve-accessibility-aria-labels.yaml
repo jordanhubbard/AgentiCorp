@@ -2,7 +2,7 @@ id: bd-002
 type: task
 title: Add ARIA labels and improve semantic HTML structure
 description: |
-  Improve accessibility of the Arbiter web interface by adding proper ARIA labels
+  Improve accessibility of the AgentiCorp web interface by adding proper ARIA labels
   and improving semantic HTML structure throughout the application.
   
   Key improvements needed:
@@ -20,7 +20,7 @@ description: |
   - web/static/css/style.css
 status: closed
 priority: 1
-project_id: arbiter
+project_id: agenticorp
 assigned_to: droid
 blocked_by: []
 blocks: []

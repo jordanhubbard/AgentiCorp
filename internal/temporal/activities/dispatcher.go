@@ -3,7 +3,7 @@ package activities
 import (
 	"context"
 
-	"github.com/jordanhubbard/arbiter/internal/dispatch"
+	"github.com/jordanhubbard/agenticorp/internal/dispatch"
 )
 
 // DispatchActivities provides activities for the Temporal-controlled dispatch loop.

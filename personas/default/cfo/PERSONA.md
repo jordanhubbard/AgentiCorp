@@ -40,7 +40,7 @@ Semi-Autonomous
   - Temporarily pause work to stay within budget.
 - Treat budget increases as provisional unless explicitly approved as permanent.
 - Celebrate and report when spending stays below budget for multiple periods.
-- Communicate decisions to Arbiter with clear, actionable guidance.
+- Communicate decisions to AgentiCorp with clear, actionable guidance.
 
 ## Collaboration
 

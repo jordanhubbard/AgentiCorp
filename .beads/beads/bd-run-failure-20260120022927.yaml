@@ -1,0 +1,785 @@
+id: bd-run-failure-20260120022927
+type: task
+title: "P0 - run failed"
+description: |
+  Command: docker compose up --build
+  Exit code: 130
+
+  Output:
+     Image agenticorp:latest Building 
+     Image agenticorp-agenticorp-test Building 
+    #1 [internal] load local bake definitions
+    #1 reading from stdin 959B done
+    #1 DONE 0.0s
+    
+    #2 [agenticorp-test internal] load build definition from Dockerfile
+    #2 transferring dockerfile: 1.12kB done
+    #2 DONE 0.0s
+    
+    #3 [agenticorp-test internal] load metadata for docker.io/library/golang:1.24-alpine
+    #3 ...
+    
+    #4 [agenticorp internal] load metadata for docker.io/library/alpine:latest
+    #4 DONE 0.2s
+    
+    #3 [agenticorp internal] load metadata for docker.io/library/golang:1.24-alpine
+    #3 DONE 0.2s
+    
+    #5 [agenticorp internal] load .dockerignore
+    #5 transferring context: 353B done
+    #5 DONE 0.0s
+    
+    #6 [agenticorp stage-1 1/7] FROM docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+    #6 resolve docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 0.0s done
+    #6 DONE 0.0s
+    
+    #7 [agenticorp builder 1/8] FROM docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986
+    #7 resolve docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986 0.0s done
+    #7 DONE 0.0s
+    
+    #8 [agenticorp-test internal] load build context
+    #8 transferring context: 12.35kB done
+    #8 DONE 0.0s
+    
+    #9 [agenticorp-test builder 6/8] RUN go mod download
+    #9 CACHED
+    
+    #10 [agenticorp-test builder 5/8] COPY go.sum ./
+    #10 CACHED
+    
+    #11 [agenticorp-test builder 7/8] COPY . .
+    #11 CACHED
+    
+    #12 [agenticorp-test builder 2/8] RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+    #12 CACHED
+    
+    #13 [agenticorp-test builder 4/8] COPY go.mod ./
+    #13 CACHED
+    
+    #14 [agenticorp-test builder 3/8] WORKDIR /build
+    #14 CACHED
+    
+    #15 [agenticorp stage-1 3/7] RUN addgroup -g 1000 agenticorp &&     adduser -D -u 1000 -G agenticorp agenticorp
+    #15 CACHED
+    
+    #16 [agenticorp stage-1 4/7] WORKDIR /app
+    #16 CACHED
+    
+    #17 [agenticorp stage-1 5/7] COPY --from=builder /build/agenticorp /app/agenticorp
+    #17 CACHED
+    
+    #18 [agenticorp stage-1 2/7] RUN apk add --no-cache ca-certificates tzdata
+    #18 CACHED
+    
+    #19 [agenticorp stage-1 6/7] COPY --from=builder /build/config.yaml /app/config.yaml
+    #19 CACHED
+    
+    #20 [agenticorp-test builder 8/8] RUN CGO_ENABLED=1 GOOS=linux go build     -ldflags="-w -s"     -o agenticorp     ./cmd/agenticorp
+    #20 CACHED
+    
+    #21 [agenticorp stage-1 7/7] RUN chown -R agenticorp:agenticorp /app
+    #21 CACHED
+    
+    #22 [agenticorp] exporting to image
+    #22 exporting layers done
+    #22 exporting manifest sha256:173840ef16a8128644afb6fab8b467c1854609f0548d5cca150b65d7c11e0d65 done
+    #22 exporting config sha256:721f1290e8b531c642db9518fe136db229437430a46f705268d880278d2b9318 done
+    #22 exporting attestation manifest sha256:339c8d69d8912c21a660b511b58b091cd087e42f12781da4d82dcd602da15613 0.0s done
+    #22 exporting manifest list sha256:46afeab22e0c93a03605371a0483889ec550a8e993680e01bdd70ca70d00ab15 done
+    #22 naming to docker.io/library/agenticorp:latest done
+    #22 unpacking to docker.io/library/agenticorp:latest done
+    #22 DONE 0.1s
+    
+    #23 [agenticorp-test] exporting to image
+    #23 exporting layers done
+    #23 exporting manifest sha256:0796979853ff799e64de27e46875f505eaca81a142f6c420edcc33fd69f62ad9 done
+    #23 exporting config sha256:d17d51b52134de52186971f3fee7c7d84f8b0bfce524cef135ae0f91d6854b6b done
+    #23 exporting attestation manifest sha256:5d5023b972ee9b695ebca7470ceaf14d8447f6ce9168420bbfe156b1ca5cb9c9 0.0s done
+    #23 exporting manifest list sha256:8610f74af71d580319cf4aa5b34b38f3bef8d8b886c73ceb8cb6f9e55fb79afe done
+    #23 naming to docker.io/library/agenticorp-agenticorp-test:latest done
+    #23 unpacking to docker.io/library/agenticorp-agenticorp-test:latest done
+    #23 DONE 0.1s
+    
+    #24 [agenticorp] resolving provenance for metadata file
+    #24 DONE 0.0s
+    
+    #25 [agenticorp-test] resolving provenance for metadata file
+    #25 DONE 0.0s
+     Image agenticorp-agenticorp-test Built 
+     Image agenticorp:latest Built 
+     Network agenticorp_agenticorp-network Creating 
+     Network agenticorp_agenticorp-network Created 
+     Container temporal-postgresql Creating 
+     Container temporal-postgresql Created 
+     Container temporal Creating 
+     Container temporal Created 
+     Container agenticorp Creating 
+     Container temporal-ui Creating 
+     Container agenticorp-test Creating 
+     Container agenticorp Created 
+     Container temporal-ui Created 
+     Container agenticorp-test Created 
+    Attaching to agenticorp, agenticorp-test, temporal, temporal-postgresql, temporal-ui
+     Container temporal-postgresql Starting 
+     Container temporal-postgresql Started 
+     Container temporal-postgresql Waiting 
+    temporal-postgresql  | 
+    temporal-postgresql  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+    temporal-postgresql  | 
+    temporal-postgresql  | 2026-01-20 02:20:54.007 UTC [1] LOG:  starting PostgreSQL 15.15 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+    temporal-postgresql  | 2026-01-20 02:20:54.007 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+    temporal-postgresql  | 2026-01-20 02:20:54.007 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+    temporal-postgresql  | 2026-01-20 02:20:54.009 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+    temporal-postgresql  | 2026-01-20 02:20:54.012 UTC [29] LOG:  database system was shut down at 2026-01-20 01:02:43 UTC
+    temporal-postgresql  | 2026-01-20 02:20:54.018 UTC [1] LOG:  database system is ready to accept connections
+     Container temporal-postgresql Healthy 
+     Container temporal Starting 
+     Container temporal Started 
+     Container temporal Waiting 
+     Container temporal Waiting 
+     Container temporal Waiting 
+    temporal             | TEMPORAL_ADDRESS is not set, setting it to 172.18.0.3:7233
+    temporal             | PostgreSQL started.
+    temporal             | Setup PostgreSQL schema.
+    temporal             | 2026-01-20T02:21:04.628Z[34mINFO[0mStarting schema setup{"config": {"SchemaFilePath":"","InitialVersion":"0.0","Overwrite":false,"DisableVersioning":false}, "logging-call-at": "setuptask.go:58"}
+    temporal             | 2026-01-20T02:21:04.628Z[35mDEBUG[0mSetting up version tables{"logging-call-at": "setuptask.go:68"}
+    temporal             | 2026-01-20T02:21:04.640Z[35mDEBUG[0mCurrent database schema version 1.10 is greater than initial schema version 0.0. Skip version upgrade{"logging-call-at": "setuptask.go:117"}
+    temporal             | 2026-01-20T02:21:04.640Z[34mINFO[0mSchema setup complete{"logging-call-at": "setuptask.go:132"}
+    temporal             | 2026-01-20T02:21:04.656Z[34mINFO[0mUpdateSchemeTask started{"config": {"DBName":"","TargetVersion":"","SchemaDir":"/etc/temporal/schema/postgresql/v96/temporal/versioned","IsDryRun":false}, "logging-call-at": "updatetask.go:97"}
+    temporal             | 2026-01-20T02:21:04.658Z[35mDEBUG[0mSchema Dirs: []{"logging-call-at": "updatetask.go:195"}
+    temporal             | 2026-01-20T02:21:04.658Z[35mDEBUG[0mfound zero updates from current version 1.10{"logging-call-at": "updatetask.go:127"}
+    temporal             | 2026-01-20T02:21:04.658Z[34mINFO[0mUpdateSchemeTask done{"logging-call-at": "updatetask.go:120"}
+    temporal-postgresql  | 2026-01-20 02:21:04.687 UTC [43] ERROR:  database "temporal_visibility" already exists
+    temporal-postgresql  | 2026-01-20 02:21:04.687 UTC [43] STATEMENT:  CREATE DATABASE temporal_visibility
+    temporal             | 2026-01-20T02:21:04.705Z[34mINFO[0mStarting schema setup{"config": {"SchemaFilePath":"","InitialVersion":"0.0","Overwrite":false,"DisableVersioning":false}, "logging-call-at": "setuptask.go:58"}
+    temporal             | 2026-01-20T02:21:04.705Z[35mDEBUG[0mSetting up version tables{"logging-call-at": "setuptask.go:68"}
+    temporal             | 2026-01-20T02:21:04.713Z[35mDEBUG[0mCurrent database schema version 1.1 is greater than initial schema version 0.0. Skip version upgrade{"logging-call-at": "setuptask.go:117"}
+    temporal             | 2026-01-20T02:21:04.713Z[34mINFO[0mSchema setup complete{"logging-call-at": "setuptask.go:132"}
+    temporal             | 2026-01-20T02:21:04.725Z[34mINFO[0mUpdateSchemeTask started{"config": {"DBName":"","TargetVersion":"","SchemaDir":"/etc/temporal/schema/postgresql/v96/visibility/versioned","IsDryRun":false}, "logging-call-at": "updatetask.go:97"}
+    temporal             | 2026-01-20T02:21:04.726Z[35mDEBUG[0mSchema Dirs: []{"logging-call-at": "updatetask.go:195"}
+    temporal             | 2026-01-20T02:21:04.726Z[35mDEBUG[0mfound zero updates from current version 1.1{"logging-call-at": "updatetask.go:127"}
+    temporal             | 2026-01-20T02:21:04.726Z[34mINFO[0mUpdateSchemeTask done{"logging-call-at": "updatetask.go:120"}
+    temporal             | Temporal CLI address: 172.18.0.3:7233.
+    temporal             | 2026/01/20 02:21:04 Loading config; env=docker,zone=,configDir=config
+    temporal             | 2026/01/20 02:21:04 Loading config files=[config/docker.yaml]
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.749Z","msg":"Build info.","git-time":"2024-01-12T20:57:30.000Z","git-revision":"ca74b18c7257fdb8a87a27afc89827901e152d15","git-modified":true,"go-arch":"arm64","go-os":"linux","go-version":"go1.20.10","cgo-enabled":false,"server-version":"1.22.4","debug-mode":false,"logging-call-at":"main.go:148"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: system.enablenamespacenotactiveautoforwarding oldValue: nil newValue: { constraints: {} value: true }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: history.maxautoresetpoints oldValue: nil newValue: { constraints: {} value: 20 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: matching.numtaskqueuewritepartitions oldValue: nil newValue: { constraints: {} value: 4 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: system.defaultworkflowretentionperiod oldValue: nil newValue: { constraints: {} value: 168h }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: frontend.enableclientversioncheck oldValue: nil newValue: { constraints: {} value: false }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: matching.numtaskqueuereadpartitions oldValue: nil newValue: { constraints: {} value: 4 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: worker.replicatorconcurrency oldValue: nil newValue: { constraints: {} value: 1000 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: system.advancedvisibilitywritingmode oldValue: nil newValue: { constraints: {} value: off }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"dynamic config changed for the key: limit.maxidlength oldValue: nil newValue: { constraints: {} value: 255 }","logging-call-at":"file_based_client.go:275"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.751Z","msg":"Updated dynamic config","logging-call-at":"file_based_client.go:195"}
+    temporal             | {"level":"warn","ts":"2026-01-20T02:21:04.751Z","msg":"Not using any authorizer and flag `--allow-no-auth` not detected. Future versions will require using the flag `--allow-no-auth` if you do not want to set an authorizer.","logging-call-at":"main.go:178"}
+    temporal             | Error: unable to health check "temporal.api.workflowservice.v1.WorkflowService" service: connection error: desc = "transport: Error while dialing: dial tcp 172.18.0.3:7233: connect: connection refused"
+    temporal             | ('export TEMPORAL_CLI_SHOW_STACKS=1' to see stack traces)
+    temporal             | Waiting for Temporal server to start...
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.771Z","msg":"Use rpc address 127.0.0.1:7233 for cluster active.","component":"metadata-initializer","logging-call-at":"fx.go:732"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.778Z","msg":"historyClient: ownership caching disabled","service":"history","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.785Z","msg":"Created gRPC listener","service":"history","address":"172.18.0.3:7234","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.790Z","msg":"Created gRPC listener","service":"matching","address":"172.18.0.3:7235","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.790Z","msg":"historyClient: ownership caching disabled","service":"matching","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.800Z","msg":"historyClient: ownership caching disabled","service":"frontend","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.800Z","msg":"Created gRPC listener","service":"frontend","address":"172.18.0.3:7233","logging-call-at":"rpc.go:152"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.804Z","msg":"Service is not requested, skipping initialization.","service":"internal-frontend","logging-call-at":"fx.go:477"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.810Z","msg":"historyClient: ownership caching disabled","service":"worker","logging-call-at":"client.go:82"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.815Z","msg":"PProf not started due to port not set","logging-call-at":"pprof.go:67"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.815Z","msg":"Starting server for services","value":{"frontend":{},"history":{},"matching":{},"worker":{}},"logging-call-at":"server_impl.go:94"}
+    temporal-postgresql  | 2026-01-20 02:21:04.821 UTC [57] ERROR:  duplicate key value violates unique constraint "namespaces_pkey"
+    temporal-postgresql  | 2026-01-20 02:21:04.821 UTC [57] DETAIL:  Key (partition_id, id)=(54321, \x32049b68787240948e63d0dd59896a83) already exists.
+    temporal-postgresql  | 2026-01-20 02:21:04.821 UTC [57] STATEMENT:  INSERT INTO 
+    temporal-postgresql  |  namespaces (partition_id, id, name, is_global, data, data_encoding, notification_version)
+    temporal-postgresql  |  VALUES($1, $2, $3, $4, $5, $6, $7)
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.821Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.821Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.822Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.822Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.822Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.822Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.822Z","msg":"fifo scheduler started","service":"history","component":"memory-scheduled-queue-processor","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"fifo scheduler started","service":"history","logging-call-at":"fifo_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"interleaved weighted round robin task scheduler started","service":"history","logging-call-at":"interleaved_weighted_round_robin.go:197"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"RuntimeMetricsReporter started","service":"frontend","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"frontend starting","service":"frontend","logging-call-at":"service.go:336"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"RuntimeMetricsReporter started","service":"worker","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.823Z","msg":"worker starting","service":"worker","component":"worker","logging-call-at":"service.go:379"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.824Z","msg":"Starting to serve on frontend listener","service":"frontend","logging-call-at":"service.go:355"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.824Z","msg":"RuntimeMetricsReporter started","service":"matching","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.824Z","msg":"matching starting","service":"matching","logging-call-at":"service.go:91"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.824Z","msg":"Starting to serve on matching listener","service":"matching","logging-call-at":"service.go:104"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"RuntimeMetricsReporter started","service":"history","logging-call-at":"runtime.go:138"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"history starting","service":"history","logging-call-at":"service.go:91"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"Replication task fetchers started.","logging-call-at":"task_fetcher.go:142"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","lifecycle":"Started","logging-call-at":"controller_impl.go:136"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"Starting to serve on history listener","service":"history","logging-call-at":"service.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.825Z","msg":"sequential scheduler started","logging-call-at":"sequential_scheduler.go:96"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.828Z","msg":"Membership heartbeat upserted successfully","address":"172.18.0.3","port":6935,"hostId":"ac058b7e-f5a6-11f0-8df0-a6985a050b82","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.828Z","msg":"Membership heartbeat upserted successfully","address":"172.18.0.3","port":6934,"hostId":"ac03b0f4-f5a6-11f0-8df0-a6985a050b82","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.828Z","msg":"Membership heartbeat upserted successfully","address":"172.18.0.3","port":6939,"hostId":"ac089b19-f5a6-11f0-8df0-a6985a050b82","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.828Z","msg":"Membership heartbeat upserted successfully","address":"172.18.0.3","port":6933,"hostId":"ac06f96e-f5a6-11f0-8df0-a6985a050b82","logging-call-at":"monitor.go:256"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.829Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.18.0.3:6934,172.18.0.3:6935,172.18.0.3:6933,172.18.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.829Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.18.0.3:6934,172.18.0.3:6935,172.18.0.3:6933,172.18.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.830Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.18.0.3:6934,172.18.0.3:6935,172.18.0.3:6933,172.18.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.830Z","msg":"bootstrap hosts fetched","bootstrap-hostports":"172.18.0.3:6934,172.18.0.3:6935,172.18.0.3:6933,172.18.0.3:6939","logging-call-at":"monitor.go:298"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.831Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.18.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.833Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","component":"shard-controller","address":"172.18.0.3:7234","shard-update":"RingMembershipChangedEvent","number-processed":1,"number-deleted":0,"logging-call-at":"ownership.go:116"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.833Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.833Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","numShards":1,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","numShards":2,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.18.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.18.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","numShards":3,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.18.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.18.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-context","logging-call-at":"context_impl.go:1482"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"none","component":"shard-controller","address":"172.18.0.3:7234","numShards":4,"logging-call-at":"controller_impl.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.834Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.18.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.835Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.18.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.835Z","msg":"Frontend is now healthy","service":"frontend","logging-call-at":"workflow_handler.go:219"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Range updated for shardID","shard-id":1,"address":"172.18.0.3:7234","shard-range-id":4,"previous-shard-range-id":3,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Acquired shard","shard-id":1,"address":"172.18.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"Task rescheduler started.","shard-id":1,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"none","shard-id":1,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"queue reader started","shard-id":1,"address":"172.18.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.837Z","msg":"queue reader started","shard-id":1,"address":"172.18.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.838Z","msg":"queue reader started","shard-id":1,"address":"172.18.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.838Z","msg":"queue reader started","shard-id":1,"address":"172.18.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Range updated for shardID","shard-id":2,"address":"172.18.0.3:7234","shard-range-id":4,"previous-shard-range-id":3,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Acquired shard","shard-id":2,"address":"172.18.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":2,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":2,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":2,"address":"172.18.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":2,"address":"172.18.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":2,"address":"172.18.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Range updated for shardID","shard-id":3,"address":"172.18.0.3:7234","shard-range-id":4,"previous-shard-range-id":3,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Acquired shard","shard-id":3,"address":"172.18.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":2,"address":"172.18.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"Task rescheduler started.","shard-id":3,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"none","shard-id":3,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":3,"address":"172.18.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":3,"address":"172.18.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":3,"address":"172.18.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.842Z","msg":"queue reader started","shard-id":3,"address":"172.18.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.846Z","msg":"Range updated for shardID","shard-id":4,"address":"172.18.0.3:7234","shard-range-id":4,"previous-shard-range-id":3,"number":0,"next-number":0,"logging-call-at":"context_impl.go:1147"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.846Z","msg":"Acquired shard","shard-id":4,"address":"172.18.0.3:7234","logging-call-at":"context_impl.go:1839"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.846Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","lifecycle":"Starting","component":"shard-engine","logging-call-at":"context_impl.go:1358"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Starting","logging-call-at":"history_engine.go:286"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Starting","logging-call-at":"memory_scheduled_queue.go:103"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","service":"history","component":"memory-scheduled-queue-processor","lifecycle":"Started","logging-call-at":"memory_scheduled_queue.go:108"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"timer-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"visibility-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Starting","logging-call-at":"queue_scheduled.go:154"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"archival-queue-processor","lifecycle":"Started","logging-call-at":"queue_scheduled.go:163"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Starting","logging-call-at":"queue_immediate.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"Task rescheduler started.","shard-id":4,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"rescheduler.go:124"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"transfer-queue-processor","lifecycle":"Started","logging-call-at":"queue_immediate.go:123"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","component":"history-engine","lifecycle":"Started","logging-call-at":"history_engine.go:295"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"none","shard-id":4,"address":"172.18.0.3:7234","lifecycle":"Started","component":"shard-engine","logging-call-at":"context_impl.go:1361"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"queue reader started","shard-id":4,"address":"172.18.0.3:7234","component":"timer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"queue reader started","shard-id":4,"address":"172.18.0.3:7234","component":"visibility-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"queue reader started","shard-id":4,"address":"172.18.0.3:7234","component":"archival-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.847Z","msg":"queue reader started","shard-id":4,"address":"172.18.0.3:7234","component":"transfer-queue-processor","queue-reader-id":0,"lifecycle":"Started","logging-call-at":"reader.go:182"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.871Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.18.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.872Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.18.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:04.872Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.18.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | Temporal server started.
+    temporal             | Registering default namespace: default.
+    temporal             |   NamespaceInfo.Name                    default                                           
+    temporal             |   NamespaceInfo.Id                      1331b41c-e384-4bfa-a6fe-d66c31f827a7              
+    temporal             |   NamespaceInfo.Description             Default namespace for Temporal                    
+    temporal             |                                         Server.                                           
+    temporal             |   NamespaceInfo.OwnerEmail                                                                
+    temporal             |   NamespaceInfo.State                   Registered                                        
+    temporal             |   NamespaceInfo.Data                    map[]                                             
+    temporal             |   Config.WorkflowExecutionRetentionTtl  24h0m0s                                           
+    temporal             |   ReplicationConfig.ActiveClusterName   active                                            
+    temporal             |   ReplicationConfig.Clusters            [&ClusterReplicationConfig{ClusterName:active,}]  
+    temporal             |   Config.HistoryArchivalState           Disabled                                          
+    temporal             |   Config.VisibilityArchivalState        Disabled                                          
+    temporal             |   IsGlobalNamespace                     false                                             
+    temporal             |   FailoverVersion                                                                      0  
+    temporal             |   FailoverHistory                       []                                                
+    temporal             | 
+    temporal             | Default namespace default already registered.
+    temporal             |   [95m           Name           [0m  [95m   Type    [0m  
+    temporal             |   BatcherNamespace            Keyword      
+    temporal             |   BatcherUser                 Keyword      
+    temporal             |   BinaryChecksums             KeywordList  
+    temporal             |   BuildIds                    KeywordList  
+    temporal             |   CloseTime                   Datetime     
+    temporal             |   CustomBoolField             Bool         
+    temporal             |   CustomDatetimeField         Datetime     
+    temporal             |   CustomDoubleField           Double       
+    temporal             |   CustomIntField              Int          
+    temporal             |   CustomKeywordField          Keyword      
+    temporal             |   CustomStringField           Text         
+    temporal             |   CustomTextField             Text         
+    temporal             |   ExecutionDuration           Int          
+    temporal             |   ExecutionStatus             Keyword      
+    temporal             |   ExecutionTime               Datetime     
+    temporal             |   HistoryLength               Int          
+    temporal             |   HistorySizeBytes            Int          
+    temporal             |   RunId                       Keyword      
+    temporal             |   StartTime                   Datetime     
+    temporal             |   StateTransitionCount        Int          
+    temporal             |   TaskQueue                   Keyword      
+    temporal             |   TemporalChangeVersion       KeywordList  
+    temporal             |   TemporalNamespaceDivision   Keyword      
+    temporal             |   TemporalSchedulePaused      Bool         
+    temporal             |   TemporalScheduledById       Keyword      
+    temporal             |   TemporalScheduledStartTime  Datetime     
+    temporal             |   WorkflowId                  Keyword      
+    temporal             |   WorkflowType                Keyword      
+    temporal             | Namespace cache refreshed.
+    temporal             | Adding Custom*Field search attributes.
+    temporal             | Search attributes already exist
+    temporal             | {"level":"warn","ts":"2026-01-20T02:21:09.837Z","msg":"error creating sdk client","service":"worker","error":"failed reaching server: context deadline exceeded","logging-call-at":"factory.go:114"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.021Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.18.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.045Z","msg":"temporal-sys-history-scanner-workflow workflow successfully started","service":"worker","logging-call-at":"scanner.go:292"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.047Z","msg":"temporal-sys-tq-scanner-workflow workflow successfully started","service":"worker","logging-call-at":"scanner.go:292"}
+     Container temporal Healthy 
+     Container temporal Healthy 
+     Container temporal Healthy 
+     Container temporal-ui Starting 
+     Container agenticorp-test Starting 
+     Container agenticorp Starting 
+     Container agenticorp Started 
+     Container agenticorp-test Started 
+     Container temporal-ui Started 
+    temporal-ui          | 2026/01/20 02:21:10 Loading config; env=docker,configDir=config
+    temporal-ui          | 2026/01/20 02:21:10 Loading config files=[config/docker.yaml]
+    temporal-ui          | 2026/01/20 02:21:10 Loading config; env=docker,configDir=config
+    temporal-ui          | 2026/01/20 02:21:10 Loading config files=[config/docker.yaml]
+    temporal-ui          | Starting UI server...
+    temporal-ui          | 
+    temporal-ui          |    ____    __
+    temporal-ui          |   / __/___/ /  ___
+    temporal-ui          |  / _// __/ _ \/ _ \
+    temporal-ui          | /___/\__/_//_/\___/ v4.9.0
+    temporal-ui          | High performance, minimalist Go web framework
+    temporal-ui          | https://echo.labstack.com
+    temporal-ui          | ____________________________________O/_______
+    temporal-ui          |                                     O\
+    temporal-ui          | ⇨ http server started on [::]:8080
+    agenticorp              | 2026/01/20 02:21:10 main.go:72: AgentiCorp API listening on :8080
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.225Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-tq-scanner-taskqueue-0","WorkerID":"1@096414f47d4f@","logging-call-at":"scanner.go:239"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.226Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:c4588a1f-395b-46ce-8e48-251eb3c07ddc","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.226Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-tq-scanner-taskqueue-0","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.226Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.226Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:7dcf0844-52c7-4434-9385-672cb8c1fbd8","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.227Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-history-scanner-taskqueue-0","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.228Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.228Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.229Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-history-scanner-taskqueue-0","WorkerID":"1@096414f47d4f@","logging-call-at":"scanner.go:239"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.230Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.230Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-archival-tq","WorkerID":"1@096414f47d4f@","logging-call-at":"client_worker.go:137"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:a7e54093-d9d4-41dc-96dd-ff1e4dd15dd6","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-tq-scanner-taskqueue-0","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-archival-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.231Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-archival-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.233Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.234Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.234Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.235Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.235Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.236Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-processor-parent-close-policy","WorkerID":"1@096414f47d4f@","logging-call-at":"processor.go:98"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.236Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:d64ebbdd-2497-4740-a03b-94c37367289f","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.237Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-processor-parent-close-policy","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.237Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-history-scanner-taskqueue-0/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.237Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-history-scanner-taskqueue-0","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.237Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.237Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.238Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-processor-parent-close-policy","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.239Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:167c3cb7-697f-43ad-af83-8d0f2b46418b","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.240Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-batcher-taskqueue","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.240Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.241Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.242Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-batcher-taskqueue","WorkerID":"1@096414f47d4f@","logging-call-at":"batcher.go:98"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.246Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.247Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.252Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:e534659b-4052-4f35-9f96-0b7e1e0c7c56","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.253Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"default-worker-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.253Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.257Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"default-worker-tq","WorkerID":"1@096414f47d4f@","logging-call-at":"worker.go:101"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.257Z","msg":"none","component":"worker-manager","lifecycle":"Started","logging-call-at":"worker.go:106"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.257Z","msg":"none","component":"perns-worker-manager","lifecycle":"Starting","logging-call-at":"pernamespaceworker.go:166"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.257Z","msg":"none","component":"perns-worker-manager","lifecycle":"Started","logging-call-at":"pernamespaceworker.go:177"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.257Z","msg":"worker service started","service":"worker","component":"worker","address":"172.18.0.3:7239","logging-call-at":"service.go:418"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.260Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-batcher-taskqueue","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.260Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:a084cf9d-635a-427c-bfc3-247827b1a4ce","wf-task-queue-type":"Workflow","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.260Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.260Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.260Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Workflow","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.261Z","msg":"Started Worker","service":"worker","Namespace":"default","TaskQueue":"temporal-sys-per-ns-tq","WorkerID":"server-worker@1@096414f47d4f@default","logging-call-at":"pernamespaceworker.go:483"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.262Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"096414f47d4f:aee2f5da-5a62-45b8-840e-56089acc57d3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.262Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.262Z","msg":"Started Worker","service":"worker","Namespace":"temporal-system","TaskQueue":"temporal-sys-per-ns-tq","WorkerID":"server-worker@1@096414f47d4f@temporal-system","logging-call-at":"pernamespaceworker.go:483"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.262Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.263Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"temporal-sys-per-ns-tq","wf-task-queue-type":"Activity","wf-namespace":"default","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:10.266Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"default-worker-tq","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/cmd/agenticorp[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/cmd/yaml-lint[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/examples/worker_demo[no test files]
+    agenticorp-test         | === RUN   TestNewBaseAgent
+    agenticorp-test         | --- PASS: TestNewBaseAgent (0.00s)
+    agenticorp-test         | === RUN   TestBaseAgent_Execute
+    agenticorp-test         | --- PASS: TestBaseAgent_Execute (0.00s)
+    agenticorp-test         | === RUN   TestBaseAgent_GetCapabilities
+    agenticorp-test         | --- PASS: TestBaseAgent_GetCapabilities (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/agent0.004s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/api[no test files]
+    agenticorp-test         | === RUN   TestCEODecisionApproveClosesParentBead
+    agenticorp-test         | --- PASS: TestCEODecisionApproveClosesParentBead (0.00s)
+    agenticorp-test         | === RUN   TestCEODecisionDenyReopensAndUnassignsParentBead
+    agenticorp-test         | --- PASS: TestCEODecisionDenyReopensAndUnassignsParentBead (0.00s)
+    agenticorp-test         | === RUN   TestCEODecisionNeedsMoreInfoReturnsToPriorOwner
+    agenticorp-test         | --- PASS: TestCEODecisionNeedsMoreInfoReturnsToPriorOwner (0.00s)
+    agenticorp-test         | === RUN   TestGlobalDispatcherDoesNotPanicWithNoProjects
+    agenticorp-test         | --- PASS: TestGlobalDispatcherDoesNotPanicWithNoProjects (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/agenticorp0.013s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/beads[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/config[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/database[no test files]
+    agenticorp-test         | === RUN   TestNewSimpleMaker
+    agenticorp-test         | --- PASS: TestNewSimpleMaker (0.00s)
+    agenticorp-test         | === RUN   TestSimpleMaker_DecideAgent
+    agenticorp-test         | --- PASS: TestSimpleMaker_DecideAgent (0.00s)
+    agenticorp-test         | === RUN   TestSimpleMaker_DecideAgent_NoAgents
+    agenticorp-test         | --- PASS: TestSimpleMaker_DecideAgent_NoAgents (0.00s)
+    agenticorp-test         | === RUN   TestSimpleMaker_EvaluatePriority
+    agenticorp-test         | === RUN   TestSimpleMaker_EvaluatePriority/Urgent_task
+    agenticorp-test         | === RUN   TestSimpleMaker_EvaluatePriority/Bug_fix_task
+    agenticorp-test         | === RUN   TestSimpleMaker_EvaluatePriority/Normal_task
+    agenticorp-test         | --- PASS: TestSimpleMaker_EvaluatePriority (0.00s)
+    agenticorp-test         |     --- PASS: TestSimpleMaker_EvaluatePriority/Urgent_task (0.00s)
+    agenticorp-test         |     --- PASS: TestSimpleMaker_EvaluatePriority/Bug_fix_task (0.00s)
+    agenticorp-test         |     --- PASS: TestSimpleMaker_EvaluatePriority/Normal_task (0.00s)
+    agenticorp-test         | === RUN   TestSimpleMaker_calculateScore
+    agenticorp-test         | --- PASS: TestSimpleMaker_calculateScore (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/decision0.003s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/dispatch[no test files]
+    agenticorp-test         | === RUN   TestNewTaskDispatcher
+    agenticorp-test         | --- PASS: TestNewTaskDispatcher (0.00s)
+    agenticorp-test         | === RUN   TestTaskDispatcher_RegisterAgent
+    agenticorp-test         | --- PASS: TestTaskDispatcher_RegisterAgent (0.00s)
+    agenticorp-test         | === RUN   TestTaskDispatcher_GetAvailableAgents
+    agenticorp-test         | --- PASS: TestTaskDispatcher_GetAvailableAgents (0.00s)
+    agenticorp-test         | === RUN   TestTaskDispatcher_AssignTask
+    agenticorp-test         | --- PASS: TestTaskDispatcher_AssignTask (0.00s)
+    agenticorp-test         | === RUN   TestTaskDispatcher_AssignTask_NoAgents
+    agenticorp-test         | --- PASS: TestTaskDispatcher_AssignTask_NoAgents (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/dispatcher0.002s
+    agenticorp-test         | === RUN   TestKeyManager
+    agenticorp-test         | --- PASS: TestKeyManager (0.03s)
+    agenticorp-test         | === RUN   TestKeyManagerPersistence
+    agenticorp-test         | --- PASS: TestKeyManagerPersistence (0.03s)
+    agenticorp-test         | === RUN   TestKeyManagerWrongPassword
+    agenticorp-test         | --- PASS: TestKeyManagerWrongPassword (0.03s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/keymanager0.087s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/modelcatalog[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/models[no test files]
+    agenticorp-test         | === RUN   TestLoadQAEngineerPersona
+    agenticorp-test         | --- PASS: TestLoadQAEngineerPersona (0.00s)
+    agenticorp-test         | === RUN   TestLoadProjectManagerPersona
+    agenticorp-test         | --- PASS: TestLoadProjectManagerPersona (0.00s)
+    agenticorp-test         | === RUN   TestListPersonas
+    agenticorp-test         | --- PASS: TestListPersonas (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/persona0.002s
+    agenticorp-test         | === RUN   TestProjectStateManagement
+    agenticorp-test         | --- PASS: TestProjectStateManagement (0.00s)
+    agenticorp-test         | === RUN   TestPerpetualProject
+    agenticorp-test         | --- PASS: TestPerpetualProject (0.00s)
+    agenticorp-test         | === RUN   TestCanClose
+    agenticorp-test         | --- PASS: TestCanClose (0.00s)
+    agenticorp-test         | === RUN   TestProjectNotFound
+    agenticorp-test         | --- PASS: TestProjectNotFound (0.00s)
+    agenticorp-test         | === RUN   TestCloseAlreadyClosed
+    agenticorp-test         | --- PASS: TestCloseAlreadyClosed (0.00s)
+    agenticorp-test         | === RUN   TestReopenNotClosed
+    agenticorp-test         | --- PASS: TestReopenNotClosed (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/project0.002s
+    agenticorp-test         | === RUN   TestProviderRegistry
+    agenticorp-test         | --- PASS: TestProviderRegistry (0.00s)
+    agenticorp-test         | === RUN   TestProviderProtocol
+    agenticorp-test         |     registry_test.go:71: OpenAI provider created successfully
+    agenticorp-test         | --- PASS: TestProviderProtocol (0.00s)
+    agenticorp-test         | === RUN   TestChatCompletionRequest
+    agenticorp-test         | --- PASS: TestChatCompletionRequest (0.00s)
+    agenticorp-test         | === RUN   TestProviderTypes
+    agenticorp-test         | === RUN   TestProviderTypes/OpenAI_type
+    agenticorp-test         | === RUN   TestProviderTypes/Anthropic_type
+    agenticorp-test         | === RUN   TestProviderTypes/Local_type
+    agenticorp-test         | === RUN   TestProviderTypes/Custom_type
+    agenticorp-test         | === RUN   TestProviderTypes/Unknown_type
+    agenticorp-test         | --- PASS: TestProviderTypes (0.00s)
+    agenticorp-test         |     --- PASS: TestProviderTypes/OpenAI_type (0.00s)
+    agenticorp-test         |     --- PASS: TestProviderTypes/Anthropic_type (0.00s)
+    agenticorp-test         |     --- PASS: TestProviderTypes/Local_type (0.00s)
+    agenticorp-test         |     --- PASS: TestProviderTypes/Custom_type (0.00s)
+    agenticorp-test         |     --- PASS: TestProviderTypes/Unknown_type (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/provider0.002s
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:14.833Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.18.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:14.833Z","msg":"Current reachable members","component":"service-resolver","service":"worker","addresses":["172.18.0.3:7239"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:14.833Z","msg":"Current reachable members","component":"service-resolver","service":"frontend","addresses":["172.18.0.3:7233"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:14.833Z","msg":"Current reachable members","component":"service-resolver","service":"history","addresses":["172.18.0.3:7234"],"logging-call-at":"service_resolver.go:279"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:21:14.836Z","msg":"Current reachable members","component":"service-resolver","service":"matching","addresses":["172.18.0.3:7235"],"logging-call-at":"service_resolver.go:279"}
+    agenticorp-test         | === RUN   TestTemporalManagerCreation
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal event bus initialized
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker registered for task queue: test-queue
+    agenticorp-test         | 2026/01/20 02:21:14 Stopping Temporal manager...
+    agenticorp-test         | 2026/01/20 02:21:14 [Temporal INFO] Stopped Worker [Namespace test-namespace TaskQueue test-queue WorkerID 3153@f938febddb5e@]
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal manager stopped
+    agenticorp-test         | --- PASS: TestTemporalManagerCreation (0.15s)
+    agenticorp-test         | === RUN   TestTemporalManagerWithoutEventBus
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker registered for task queue: test-queue
+    agenticorp-test         | 2026/01/20 02:21:14 Stopping Temporal manager...
+    agenticorp-test         | 2026/01/20 02:21:14 [Temporal INFO] Stopped Worker [Namespace test-namespace TaskQueue test-queue WorkerID 3153@f938febddb5e@]
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal manager stopped
+    agenticorp-test         | --- PASS: TestTemporalManagerWithoutEventBus (0.00s)
+    agenticorp-test         | === RUN   TestTemporalManagerNilConfig
+    agenticorp-test         | --- PASS: TestTemporalManagerNilConfig (0.00s)
+    agenticorp-test         | === RUN   TestTemporalClientCreation
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker registered for task queue: test-queue
+    agenticorp-test         | 2026/01/20 02:21:14 Stopping Temporal manager...
+    agenticorp-test         | 2026/01/20 02:21:14 [Temporal INFO] Stopped Worker [Namespace test-namespace TaskQueue test-queue WorkerID 3153@f938febddb5e@]
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal manager stopped
+    agenticorp-test         | --- PASS: TestTemporalClientCreation (0.00s)
+    agenticorp-test         | === RUN   TestWorkflowStarter
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal event bus initialized
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker registered for task queue: test-queue
+    agenticorp-test         | 2026/01/20 02:21:14 Starting Temporal worker...
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker started successfully
+    agenticorp-test         | 2026/01/20 02:21:14 Temporal worker error: Namespace test-namespace is not found.
+    agenticorp-test         |     manager_test.go:141: Could not start workflow (worker may not be ready): failed to start agent workflow: Namespace test-namespace is not found.
+    agenticorp-test         | 2026/01/20 02:21:16 Stopping Temporal manager...
+    agenticorp-test         | 2026/01/20 02:21:16 [Temporal INFO] Stopped Worker [Namespace test-namespace TaskQueue test-queue WorkerID 3153@f938febddb5e@]
+    agenticorp-test         | 2026/01/20 02:21:16 Temporal manager stopped
+    agenticorp-test         | --- SKIP: TestWorkflowStarter (2.01s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/temporal2.178s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/temporal/activities[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/temporal/client[no test files]
+    agenticorp-test         | === RUN   TestEventBusCreation
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | --- PASS: TestEventBusCreation (0.12s)
+    agenticorp-test         | === RUN   TestEventPublishSubscribe
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | --- PASS: TestEventPublishSubscribe (0.00s)
+    agenticorp-test         | === RUN   TestEventFilter
+    agenticorp-test         | 2026/01/20 02:21:14 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | --- PASS: TestEventFilter (1.01s)
+    agenticorp-test         | === RUN   TestMultipleSubscribers
+    agenticorp-test         | 2026/01/20 02:21:15 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | --- PASS: TestMultipleSubscribers (0.01s)
+    agenticorp-test         | === RUN   TestEventTypes
+    agenticorp-test         | 2026/01/20 02:21:15 Connected to Temporal server at temporal:7233 (namespace: test-namespace)
+    agenticorp-test         | --- PASS: TestEventTypes (0.01s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/internal/temporal/eventbus1.162s
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/temporal/workflows[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/internal/worker[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/pkg/config[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/pkg/models[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/pkg/secrets[no test files]
+    agenticorp-test         | ?   github.com/jordanhubbard/agenticorp/pkg/server[no test files]
+    agenticorp-test         | === RUN   TestTaskStatus
+    agenticorp-test         | === RUN   TestTaskStatus/Pending_status
+    agenticorp-test         | === RUN   TestTaskStatus/Assigned_status
+    agenticorp-test         | === RUN   TestTaskStatus/InProgress_status
+    agenticorp-test         | === RUN   TestTaskStatus/Completed_status
+    agenticorp-test         | === RUN   TestTaskStatus/Failed_status
+    agenticorp-test         | --- PASS: TestTaskStatus (0.00s)
+    agenticorp-test         |     --- PASS: TestTaskStatus/Pending_status (0.00s)
+    agenticorp-test         |     --- PASS: TestTaskStatus/Assigned_status (0.00s)
+    agenticorp-test         |     --- PASS: TestTaskStatus/InProgress_status (0.00s)
+    agenticorp-test         |     --- PASS: TestTaskStatus/Completed_status (0.00s)
+    agenticorp-test         |     --- PASS: TestTaskStatus/Failed_status (0.00s)
+    agenticorp-test         | === RUN   TestAgentType
+    agenticorp-test         | === RUN   TestAgentType/General_type
+    agenticorp-test         | === RUN   TestAgentType/Specialist_type
+    agenticorp-test         | === RUN   TestAgentType/Reviewer_type
+    agenticorp-test         | --- PASS: TestAgentType (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentType/General_type (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentType/Specialist_type (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentType/Reviewer_type (0.00s)
+    agenticorp-test         | === RUN   TestAgentStatus
+    agenticorp-test         | === RUN   TestAgentStatus/Idle_status
+    agenticorp-test         | === RUN   TestAgentStatus/Busy_status
+    agenticorp-test         | === RUN   TestAgentStatus/Offline_status
+    agenticorp-test         | --- PASS: TestAgentStatus (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentStatus/Idle_status (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentStatus/Busy_status (0.00s)
+    agenticorp-test         |     --- PASS: TestAgentStatus/Offline_status (0.00s)
+    agenticorp-test         | === RUN   TestTask
+    agenticorp-test         | --- PASS: TestTask (0.00s)
+    agenticorp-test         | === RUN   TestAgent
+    agenticorp-test         | --- PASS: TestAgent (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/pkg/types0.001s
+    agenticorp-test         | === RUN   TestWorkerSystemIntegration
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-test-agent-1-1768875674 started for agent test-agent-1 using provider Mock Provider
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-test-agent-1-1768875674 for agent test-agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent test-agent-1 with worker using provider mock-provider
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-test-agent-1-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped worker for agent agent-1768875674-test-agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped agent test-agent-1
+    agenticorp-test         | --- PASS: TestWorkerSystemIntegration (0.00s)
+    agenticorp-test         | === RUN   TestMultipleAgentsWorkflow
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-1-1768875674 started for agent agent-1 using provider Test Provider
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-agent-1-1768875674 for agent agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent agent-1 with worker using provider test-provider
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-2-1768875674 started for agent agent-2 using provider Test Provider
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-agent-2-1768875674 for agent agent-2
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent agent-2 with worker using provider test-provider
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-3-1768875674 started for agent agent-3 using provider Test Provider
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-agent-3-1768875674 for agent agent-3
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent agent-3 with worker using provider test-provider
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-1-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped worker for agent agent-1768875674-agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped agent agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-2-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped worker for agent agent-1768875674-agent-2
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped agent agent-2
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-3-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped worker for agent agent-1768875674-agent-3
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped agent agent-3
+    agenticorp-test         | --- PASS: TestMultipleAgentsWorkflow (0.00s)
+    agenticorp-test         | === RUN   TestProviderRegistry
+    agenticorp-test         | --- PASS: TestProviderRegistry (0.00s)
+    agenticorp-test         | === RUN   TestWorkerTaskExecution
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-test-1768875674 started for agent test using provider Test
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-test-1768875674 for agent test
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent test with worker using provider test
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-test-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped worker for agent agent-1768875674-test
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped agent test
+    agenticorp-test         | --- PASS: TestWorkerTaskExecution (0.00s)
+    agenticorp-test         | === RUN   TestWorkerPoolLimits
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-1-1768875674 started for agent agent-1 using provider Test
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-agent-1-1768875674 for agent agent-1
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent agent-1 with worker using provider test
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-2-1768875674 started for agent agent-2 using provider Test
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned worker worker-agent-1768875674-agent-2-1768875674 for agent agent-2
+    agenticorp-test         | 2026/01/20 02:21:14 Spawned agent agent-2 with worker using provider test
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-1-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Worker worker-agent-1768875674-agent-2-1768875674 stopped
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped all workers in pool
+    agenticorp-test         | 2026/01/20 02:21:14 Stopped all agents and workers
+    agenticorp-test         | --- PASS: TestWorkerPoolLimits (0.00s)
+    agenticorp-test         | PASS
+    agenticorp-test         | ok  github.com/jordanhubbard/agenticorp/tests/integration0.004s
+    [Kagenticorp-test exited with code 0
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.255Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.267Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.270Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.271Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.272Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.274Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/2","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:09.274Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:10.268Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:22:10.268Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/1","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:23:09.262Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-tq-scanner-taskqueue-0/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:24:07.280Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:24:08.276Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/3","wf-task-queue-type":"Activity","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:24:08.281Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:25:06.283Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-processor-parent-close-policy/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal-postgresql  | 2026-01-20 02:25:54.032 UTC [27] LOG:  checkpoint starting: time
+    temporal-postgresql  | 2026-01-20 02:25:58.697 UTC [27] LOG:  checkpoint complete: wrote 48 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.649 s, sync=0.008 s, total=4.665 s; sync files=35, longest=0.005 s, average=0.001 s; distance=254 kB, estimate=254 kB
+    temporal             | {"level":"info","ts":"2026-01-20T02:26:07.280Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-archival-tq/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:26:10.263Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Stopped","logging-call-at":"task_queue_manager.go:363"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:26:10.271Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/2","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Stopped","logging-call-at":"task_queue_manager.go:363"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:27:09.284Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/default-worker-tq/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Stopped","logging-call-at":"task_queue_manager.go:363"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:28:04.302Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/1","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Started","logging-call-at":"task_queue_manager.go:331"}
+    temporal             | {"level":"info","ts":"2026-01-20T02:29:07.289Z","msg":"none","service":"matching","component":"matching-engine","wf-task-queue-name":"/_sys/temporal-sys-batcher-taskqueue/3","wf-task-queue-type":"Workflow","wf-namespace":"temporal-system","lifecycle":"Stopped","logging-call-at":"task_queue_manager.go:363"}
+
+status: open
+priority: 0
+project_id: agenticorp
+assigned_to: null
+blocked_by: []
+blocks: []
+parent: null
+children: []
+tags:
+  - p0
+  - failure
+  - run
+created_at: 2026-01-20T02:29:27Z
+updated_at: 2026-01-20T02:29:27Z
+closed_at: null
+context:
+  source: makefile
+  target: run

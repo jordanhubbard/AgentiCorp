@@ -1,4 +1,4 @@
-# Arbiter Configuration
+# AgentiCorp Configuration
 
 server:
   http_port: 8080
@@ -13,7 +13,7 @@ server:
 
 database:
   type: sqlite
-  path: ./arbiter.db
+  path: ./agenticorp.db
 
 beads:
   bd_path: bd  # Path to bd executable
@@ -38,8 +38,8 @@ security:
   #   - "your-api-key-here"
 
 projects:
-  - id: arbiter
-    name: Arbiter
+  - id: agenticorp
+    name: AgentiCorp
     git_repo: .
     branch: main
     beads_path: .beads

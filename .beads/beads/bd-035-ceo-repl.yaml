@@ -1,14 +1,14 @@
 id: bd-035
 type: task
-title: P0 - CEO REPL for high-priority Arbiter queries
+title: P0 - CEO REPL for high-priority AgentiCorp queries
 description: |
   Add a CEO-facing REPL at the bottom of the UI to send high-priority
-  questions directly to Arbiter through Temporal.
+  questions directly to AgentiCorp through Temporal.
 
   Requirements
   - Add a CEO REPL section in the UI with textarea input and response display.
   - Route queries through Temporal as a high-priority workflow.
-  - Use Arbiter persona context and select the best provider by quality/latency.
+  - Use AgentiCorp persona context and select the best provider by quality/latency.
   - Surface provider/model metadata in the response.
 
   Acceptance Criteria
@@ -18,7 +18,7 @@ description: |
 
 status: closed
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

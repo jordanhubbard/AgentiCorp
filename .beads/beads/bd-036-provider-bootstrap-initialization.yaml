@@ -2,7 +2,7 @@ id: bd-036
 type: task
 title: P0 - Provider bootstrap initialization on registration
 description: |
-  When a provider is registered, Arbiter must bootstrap it by discovering the
+  When a provider is registered, AgentiCorp must bootstrap it by discovering the
   correct OpenAI-compatible (vLLM) or Ollama-compatible endpoint/port, loading
   models, negotiating the best model, persisting metadata, and starting the
   heartbeat workflow.
@@ -22,7 +22,7 @@ description: |
 
 status: closed
 priority: 0
-project_id: arbiter
+project_id: agenticorp
 assigned_to: null
 blocked_by: []
 blocks: []

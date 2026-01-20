@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/internal/database"
-	"github.com/jordanhubbard/arbiter/internal/modelcatalog"
-	internalmodels "github.com/jordanhubbard/arbiter/internal/models"
-	"github.com/jordanhubbard/arbiter/internal/provider"
-	"github.com/jordanhubbard/arbiter/internal/temporal/eventbus"
+	"github.com/jordanhubbard/agenticorp/internal/database"
+	"github.com/jordanhubbard/agenticorp/internal/modelcatalog"
+	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	"github.com/jordanhubbard/agenticorp/internal/provider"
+	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
 )
 
 // ProviderHeartbeatInput represents heartbeat activity input.

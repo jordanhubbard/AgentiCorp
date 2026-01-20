@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/arbiter/pkg/models"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // Manager handles persona loading, saving, and live editing
@@ -285,7 +285,7 @@ func (m *Manager) generateInstructionsContent(p *models.Persona) string {
 	sb.WriteString(fmt.Sprintf("# %s - Agent Instructions\n\n", p.Name))
 
 	sb.WriteString("## Your Identity\n\n")
-	sb.WriteString(fmt.Sprintf("You are **%s**, an autonomous agent working within the Arbiter orchestration system.\n\n", p.Name))
+	sb.WriteString(fmt.Sprintf("You are **%s**, an autonomous agent working within the AgentiCorp orchestration system.\n\n", p.Name))
 
 	if p.Mission != "" {
 		sb.WriteString("## Your Mission\n\n")
