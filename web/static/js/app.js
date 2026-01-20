@@ -379,27 +379,38 @@ function renderProjectViewer() {
     // Get agents assigned to this project
     const projectAgents = (state.agents || []).filter((a) => a.project_id === project.id);
 
+    // Status badge class
+    const statusClass = project.status === 'closed' ? 'priority-3' : '';
+
     details.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="project-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
             <div>
-                <h4 style="margin-bottom: 0.75rem; color: var(--primary-color);">Project Details</h4>
-                <div><strong>ID:</strong> ${escapeHtml(project.id)}</div>
-                <div><strong>Status:</strong> ${escapeHtml(project.status || 'open')}</div>
-                <div><strong>Repo:</strong> ${escapeHtml(project.git_repo || '')}</div>
-                <div><strong>Branch:</strong> ${escapeHtml(project.branch || '')}</div>
-                <div><strong>Beads path:</strong> ${escapeHtml(project.beads_path || '')}</div>
-                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <button type="button" class="secondary" onclick="showEditProjectModal('${escapeHtml(project.id)}')">Edit</button>
-                    <button type="button" class="danger" onclick="deleteProject('${escapeHtml(project.id)}')">Delete</button>
-                </div>
+                <span class="badge ${statusClass}" style="margin-right: 0.5rem;">${escapeHtml(project.status || 'open')}</span>
+                <span class="small" style="color: var(--text-muted);">${escapeHtml(project.git_repo || '')} @ ${escapeHtml(project.branch || 'main')}</span>
             </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="secondary" onclick="showProjectSettingsModal('${escapeHtml(project.id)}')" title="Project Settings" style="padding: 0.5rem 0.75rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+                <button type="button" class="danger" onclick="deleteProject('${escapeHtml(project.id)}')" title="Delete Project" style="padding: 0.5rem 0.75rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
             <div>
-                <h4 style="margin-bottom: 0.75rem; color: var(--primary-color);">Assigned Agents (${projectAgents.length})</h4>
-                <div id="project-agents-list" style="max-height: 300px; overflow-y: auto;">
-                    ${renderProjectAgentsList(projectAgents, project.id)}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h4 style="color: var(--primary-color); margin: 0;">Assigned Agents (${projectAgents.length})</h4>
+                    <button type="button" class="secondary" style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" onclick="showAddAgentToProjectModal('${escapeHtml(project.id)}')">+ Add Agent</button>
                 </div>
-                <div style="margin-top: 0.75rem;">
-                    <button type="button" class="secondary" onclick="showAddAgentToProjectModal('${escapeHtml(project.id)}')">+ Add Agent</button>
+                <div id="project-agents-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px;">
+                    ${renderProjectAgentsList(projectAgents, project.id)}
                 </div>
             </div>
         </div>
@@ -441,11 +452,11 @@ function renderProjectAgentsList(agents, projectId) {
         const roleName = extractRoleName(a.persona_name || a.name);
         
         return `
-            <div class="agent-assignment-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-color);">
+            <div class="agent-assignment-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-color); background: var(--card-bg);">
                 <div>
-                    <strong>${escapeHtml(a.name || roleName)}</strong>
+                    <strong style="color: var(--text-color);">${escapeHtml(a.name || roleName)}</strong>
                     <span class="badge ${statusClass}" style="margin-left: 0.5rem;">${escapeHtml(a.status || 'idle')}</span>
-                    <div class="small" style="color: #6b7280;">
+                    <div class="small">
                         ${escapeHtml(a.persona_name || '')}
                         ${bead ? ` • Working on: ${escapeHtml(bead.title.substring(0, 30))}...` : ''}
                     </div>
@@ -581,6 +592,113 @@ async function removeAgentFromProject(projectId, agentId) {
         // Error already handled
     } finally {
         setBusy(`removeAgent:${agentId}`, false);
+    }
+}
+
+async function showProjectSettingsModal(projectId) {
+    const project = state.projects.find((p) => p.id === projectId);
+    if (!project) {
+        showToast('Project not found', 'error');
+        return;
+    }
+
+    try {
+        const res = await formModal({
+            title: `Project Settings: ${project.name}`,
+            submitText: 'Save Settings',
+            fields: [
+                {
+                    id: 'name',
+                    label: 'Project Name',
+                    type: 'text',
+                    required: true,
+                    value: project.name || ''
+                },
+                {
+                    id: 'git_repo',
+                    label: 'GitHub Repository',
+                    type: 'text',
+                    required: true,
+                    value: project.git_repo || '',
+                    placeholder: 'https://github.com/org/repo'
+                },
+                {
+                    id: 'branch',
+                    label: 'Branch',
+                    type: 'text',
+                    required: true,
+                    value: project.branch || 'main'
+                },
+                {
+                    id: 'beads_path',
+                    label: 'Beads Path',
+                    type: 'text',
+                    required: false,
+                    value: project.beads_path || '.beads',
+                    placeholder: '.beads'
+                },
+                {
+                    id: 'status',
+                    label: 'Status',
+                    type: 'select',
+                    required: true,
+                    value: project.status || 'open',
+                    options: [
+                        { value: 'open', label: 'Open' },
+                        { value: 'closed', label: 'Closed' },
+                        { value: 'reopened', label: 'Reopened' }
+                    ]
+                },
+                {
+                    id: 'is_perpetual',
+                    label: 'Perpetual Project',
+                    type: 'select',
+                    required: false,
+                    value: project.is_perpetual ? 'true' : 'false',
+                    options: [
+                        { value: 'false', label: 'No - Project can be closed' },
+                        { value: 'true', label: 'Yes - Project never closes' }
+                    ]
+                },
+                {
+                    id: 'is_sticky',
+                    label: 'Sticky Project',
+                    type: 'select',
+                    required: false,
+                    value: project.is_sticky ? 'true' : 'false',
+                    options: [
+                        { value: 'false', label: 'No' },
+                        { value: 'true', label: 'Yes - Auto-added on startup' }
+                    ]
+                }
+            ]
+        });
+
+        if (!res) return;
+
+        const payload = {
+            name: res.name,
+            git_repo: res.git_repo,
+            branch: res.branch,
+            beads_path: res.beads_path || '.beads',
+            status: res.status,
+            is_perpetual: res.is_perpetual === 'true',
+            is_sticky: res.is_sticky === 'true'
+        };
+
+        setBusy('projectSettings', true);
+        await apiCall(`/projects/${projectId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+
+        showToast('Project settings saved', 'success');
+        await loadProjects();
+        render();
+    } catch (error) {
+        // Error already handled by apiCall
+    } finally {
+        setBusy('projectSettings', false);
     }
 }
 

@@ -1,12 +1,13 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2ecc71;
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --dark-bg: #2c3e50;
-    --light-bg: #ecf0f1;
-    --border-color: #bdc3c7;
-    --text-color: #2c3e50;
+    --primary-color: #2563eb;
+    --secondary-color: #16a34a;
+    --danger-color: #dc2626;
+    --warning-color: #d97706;
+    --dark-bg: #1e293b;
+    --light-bg: #f1f5f9;
+    --border-color: #cbd5e1;
+    --text-color: #1e293b;
+    --text-muted: #475569;
     --card-bg: #ffffff;
 
     --space-1: 0.5rem;
@@ -30,7 +31,7 @@ body {
 
 .small {
     font-size: 0.85rem;
-    color: #4b5563;
+    color: var(--text-muted);
 }
 
 html {
@@ -141,7 +142,7 @@ section h2 {
 
 .project-view-details {
     margin-bottom: var(--space-3);
-    color: #374151;
+    color: var(--text-color);
 }
 
 .assignment-board {
@@ -227,7 +228,7 @@ section h2 {
 }
 
 .bead-card .bead-meta {
-    color: #7f8c8d !important;
+    color: var(--text-muted) !important;
 }
 
 .bead-card:hover {
@@ -254,7 +255,7 @@ section h2 {
 
 .bead-meta {
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: var(--text-muted);
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
@@ -296,11 +297,11 @@ section h2 {
 
 .empty-state {
     border: 2px dashed var(--border-color);
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--card-bg);
     padding: var(--space-3);
     border-radius: 8px;
     text-align: center;
-    color: #4b5563;
+    color: var(--text-muted);
 }
 
 .empty-state h4 {
@@ -310,6 +311,7 @@ section h2 {
 
 .empty-state p {
     margin-bottom: 1rem;
+    color: var(--text-muted);
 }
 
 /* Agents */
@@ -599,24 +601,37 @@ textarea {
 
 .project-card,
 .persona-card {
-    background-color: var(--light-bg);
+    background-color: var(--card-bg);
     padding: 1.5rem;
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
 }
 
 .persona-card {
-    border: none;
+    border: 1px solid var(--border-color);
     width: 100%;
     text-align: left;
     font: inherit;
 }
 
+.persona-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.persona-card p,
+.persona-card .small {
+    color: var(--text-muted);
+}
+
 .project-card:hover,
 .persona-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
 }
 
 /* CEO REPL */
