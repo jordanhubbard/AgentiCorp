@@ -1427,64 +1427,49 @@ function viewDecision(decisionId) {
 }
 
 // Actions
-function showRegisterProviderModal(preset = {}) {
-    formModal({
+async function showRegisterProviderModal(preset = {}) {
+    const values = await formModal({
         title: 'Register provider',
         submitText: 'Register',
         fields: [
-            { id: 'id', label: 'Provider ID (e.g. puck)', required: true, placeholder: preset.id || '' },
+            { id: 'endpoint', label: 'Provider URL', required: true, placeholder: preset.endpoint || 'e.g. http://myvllmhost.local:8000' },
             { id: 'name', label: 'Display name (optional)', required: false, placeholder: preset.name || '' },
             { id: 'type', label: 'Type (local/openai)', required: false, placeholder: preset.type || 'local' },
-            { id: 'endpoint', label: 'Endpoint base (e.g. http://puck.local:8000)', required: true, placeholder: preset.endpoint || '' },
             { id: 'model', label: 'Default model', required: false, placeholder: preset.model || 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' }
         ]
-    }).then(async (values) => {
-        if (!values) return;
-        const payload = {
-            id: (values.id || '').trim(),
-            name: (values.name || '').trim(),
-            type: (values.type || '').trim(),
-            endpoint: (values.endpoint || '').trim(),
-            model: (values.model || '').trim()
-        };
-
-        try {
-            setBusy('registerProvider', true);
-            await apiCall('/providers', { method: 'POST', body: JSON.stringify(payload) });
-            showToast('Provider registered', 'success');
-            await loadProviders();
-            render();
-        } finally {
-            setBusy('registerProvider', false);
-        }
     });
-}
-
-async function bootstrapProviders() {
-    const ok = await confirmModal({
-        title: 'Bootstrap providers?',
-        body: 'This will register puck.local and sparky.local using vLLM default port 8000 and model NVIDIA-Nemotron-3-Nano-30B-A3B-BF16.',
-        confirmText: 'Bootstrap',
-        cancelText: 'Cancel'
-    });
-    if (!ok) return;
-
-    const presets = [
-        { id: 'puck', name: 'puck.local', type: 'local', endpoint: 'http://puck.local:8000', model: 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' },
-        { id: 'sparky', name: 'sparky.local', type: 'local', endpoint: 'http://sparky.local:8000', model: 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' }
-    ];
-
-    for (const p of presets) {
-        try {
-            await apiCall('/providers', { method: 'POST', body: JSON.stringify(p) });
-        } catch (e) {
-            // ignore individual failures
-        }
+    
+    if (!values) return;
+    
+    // Auto-generate provider ID from URL hostname
+    const endpoint = (values.endpoint || '').trim();
+    let providerId = endpoint;
+    try {
+        const url = new URL(endpoint);
+        providerId = url.hostname.split('.')[0]; // e.g. "puck" from "http://puck.local:8000"
+    } catch (e) {
+        // Use endpoint as-is if not a valid URL
     }
+    
+    const payload = {
+        id: providerId,
+        name: (values.name || '').trim() || providerId,
+        type: (values.type || '').trim(),
+        endpoint: endpoint,
+        model: (values.model || '').trim()
+    };
 
-    await loadProviders();
-    showToast('Bootstrap attempted', 'success');
-    render();
+    try {
+        setBusy('registerProvider', true);
+        await apiCall('/providers', { method: 'POST', body: JSON.stringify(payload) });
+        showToast('Provider registered', 'success');
+        await loadProviders();
+        render();
+    } catch (err) {
+        showToast(`Failed to register provider: ${err.message}`, 'error');
+    } finally {
+        setBusy('registerProvider', false);
+    }
 }
 
 async function fetchProviderModels(providerId) {
@@ -1494,15 +1479,15 @@ async function fetchProviderModels(providerId) {
         const models = resp?.models || [];
         const body = models.length > 0
             ? `<div>${models.map((m) => `<div class="badge">${escapeHtml(m.id || '')}</div>`).join(' ')}</div>`
-            : '<p>No models returned.</p>';
+            : '<p>No models returned from provider.</p>';
 
         openAppModal({
             title: `Models: ${providerId}`,
             bodyHtml: body,
             actions: [{ label: 'Close', variant: 'secondary', onClick: () => closeAppModal() }]
         });
-    } catch (e) {
-        // handled
+    } catch (err) {
+        showToast(`Failed to fetch models: ${err.message || 'Unknown error'}`, 'error');
     } finally {
         setBusy(`providerModels:${providerId}`, false);
     }
@@ -1515,8 +1500,8 @@ async function renegotiateProvider(providerId) {
         showToast('Provider negotiation complete', 'success');
         await loadProviders();
         render();
-    } catch (e) {
-        // handled
+    } catch (err) {
+        showToast(`Failed to negotiate provider: ${err.message || 'Unknown error'}`, 'error');
     } finally {
         setBusy(`providerNegotiate:${providerId}`, false);
     }

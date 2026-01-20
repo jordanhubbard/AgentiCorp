@@ -1,0 +1,23 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: bd-043
+type: task
+title: Post-flight Test Bead
+description: Automated test
+status: in_progress
+priority: 2
+projectid: agenticorp
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-20T06:33:43.667799513Z
+updatedat: 2026-01-20T06:33:43.691661096Z
+closedat: null
