@@ -42,6 +42,9 @@ COPY --from=builder /build/arbiter /app/arbiter
 # Copy config file
 COPY --from=builder /build/config.yaml /app/config.yaml
 
+# Copy personas directory
+COPY --from=builder /build/personas /app/personas
+
 # Change ownership
 RUN chown -R arbiter:arbiter /app
 

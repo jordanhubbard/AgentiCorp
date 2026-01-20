@@ -205,13 +205,13 @@ section h2 {
 }
 
 .bead-card {
-    background-color: var(--card-bg);
+    background-color: var(--card-bg) !important;
     padding: 1rem;
     border-radius: 4px;
     border-left: 4px solid var(--primary-color);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    color: var(--text-color);
+    color: var(--text-color) !important;
 
     display: block;
     width: 100%;
@@ -220,6 +220,14 @@ section h2 {
     border-right: none;
     border-bottom: none;
     font: inherit;
+}
+
+.bead-card .bead-title {
+    color: var(--text-color) !important;
+}
+
+.bead-card .bead-meta {
+    color: #7f8c8d !important;
 }
 
 .bead-card:hover {

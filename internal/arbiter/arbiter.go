@@ -521,7 +521,9 @@ func (a *Arbiter) ensureDefaultAgents(ctx context.Context, projectID string) err
 		if _, ok := existing[roleName]; ok {
 			continue
 		}
-		_, err := a.SpawnAgent(ctx, roleName, personaName, projectID, providers[0].Config.ID)
+		// Format agent name as "Role Name (Persona Type)" for clarity
+		agentName := formatAgentName(roleName, "Default")
+		_, err := a.SpawnAgent(ctx, agentName, personaName, projectID, providers[0].Config.ID)
 		if err != nil {
 			continue
 		}
@@ -546,6 +548,19 @@ func roleFromPersonaName(personaName string) string {
 		return parts[len(parts)-1]
 	}
 	return personaName
+}
+
+// formatAgentName formats an agent name as "Role Name (Persona Type)" for better readability
+func formatAgentName(roleName, personaType string) string {
+	// Convert kebab-case to Title Case
+	words := strings.Split(roleName, "-")
+	for i, word := range words {
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(word[:1]) + word[1:]
+		}
+	}
+	titleRole := strings.Join(words, " ")
+	return fmt.Sprintf("%s (%s)", titleRole, personaType)
 }
 
 func normalizeBeadsPath(path string) string {

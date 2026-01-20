@@ -376,19 +376,32 @@ function renderProjectViewer() {
     const project = projects.find((p) => p.id === uiState.project.selectedId) || projects[0];
     uiState.project.selectedId = project.id;
 
+    // Get agents assigned to this project
+    const projectAgents = (state.agents || []).filter((a) => a.project_id === project.id);
+
     details.innerHTML = `
-        <div><strong>ID:</strong> ${escapeHtml(project.id)}</div>
-        <div><strong>Status:</strong> ${escapeHtml(project.status || '')}</div>
-        <div><strong>Repo:</strong> ${escapeHtml(project.git_repo || '')}</div>
-        <div><strong>Branch:</strong> ${escapeHtml(project.branch || '')}</div>
-        <div><strong>Beads path:</strong> ${escapeHtml(project.beads_path || '')}</div>
-        <div><strong>Perpetual:</strong> ${project.is_perpetual ? 'Yes' : 'No'}</div>
-        <div><strong>Sticky:</strong> ${project.is_sticky ? 'Yes' : 'No'}</div>
-        <div><strong>Agents assigned:</strong> ${(project.agents || []).length}</div>
-        <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button type="button" class="secondary" onclick="assignAgentToProject('${escapeHtml(project.id)}')">Assign agent</button>
-            <button type="button" class="secondary" onclick="showEditProjectModal('${escapeHtml(project.id)}')">Edit project</button>
-            <button type="button" class="danger" onclick="deleteProject('${escapeHtml(project.id)}')">Delete project</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div>
+                <h4 style="margin-bottom: 0.75rem; color: var(--primary-color);">Project Details</h4>
+                <div><strong>ID:</strong> ${escapeHtml(project.id)}</div>
+                <div><strong>Status:</strong> ${escapeHtml(project.status || 'open')}</div>
+                <div><strong>Repo:</strong> ${escapeHtml(project.git_repo || '')}</div>
+                <div><strong>Branch:</strong> ${escapeHtml(project.branch || '')}</div>
+                <div><strong>Beads path:</strong> ${escapeHtml(project.beads_path || '')}</div>
+                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="secondary" onclick="showEditProjectModal('${escapeHtml(project.id)}')">Edit</button>
+                    <button type="button" class="danger" onclick="deleteProject('${escapeHtml(project.id)}')">Delete</button>
+                </div>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 0.75rem; color: var(--primary-color);">Assigned Agents (${projectAgents.length})</h4>
+                <div id="project-agents-list" style="max-height: 300px; overflow-y: auto;">
+                    ${renderProjectAgentsList(projectAgents, project.id)}
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <button type="button" class="secondary" onclick="showAddAgentToProjectModal('${escapeHtml(project.id)}')">+ Add Agent</button>
+                </div>
+            </div>
         </div>
     `;
 
@@ -410,32 +423,164 @@ function renderProjectViewer() {
         closedEl.innerHTML = closedBeads.length ? closedBeads.map(renderBeadCard).join('') : renderEmptyState('No closed beads', '');
     }
 
+    // Keep the assignments board for backward compatibility
     const assignmentsEl = document.getElementById('project-agent-assignments');
     if (assignmentsEl) {
-        const agents = (state.agents || []).filter((a) => a.project_id === project.id);
-        if (agents.length === 0) {
-            assignmentsEl.innerHTML = renderEmptyState('No agents assigned', 'Spawn an agent and choose this project.');
-        } else {
-            assignmentsEl.innerHTML = agents
-                .map((a) => {
-                    const bead = a.current_bead ? (state.beads || []).find((b) => b.id === a.current_bead) : null;
-                    const beadTitle = bead ? bead.title : '';
-                    const statusBadge = `<span class="badge">${escapeHtml(a.status || '')}</span>`;
-                    const providerBadge = a.provider_id ? `<span class="badge">${escapeHtml(a.provider_id)}</span>` : '';
-                    return `
-                        <div class="assignment-card">
-                            <div><strong>${escapeHtml(a.name || a.id)}</strong> ${statusBadge} ${providerBadge}</div>
-                            <div class="small"><strong>Persona:</strong> ${escapeHtml(a.persona_name || '')}</div>
-                            <div class="small"><strong>Bead:</strong> ${a.current_bead ? escapeHtml(a.current_bead) : '<em>none</em>'}</div>
-                            ${beadTitle ? `<div class="small"><strong>Bead title:</strong> ${escapeHtml(beadTitle)}</div>` : ''}
-                            <div style="margin-top: 0.5rem;">
-                                <button class="secondary" onclick="unassignAgentFromProject('${escapeHtml(project.id)}', '${escapeHtml(a.id)}')">Unassign</button>
-                            </div>
-                        </div>
-                    `;
-                })
-                .join('');
-        }
+        assignmentsEl.style.display = 'none';
+    }
+}
+
+function renderProjectAgentsList(agents, projectId) {
+    if (agents.length === 0) {
+        return `<div class="empty-state" style="padding: 1rem;"><p>No agents assigned yet.</p><p class="small">Add an agent from the org chart to get started.</p></div>`;
+    }
+
+    return agents.map((a) => {
+        const bead = a.current_bead ? (state.beads || []).find((b) => b.id === a.current_bead) : null;
+        const statusClass = a.status === 'working' ? 'working' : (a.status === 'blocked' ? 'blocked' : 'idle');
+        const roleName = extractRoleName(a.persona_name || a.name);
+        
+        return `
+            <div class="agent-assignment-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <strong>${escapeHtml(a.name || roleName)}</strong>
+                    <span class="badge ${statusClass}" style="margin-left: 0.5rem;">${escapeHtml(a.status || 'idle')}</span>
+                    <div class="small" style="color: #6b7280;">
+                        ${escapeHtml(a.persona_name || '')}
+                        ${bead ? ` • Working on: ${escapeHtml(bead.title.substring(0, 30))}...` : ''}
+                    </div>
+                </div>
+                <button type="button" class="danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="removeAgentFromProject('${escapeHtml(projectId)}', '${escapeHtml(a.id)}')">Remove</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function extractRoleName(personaName) {
+    if (!personaName) return 'Agent';
+    // Extract role from persona paths like "default/engineering-manager" or "projects/foo/engineering-manager/custom"
+    const parts = personaName.split('/');
+    let role = parts[parts.length - 1];
+    if (parts.length >= 2 && parts[0] === 'default') {
+        role = parts[1];
+    } else if (parts.length >= 3 && parts[0] === 'projects') {
+        role = parts[2];
+    }
+    // Convert kebab-case to Title Case
+    return role.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+async function showAddAgentToProjectModal(projectId) {
+    // Get available personas (the "org chart")
+    const personas = state.personas || [];
+    if (personas.length === 0) {
+        showToast('No personas available. Add personas to the personas directory first.', 'error');
+        return;
+    }
+
+    // Get providers
+    const providers = state.providers || [];
+    if (providers.length === 0) {
+        showToast('No providers registered. Register a provider first.', 'error');
+        return;
+    }
+
+    // Build persona options - only show default personas (the org chart)
+    const defaultPersonas = personas.filter(p => p.name && p.name.startsWith('default/'));
+    const personaOptions = defaultPersonas.map(p => {
+        const roleName = extractRoleName(p.name);
+        return { value: p.name, label: `${roleName} (${p.name})` };
+    });
+
+    if (personaOptions.length === 0) {
+        showToast('No default personas found in org chart. Add personas under personas/default/.', 'error');
+        return;
+    }
+
+    // Build provider options
+    const providerOptions = providers.map(p => ({
+        value: p.id,
+        label: `${p.name || p.id} (${p.status || 'unknown'})`
+    }));
+
+    try {
+        const res = await formModal({
+            title: 'Add Agent to Project',
+            submitText: 'Create & Assign',
+            fields: [
+                {
+                    id: 'persona_name',
+                    label: 'Agent Role (from Org Chart)',
+                    type: 'select',
+                    required: true,
+                    options: personaOptions
+                },
+                {
+                    id: 'provider_id',
+                    label: 'Provider',
+                    type: 'select',
+                    required: true,
+                    options: providerOptions
+                },
+                {
+                    id: 'custom_name',
+                    label: 'Custom Name (optional)',
+                    type: 'text',
+                    required: false,
+                    placeholder: 'Leave empty for default name'
+                }
+            ]
+        });
+
+        if (!res) return;
+
+        // Create the agent and assign to project
+        const roleName = extractRoleName(res.persona_name);
+        const agentName = res.custom_name || `${roleName} (Default)`;
+
+        setBusy('addAgentToProject', true);
+        await apiCall('/agents', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: agentName,
+                persona_name: res.persona_name,
+                project_id: projectId,
+                provider_id: res.provider_id
+            })
+        });
+
+        showToast(`Agent "${agentName}" created and assigned`, 'success');
+        await loadAll();
+    } catch (error) {
+        // Error already handled by apiCall
+    } finally {
+        setBusy('addAgentToProject', false);
+    }
+}
+
+async function removeAgentFromProject(projectId, agentId) {
+    const agent = (state.agents || []).find(a => a.id === agentId);
+    const agentName = agent ? (agent.name || agentId) : agentId;
+
+    const ok = await confirmModal({
+        title: 'Remove Agent?',
+        body: `Remove "${agentName}" from this project? This will stop the agent.`,
+        confirmText: 'Remove',
+        cancelText: 'Cancel',
+        danger: true
+    });
+
+    if (!ok) return;
+
+    try {
+        setBusy(`removeAgent:${agentId}`, true);
+        await apiCall(`/agents/${agentId}`, { method: 'DELETE' });
+        showToast('Agent removed', 'success');
+        await loadAll();
+    } catch (error) {
+        // Error already handled
+    } finally {
+        setBusy(`removeAgent:${agentId}`, false);
     }
 }
 

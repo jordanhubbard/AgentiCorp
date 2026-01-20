@@ -322,10 +322,15 @@ func (m *Manager) generateInstructionsContent(p *models.Persona) string {
 
 // ListPersonas returns all available persona names
 func (m *Manager) ListPersonas() ([]string, error) {
+	// Check if persona directory exists
+	if _, err := os.Stat(m.personaDir); os.IsNotExist(err) {
+		return []string{}, nil
+	}
+
 	var personas []string
 	err := filepath.WalkDir(m.personaDir, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			return walkErr
+			return nil // Skip errors, continue walking
 		}
 		if !d.IsDir() {
 			return nil
