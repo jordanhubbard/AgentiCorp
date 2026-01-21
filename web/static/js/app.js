@@ -2,6 +2,11 @@
 const API_BASE = '/api/v1';
 const REFRESH_INTERVAL = 5000; // 5 seconds
 
+const AUTH_TOKEN_KEY = 'agenticorp.authToken';
+let authToken = localStorage.getItem(AUTH_TOKEN_KEY) || '';
+let authCheckInFlight = null;
+let loginInFlight = null;
+
 // State
 let state = {
     beads: [],
@@ -14,6 +19,9 @@ let state = {
 };
 
 let uiState = {
+    view: {
+        active: 'project-viewer'
+    },
     bead: {
         search: '',
         sort: 'priority',
@@ -43,6 +51,7 @@ let reloadTimers = {};
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initUI();
+    initViewTabs();
     loadAll();
     startEventStream();
     startAutoRefresh();
@@ -164,6 +173,60 @@ function setupNavActiveState() {
     for (const s of sections) observer.observe(s);
 }
 
+function initViewTabs() {
+    const tabs = Array.from(document.querySelectorAll('.view-tab'));
+    const panels = Array.from(document.querySelectorAll('.view-panel'));
+
+    function activate(id) {
+        uiState.view.active = id;
+        for (const tab of tabs) {
+            const target = tab.getAttribute('data-target');
+            const isActive = target === id;
+            tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            tab.tabIndex = isActive ? 0 : -1;
+        }
+        for (const panel of panels) {
+            const isActive = panel.id === id;
+            panel.classList.toggle('active', isActive);
+            if (isActive) {
+                panel.removeAttribute('hidden');
+            } else {
+                panel.setAttribute('hidden', 'true');
+            }
+        }
+    }
+
+    for (const tab of tabs) {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-target');
+            if (target) activate(target);
+        });
+        tab.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const target = tab.getAttribute('data-target');
+                if (target) activate(target);
+            }
+        });
+    }
+
+    window.addEventListener('hashchange', () => {
+        const id = (location.hash || '').replace('#', '');
+        if (id && panels.find((p) => p.id === id)) {
+            activate(id);
+        }
+    });
+
+    // Respect hash on load if it matches a panel id
+    const hash = (location.hash || '').replace('#', '');
+    if (hash && panels.find((p) => p.id === hash)) {
+        activate(hash);
+    } else {
+        activate(uiState.view.active);
+    }
+}
+
 // Auto-refresh
 function startAutoRefresh() {
     // Event bus is preferred; this interval is a fallback.
@@ -189,12 +252,18 @@ async function loadAll() {
 // API calls
 async function apiCall(endpoint, options = {}) {
     try {
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        if (!options.skipAuth && authToken) {
+            headers.Authorization = `Bearer ${authToken}`;
+        }
+
         const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            }
+            headers
         });
         
         if (!response.ok) {
@@ -203,7 +272,16 @@ async function apiCall(endpoint, options = {}) {
                 const error = await response.json();
                 message = error.error || message;
             } catch {
-                // ignore
+                try {
+                    const text = await response.text();
+                    if (text) message = text;
+                } catch {
+                    // ignore
+                }
+            }
+            if (response.status === 401 && !options.skipAuth && !options.retryAuth) {
+                await ensureAuth(true);
+                return apiCall(endpoint, { ...options, retryAuth: true });
             }
             throw new Error(message);
         }
@@ -215,9 +293,72 @@ async function apiCall(endpoint, options = {}) {
         return await response.json();
     } catch (error) {
         console.error('API Error:', error);
-        showToast(error.message || 'Request failed', 'error');
+        if (!options.suppressToast) {
+            showToast(error.message || 'Request failed', 'error');
+        }
         throw error;
     }
+}
+
+async function ensureAuth(forcePrompt = false) {
+    if (authCheckInFlight) return authCheckInFlight;
+    authCheckInFlight = (async () => {
+        if (!forcePrompt && authToken) {
+            try {
+                await apiCall('/auth/me', { skipAuth: false, suppressToast: true, retryAuth: true });
+                return;
+            } catch (err) {
+                // Fall through to prompt.
+            }
+        }
+        await showLoginModal();
+    })().finally(() => {
+        authCheckInFlight = null;
+    });
+    return authCheckInFlight;
+}
+
+async function showLoginModal() {
+    if (loginInFlight) return loginInFlight;
+    loginInFlight = (async () => {
+        let loggedIn = false;
+        while (!loggedIn) {
+            const values = await formModal({
+                title: 'Sign in',
+                submitText: 'Sign in',
+                fields: [
+                    { id: 'username', label: 'Username', required: true, placeholder: 'admin' },
+                    { id: 'password', label: 'Password', required: true, type: 'password', placeholder: 'Password' }
+                ]
+            });
+            if (!values) {
+                throw new Error('Login required');
+            }
+            try {
+                const resp = await apiCall('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: (values.username || '').trim(),
+                        password: values.password || ''
+                    }),
+                    skipAuth: true
+                });
+                if (resp?.token) {
+                    authToken = resp.token;
+                    localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+                    showToast('Signed in', 'success');
+                    loggedIn = true;
+                } else {
+                    throw new Error('Login failed');
+                }
+            } catch (err) {
+                showToast(`Login failed: ${err.message || 'Unknown error'}`, 'error');
+            }
+        }
+    })().finally(() => {
+        loginInFlight = null;
+    });
+    return loginInFlight;
 }
 
 function scheduleReload(kind, delayMs = 150) {
@@ -1503,7 +1644,7 @@ async function showRegisterProviderModal(preset = {}) {
                 value: preset.type || 'local'
             },
             { id: 'api_key', label: 'API Key (optional)', required: false, type: 'password', placeholder: 'Leave blank if not required' },
-            { id: 'model', label: 'Default model', required: false, placeholder: preset.model || 'NVIDIA-Nemotron-3-Nano-30B-A3B-BF16' }
+            { id: 'model', label: 'Default model', required: false, placeholder: 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8', value: preset.model || 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8' }
         ]
     });
     
@@ -2017,10 +2158,13 @@ function formModal({ title, submitText = 'Submit', cancelText = 'Cancel', fields
                         const required = f.required ? 'required' : '';
                         const placeholder = f.placeholder ? `placeholder="${escapeHtml(f.placeholder)}"` : '';
                         const value = f.value !== undefined && f.value !== null ? String(f.value) : '';
+                        const description = f.description ? `<div class="small" style="color: var(--text-muted); margin-top: 0.25rem;">${escapeHtml(f.description)}</div>` : '';
+                        
                         if (f.type === 'textarea') {
                             return `
                                 <label for="${id}">${escapeHtml(f.label)}</label>
                                 <textarea id="${id}" name="${escapeHtml(f.id)}" ${required} ${placeholder}>${escapeHtml(value)}</textarea>
+                                ${description}
                             `;
                         }
                         if (f.type === 'select') {
@@ -2036,11 +2180,25 @@ function formModal({ title, submitText = 'Submit', cancelText = 'Cancel', fields
                                         })
                                         .join('')}
                                 </select>
+                                ${description}
                             `;
                         }
+                        if (f.type === 'checkbox') {
+                            const checked = (value === 'true' || value === true || value === '1') ? 'checked' : '';
+                            return `
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="${id}" name="${escapeHtml(f.id)}" value="true" ${checked}>
+                                    <label for="${id}" style="margin: 0;">${escapeHtml(f.label)}</label>
+                                </div>
+                                ${description}
+                            `;
+                        }
+                        // Default: text, password, number, etc.
+                        const inputType = f.type || 'text';
                         return `
                             <label for="${id}">${escapeHtml(f.label)}</label>
-                            <input type="text" id="${id}" name="${escapeHtml(f.id)}" ${required} ${placeholder} value="${escapeHtml(value)}">
+                            <input type="${escapeHtml(inputType)}" id="${id}" name="${escapeHtml(f.id)}" ${required} ${placeholder} value="${escapeHtml(value)}">
+                            ${description}
                         `;
                     })
                     .join('')}

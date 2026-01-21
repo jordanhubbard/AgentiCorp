@@ -23,10 +23,14 @@ type ProviderConfig struct {
 	LastHeartbeatLatencyMs int64     `json:"last_heartbeat_latency_ms,omitempty"`
 }
 
+// MetricsCallback is called after each provider request to record metrics
+type MetricsCallback func(providerID string, success bool, latencyMs int64, totalTokens int64)
+
 // Registry manages registered AI providers
 type Registry struct {
-	mu        sync.RWMutex
-	providers map[string]*RegisteredProvider
+	mu              sync.RWMutex
+	providers       map[string]*RegisteredProvider
+	metricsCallback MetricsCallback
 }
 
 // RegisteredProvider wraps a provider with its configuration and protocol
@@ -70,6 +74,8 @@ func (r *Registry) Register(config *ProviderConfig) error {
 		protocol = NewOpenAIProvider(config.Endpoint, config.APIKey)
 	case "ollama":
 		protocol = NewOllamaProvider(config.Endpoint)
+	case "mock":
+		protocol = NewMockProvider()
 	default:
 		return fmt.Errorf("unsupported provider type: %s", config.Type)
 	}
@@ -97,6 +103,8 @@ func (r *Registry) Upsert(config *ProviderConfig) error {
 		protocol = NewOpenAIProvider(config.Endpoint, config.APIKey)
 	case "ollama":
 		protocol = NewOllamaProvider(config.Endpoint)
+	case "mock":
+		protocol = NewMockProvider()
 	default:
 		return fmt.Errorf("unsupported provider type: %s", config.Type)
 	}
@@ -171,8 +179,17 @@ func (r *Registry) IsActive(providerID string) bool {
 	return isProviderHealthy(provider.Config.Status)
 }
 
+// SetMetricsCallback sets the callback function for recording metrics
+func (r *Registry) SetMetricsCallback(callback MetricsCallback) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.metricsCallback = callback
+}
+
 // SendChatCompletion sends a chat completion request to a provider
 func (r *Registry) SendChatCompletion(ctx context.Context, providerID string, req *ChatCompletionRequest) (*ChatCompletionResponse, error) {
+	startTime := time.Now()
+	
 	provider, err := r.Get(providerID)
 	if err != nil {
 		return nil, err
@@ -186,7 +203,27 @@ func (r *Registry) SendChatCompletion(ctx context.Context, providerID string, re
 		req.Model = provider.Config.Model
 	}
 
-	return provider.Protocol.CreateChatCompletion(ctx, req)
+	// Make the request
+	resp, err := provider.Protocol.CreateChatCompletion(ctx, req)
+	
+	// Record metrics
+	latencyMs := time.Since(startTime).Milliseconds()
+	success := err == nil
+	totalTokens := int64(0)
+	if resp != nil {
+		totalTokens = int64(resp.Usage.TotalTokens)
+	}
+	
+	// Call metrics callback if registered
+	r.mu.RLock()
+	callback := r.metricsCallback
+	r.mu.RUnlock()
+	
+	if callback != nil {
+		callback(providerID, success, latencyMs, totalTokens)
+	}
+	
+	return resp, err
 }
 
 // GetModels retrieves available models from a provider

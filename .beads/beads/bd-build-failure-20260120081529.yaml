@@ -1,0 +1,112 @@
+id: bd-build-failure-20260120081529
+type: task
+title: "P0 - build failed"
+description: |
+  Command: docker compose build
+  Exit code: 1
+
+  Output:
+     Image agenticorp:latest Building 
+     Image agenticorp-agenticorp-test Building 
+    #1 [internal] load local bake definitions
+    #1 reading from stdin 1.00kB done
+    #1 DONE 0.0s
+    
+    #2 [agenticorp internal] load build definition from Dockerfile
+    #2 DONE 0.0s
+    
+    #2 [agenticorp-test internal] load build definition from Dockerfile
+    #2 transferring dockerfile: 1.83kB done
+    #2 DONE 0.0s
+    
+    #3 [agenticorp-test internal] load metadata for docker.io/library/golang:1.24-alpine
+    #3 ...
+    
+    #4 [agenticorp internal] load metadata for docker.io/library/alpine:latest
+    #4 DONE 0.6s
+    
+    #3 [agenticorp-test internal] load metadata for docker.io/library/golang:1.24-alpine
+    #3 DONE 0.7s
+    
+    #5 [agenticorp internal] load .dockerignore
+    #5 transferring context: 353B done
+    #5 DONE 0.0s
+    
+    #6 [agenticorp-test builder 1/8] FROM docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986
+    #6 resolve docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986 done
+    #6 DONE 0.0s
+    
+    #7 [agenticorp stage-1  1/12] FROM docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+    #7 resolve docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 0.0s done
+    #7 DONE 0.0s
+    
+    #8 [agenticorp-test internal] load build context
+    #8 transferring context: 24.11kB 0.0s done
+    #8 DONE 0.0s
+    
+    #9 [agenticorp-test builder 3/8] WORKDIR /build
+    #9 CACHED
+    
+    #10 [agenticorp-test builder 5/8] COPY go.sum ./
+    #10 CACHED
+    
+    #11 [agenticorp-test builder 4/8] COPY go.mod ./
+    #11 CACHED
+    
+    #12 [agenticorp-test builder 2/8] RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+    #12 CACHED
+    
+    #13 [agenticorp-test builder 6/8] RUN go mod download
+    #13 CACHED
+    
+    #14 [agenticorp-test builder 7/8] COPY . .
+    #14 DONE 0.0s
+    
+    #15 [agenticorp-test builder 8/8] RUN CGO_ENABLED=1 GOOS=linux go build     -ldflags="-w -s"     -o agenticorp     ./cmd/agenticorp
+    #15 35.64 # github.com/jordanhubbard/agenticorp/internal/temporal
+    #15 35.64 internal/temporal/dsl_executor.go:6:2: "log" imported and not used
+    #15 ERROR: process "/bin/sh -c CGO_ENABLED=1 GOOS=linux go build     -ldflags=\"-w -s\"     -o agenticorp     ./cmd/agenticorp" did not complete successfully: exit code: 1
+    ------
+     > [agenticorp builder 8/8] RUN CGO_ENABLED=1 GOOS=linux go build     -ldflags="-w -s"     -o agenticorp     ./cmd/agenticorp:
+    35.64 # github.com/jordanhubbard/agenticorp/internal/temporal
+    35.64 internal/temporal/dsl_executor.go:6:2: "log" imported and not used
+    ------
+    Dockerfile:21
+    
+    --------------------
+    
+      20 |     # Build the application with CGO enabled for sqlite3
+    
+      21 | >>> RUN CGO_ENABLED=1 GOOS=linux go build \
+    
+      22 | >>>     -ldflags="-w -s" \
+    
+      23 | >>>     -o agenticorp \
+    
+      24 | >>>     ./cmd/agenticorp
+    
+      25 |     
+    
+    --------------------
+    
+    target agenticorp-test: failed to solve: process "/bin/sh -c CGO_ENABLED=1 GOOS=linux go build     -ldflags=\"-w -s\"     -o agenticorp     ./cmd/agenticorp" did not complete successfully: exit code: 1
+    
+
+status: closed
+priority: 0
+project_id: agenticorp
+assigned_to: null
+blocked_by: []
+blocks: []
+parent: null
+children: []
+tags:
+  - p0
+  - failure
+  - build
+created_at: 2026-01-20T08:15:29Z
+updated_at: 2026-01-20T16:52:43Z
+closed_at: 2026-01-20T16:52:43Z
+context:
+  source: makefile
+  target: build

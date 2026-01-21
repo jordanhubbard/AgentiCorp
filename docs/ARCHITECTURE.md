@@ -1,5 +1,7 @@
 # AgentiCorp Architecture Guide
 
+**Last Updated**: January 20, 2026
+
 This document describes the architecture of AgentiCorp, the Agent Orchestration System for managing distributed AI workflows.
 
 ## System Overview
@@ -107,7 +109,63 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 
 **Database**: `projects` table with git, status, and configuration
 
-### 5. Temporal Orchestration
+### 5. Org Chart System
+
+**Purpose**: Define and manage team structure for projects
+
+**Key Files**:
+- `pkg/models/orgchart.go`
+- `internal/orgchart/manager.go`
+
+**Concepts**:
+- **OrgChart**: Project-specific team structure defining roles and reporting
+- **Position**: A role slot in the org chart (CEO, PM, Engineer, etc.)
+- **Template**: Default org chart cloned for new projects
+- **Hierarchy**: Positions have reporting relationships (ReportsTo field)
+- **Capacity**: Positions can limit instances (MaxInstances)
+
+**Workflow**:
+1. Default template created on system startup with all standard roles
+2. New projects get org chart cloned from template
+3. Agents are assigned to fill positions in the org chart
+4. UI displays agents sorted by org chart hierarchy
+5. Required positions must be filled for project to be active
+
+**API**: `GET /api/v1/org-charts/{projectId}` for retrieving project org structure
+
+**Database**: `org_charts` and `org_chart_positions` tables (schema exists, in-memory storage currently used)
+
+### 6. Model Catalog System
+
+**Purpose**: Manage recommended models and enable intelligent provider negotiation
+
+**Key Files**:
+- `internal/modelcatalog/catalog.go`
+- `internal/models/model_catalog.go`
+
+**Concepts**:
+- **ModelSpec**: Metadata about a model (params, precision, interactivity)
+- **Parsing**: Automatic extraction of model attributes from names
+- **Scoring**: Heuristic ranking based on size, speed, and quality
+- **Negotiation**: SelectBest chooses optimal model from available options
+
+**Features**:
+- Parses model names to extract total/active params (MoE support)
+- Detects precision (BF16, FP16, INT8, etc.)
+- Identifies instruct-tuned models
+- Scores models by interactivity (fast/medium/slow) and size
+- Case-insensitive matching during negotiation
+
+**Workflow**:
+1. Provider registration includes configured model preference
+2. Provider bootstrap queries available models
+3. Catalog.SelectBest picks highest-scoring available model
+4. Selection reason and score persisted to provider metadata
+5. Provider negotiation can be manually retriggered via API
+
+**Database**: Provider table stores `selected_model`, `selection_reason`, and `model_score`
+
+### 7. Temporal Orchestration
 
 **Purpose**: Provide reliable, durable workflow execution with temporal primitives
 
@@ -137,7 +195,7 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - DSL is parsed, executed, and stripped before sending to providers
 - See `docs/TEMPORAL_DSL.md` for complete syntax
 
-### 6. Database Layer
+### 8. Database Layer
 
 **Purpose**: Persist all system state across restarts
 
@@ -161,7 +219,7 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - Backup functionality
 - Clean reset with `make distclean`
 
-### 7. Event Bus
+### 9. Event Bus
 
 **Purpose**: Coordinate system-wide events
 
@@ -174,7 +232,7 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - `EventTypeBeadStatusChanged`: Work item status change
 - `EventTypeAgentStatusChanged`: Agent status change
 
-### 8. Web UI
+### 10. Web UI
 
 **Purpose**: Real-time monitoring and control of the system
 
@@ -193,6 +251,42 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - **Projects**: Manage project configuration
 - **CEO REPL**: Direct query interface
 - **System Status**: Overall health overview
+
+### 11. Testing Infrastructure
+
+**Purpose**: Ensure system reliability through comprehensive testing
+
+**Key Files**:
+- `internal/modelcatalog/catalog_test.go` - Model parsing and negotiation tests
+- `internal/orgchart/manager_test.go` - Org chart operations tests
+- `tests/postflight/api_test.sh` - Post-deployment API validation
+
+**Test Categories**:
+
+**Unit Tests**:
+- Model name parsing (extracts params, precision, vendor)
+- Model scoring and ranking logic
+- Org chart creation and position management
+- Provider registry operations
+
+**Integration Tests**:
+- API endpoint validation (14 endpoints tested)
+- Health checks and system status
+- Event stream connectivity
+- Work graph dependency tracking
+
+**Post-Flight Tests**:
+- Automated validation after container startup
+- Tests all major API endpoints
+- Validates JSON response structure
+- Configurable via BASE_URL environment variable
+- Run with: `make test-api`
+
+**CI/CD**:
+- `make test` runs all Go tests
+- `make test-api` runs post-flight validation
+- Build must pass before deployment
+- Test failures block merges
 
 ## Data Flow
 
@@ -319,6 +413,201 @@ make distclean  # Wipes database and Temporal state
 ```
 
 ## High-Level Architecture Diagram
+
+**Last Updated**: January 20, 2026
+
+### System Component Diagram
+
+```mermaid
+graph TB
+    subgraph "Web Layer"
+        UI[Web UI :8080<br/>React SPA]
+        API[REST API<br/>/api/v1/*]
+        SSE[SSE Event Stream<br/>/api/v1/events/stream]
+    end
+
+    subgraph "Core Engine"
+        subgraph "Managers"
+            PM[Project Manager]
+            AM[Agent Manager]
+            BM[Bead Manager]
+            DM[Decision Manager]
+            OC[Org Chart Manager]
+            PRM[Provider Registry]
+            PSM[Persona Manager]
+        end
+        
+        subgraph "Orchestration"
+            DISP[Dispatcher<br/>Routes work to agents]
+            EB[Event Bus<br/>Real-time notifications]
+            WG[Work Graph<br/>Dependency tracking]
+        end
+    end
+
+    subgraph "Temporal Workflows"
+        TM[Temporal Manager]
+        AGW[Agent Workflow<br/>Process beads]
+        HBW[Heartbeat Workflow<br/>Monitor providers]
+        DSLW[DSL Executor<br/>Custom workflows]
+    end
+
+    subgraph "External Services"
+        TP[Temporal Server<br/>:7233]
+        DB[(SQLite Database<br/>State persistence)]
+        GIT[Git Repositories<br/>Bead sources]
+    end
+
+    subgraph "LLM Providers"
+        PROV1[vLLM Provider]
+        PROV2[Ollama Provider]
+        PROV3[OpenAI API]
+    end
+
+    UI --> API
+    UI --> SSE
+    API --> PM
+    API --> AM
+    API --> BM
+    API --> DM
+    API --> PRM
+    API --> OC
+    
+    PM --> DB
+    AM --> DB
+    BM --> DB
+    DM --> DB
+    PRM --> DB
+    OC --> DB
+    
+    PM -.loads beads.-> GIT
+    PM --> OC
+    OC -.defines roles.-> AM
+    
+    DISP --> AM
+    DISP --> BM
+    DISP --> WG
+    DISP --> TM
+    
+    TM --> TP
+    AGW --> TP
+    HBW --> TP
+    DSLW --> TP
+    
+    AM --> AGW
+    PRM --> HBW
+    
+    AGW -.requests completion.-> PRM
+    PRM -.routes to.-> PROV1
+    PRM -.routes to.-> PROV2
+    PRM -.routes to.-> PROV3
+    
+    EB -.publishes.-> SSE
+    AM --> EB
+    BM --> EB
+    PM --> EB
+    PRM --> EB
+    
+    style UI fill:#e1f5ff
+    style API fill:#e1f5ff
+    style SSE fill:#e1f5ff
+    style DB fill:#fff4e1
+    style TP fill:#fff4e1
+    style GIT fill:#fff4e1
+    style PROV1 fill:#e8f5e9
+    style PROV2 fill:#e8f5e9
+    style PROV3 fill:#e8f5e9
+```
+
+### Data Flow: Bead Processing
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Git
+    participant PM as Project Manager
+    participant BM as Bead Manager
+    participant WG as Work Graph
+    participant DISP as Dispatcher
+    participant AM as Agent Manager
+    participant PROV as Provider
+    participant TP as Temporal
+    participant DB as Database
+
+    User->>Git: Push .beads/beads/*.yaml
+    PM->>Git: Pull project beads
+    PM->>BM: Load beads
+    BM->>WG: Update dependency graph
+    BM->>DB: Persist beads
+    
+    DISP->>WG: Get ready beads
+    WG-->>DISP: Beads with no blockers
+    DISP->>AM: Get available agents
+    AM-->>DISP: Agents matching role
+    
+    DISP->>TP: Start AgentWorkflow
+    TP->>AM: Execute bead
+    AM->>PROV: Request completion
+    PROV-->>AM: LLM response
+    AM->>BM: Update bead status
+    BM->>DB: Persist update
+    BM->>WG: Update dependencies
+```
+
+### Org Chart Structure
+
+```mermaid
+graph TD
+    subgraph "Project: AgentiCorp"
+        PC[Project Config]
+        OC[Org Chart]
+        
+        PC --> OC
+        
+        subgraph "Executive Positions"
+            CEO[CEO<br/>Required: 1]
+            CFO[CFO<br/>Max: 1]
+            CEO --> CFO
+        end
+        
+        subgraph "Product & Engineering"
+            PM[Product Manager<br/>Unlimited]
+            EM[Engineering Manager<br/>Unlimited]
+            CEO --> PM
+            CEO --> EM
+            
+            PROJM[Project Manager<br/>Unlimited]
+            QA[QA Engineer<br/>Unlimited]
+            DO[DevOps Engineer<br/>Unlimited]
+            CR[Code Reviewer<br/>Unlimited]
+            
+            EM --> PROJM
+            EM --> QA
+            EM --> DO
+            EM --> CR
+        end
+        
+        subgraph "Support Functions"
+            DOCS[Doc Manager<br/>Max: 1]
+            WD[Web Designer<br/>Unlimited]
+            PR[PR Manager<br/>Max: 1]
+            DM[Decision Maker<br/>Max: 1]
+            HK[Housekeeping<br/>Max: 1]
+            
+            PM --> DOCS
+            PM --> WD
+            CEO --> PR
+            CEO --> DM
+        end
+        
+        OC --> CEO
+    end
+    
+    style CEO fill:#ffeb3b
+    style CFO fill:#ffeb3b
+    style OC fill:#e3f2fd
+```
+
+### ASCII Diagram (Legacy)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

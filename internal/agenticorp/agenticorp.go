@@ -118,6 +118,10 @@ func New(cfg *config.Config) (*AgentiCorp, error) {
 	}
 
 	arb.dispatcher = dispatch.NewDispatcher(arb.beadsManager, arb.projectManager, arb.agentManager, arb.providerRegistry, eb)
+	
+	// Setup provider metrics tracking
+	arb.setupProviderMetrics()
+	
 	return arb, nil
 }
 
@@ -261,6 +265,22 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("failed to load providers: %w", err)
 		}
+		// Bootstrap a mock provider when none are configured to keep the system runnable.
+		if len(providers) == 0 {
+			mock := &internalmodels.Provider{
+				ID:              "mock-local",
+				Name:            "Local Mock Provider",
+				Type:            "mock",
+				Endpoint:        "mock://local",
+				Status:          "active",
+				ConfiguredModel: "mock-model",
+				SelectedModel:   "mock-model",
+				Model:           "mock-model",
+				LastHeartbeatAt: time.Now(),
+			}
+			_ = a.database.UpsertProvider(mock)
+			providers = append(providers, mock)
+		}
 		for _, p := range providers {
 			selected := p.SelectedModel
 			if selected == "" {
@@ -328,7 +348,7 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 		a.temporalManager.RegisterActivity(temporalactivities.NewDispatchActivities(a.dispatcher))
 		a.temporalManager.RegisterActivity(temporalactivities.NewProviderActivities(a.providerRegistry, a.database, a.eventBus, a.modelCatalog))
 		a.temporalManager.RegisterActivity(temporalactivities.NewAgentiCorpActivities(a.database))
-		
+
 		if err := a.temporalManager.Start(); err != nil {
 			return fmt.Errorf("failed to start temporal: %w", err)
 		}
@@ -914,7 +934,7 @@ func (a *AgentiCorp) RegisterProvider(ctx context.Context, p *internalmodels.Pro
 		p.ConfiguredModel = p.Model
 	}
 	if p.ConfiguredModel == "" {
-		p.ConfiguredModel = "NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+		p.ConfiguredModel = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
 	}
 	if p.SelectedModel == "" {
 		p.SelectedModel = p.ConfiguredModel
@@ -952,7 +972,7 @@ func (a *AgentiCorp) RegisterProvider(ctx context.Context, p *internalmodels.Pro
 		})
 	}
 	_ = a.ensureProviderHeartbeat(ctx, p.ID)
-	
+
 	// Immediately attempt to get models from the provider to validate and update status
 	go a.checkProviderHealthAndActivate(p.ID)
 
@@ -987,7 +1007,7 @@ func (a *AgentiCorp) UpdateProvider(ctx context.Context, p *internalmodels.Provi
 		p.ConfiguredModel = p.Model
 	}
 	if p.ConfiguredModel == "" {
-		p.ConfiguredModel = "NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+		p.ConfiguredModel = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
 	}
 	if p.SelectedModel == "" {
 		p.SelectedModel = p.ConfiguredModel
@@ -1240,7 +1260,7 @@ func (a *AgentiCorp) NegotiateProviderModel(ctx context.Context, providerID stri
 		providerRecord.ConfiguredModel = providerRecord.Model
 	}
 	if providerRecord.ConfiguredModel == "" {
-		providerRecord.ConfiguredModel = "NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+		providerRecord.ConfiguredModel = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
 	}
 
 	if providerRecord.ConfiguredModel != "" {
@@ -1714,7 +1734,6 @@ func (a *AgentiCorp) StartDispatchLoop(ctx context.Context, interval time.Durati
 // and immediately activates it if so, without waiting for the heartbeat workflow
 func (a *AgentiCorp) checkProviderHealthAndActivate(providerID string) {
 	time.Sleep(300 * time.Millisecond)
-	
 	models, err := a.GetProviderModels(context.Background(), providerID)
 	if err == nil && len(models) > 0 {
 		// Update provider status to active in both database and registry
@@ -1737,6 +1756,9 @@ func (a *AgentiCorp) checkProviderHealthAndActivate(providerID string) {
 			})
 		}
 	}
+
+	// Attach newly active provider to paused agents (best-effort)
+	a.attachProviderToPausedAgents(context.Background(), providerID)
 }
 
 // TODO: Implement perpetual tasks for each org chart role:
@@ -1777,4 +1799,39 @@ func (a *AgentiCorp) ResumeAgentsWaitingForProvider(ctx context.Context, provide
 	}
 
 	return nil
+}
+
+// attachProviderToPausedAgents assigns a newly active provider to any paused agents that lack one.
+func (a *AgentiCorp) attachProviderToPausedAgents(ctx context.Context, providerID string) {
+	if a.agentManager == nil || a.database == nil || providerID == "" {
+		return
+	}
+
+	if !a.providerRegistry.IsActive(providerID) {
+		return
+	}
+
+	agents, err := a.database.ListAgents()
+	if err != nil {
+		return
+	}
+
+	for _, ag := range agents {
+		if ag == nil || ag.ProviderID != "" {
+			continue
+		}
+		// Attach persona for prompt context
+		if ag.Persona == nil && ag.PersonaName != "" {
+			ag.Persona, _ = a.personaManager.LoadPersona(ag.PersonaName)
+		}
+		ag.ProviderID = providerID
+		ag.Status = "idle"
+		_ = a.database.UpsertAgent(ag)
+		if _, err := a.agentManager.RestoreAgentWorker(ctx, ag); err != nil {
+			continue
+		}
+		if ag.ProjectID != "" {
+			_ = a.projectManager.AddAgentToProject(ag.ProjectID, ag.ID)
+		}
+	}
 }

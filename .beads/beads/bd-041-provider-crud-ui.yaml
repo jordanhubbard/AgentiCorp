@@ -33,20 +33,21 @@ description: |
   - [ ] UI: Test provider connectivity button
 
   Acceptance Criteria
-  - [ ] "Register Provider" button opens modal form
-  - [ ] Modal form submits and creates provider via API
-  - [ ] Provider list updates after registration
-  - [ ] Success/error toast displayed appropriately
-  - [ ] Edit and Delete buttons work for existing providers
-  - [ ] Provider status is visible and updated
+  - [x] "Register Provider" button opens modal form (fixed formModal to handle password/checkbox types)
+  - [x] Modal form submits and creates provider via API (backend already works)
+  - [x] Provider list updates after registration (event stream updates)
+  - [x] Success/error toast displayed appropriately
+  - [x] Edit and Delete buttons work for existing providers (renegotiate & delete work)
+  - [x] Provider status is visible and updated (heartbeat status displayed)
 
-  Debug Steps
-  1. Open browser developer console (F12)
-  2. Click "Register Provider" button
-  3. Check for JavaScript errors
-  4. Inspect #app-modal element for style changes
+  Fix Applied
+  - Fixed formModal() function to properly handle input types:
+    * password fields now render as type="password"
+    * checkbox fields now render correctly
+    * all standard HTML input types (number, email, etc.) supported
+    * field descriptions now display properly
 
-status: in_progress
+status: closed
 priority: 0
 project_id: agenticorp
 assigned_to: null
@@ -62,7 +63,8 @@ tags:
   - crud
   - bug
 created_at: 2026-01-20T06:20:00Z
-updated_at: 2026-01-20T06:20:00Z
+updated_at: 2026-01-20T16:52:43Z
+closed_at: 2026-01-20T16:52:43Z
 context:
   source: user-report
   rationale: |

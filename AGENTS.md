@@ -30,7 +30,7 @@ Access at `http://localhost:8080`
 
 Navigate to **Providers** → **Register Provider** and enter:
 - Endpoint: `http://your-llm:8000`
-- Model: `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16`
+- Model: `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8`
 
 Provider automatically checks health and transitions to `active`.
 

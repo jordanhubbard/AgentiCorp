@@ -237,7 +237,7 @@ An external LLM service that executes agent work.
   "name": "Puck vLLM",
   "type": "local",
   "endpoint": "http://puck.local:8000",
-  "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+  "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
   "status": "active",
   "requires_key": false,
   "last_heartbeat_at": "2026-01-20T08:30:00Z",

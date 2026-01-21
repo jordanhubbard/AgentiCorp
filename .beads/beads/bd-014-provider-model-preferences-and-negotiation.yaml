@@ -21,7 +21,7 @@ description: |
        - Best parallelization hints (e.g., tensor-parallel degree, kv-cache)
        - Suggested minimum GPU memory / GPU class (heuristic)
      - The model list must include (at minimum):
-       - NVIDIA-Nemotron-3-Nano-30B-A3B-BF16 (already used in bootstrap)
+       - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 (already used in bootstrap)
        - Qwen2.5-Coder variants already registered in the system
        - Qwen/Qwen3-Coder-480B-A35B-Instruct
        - Qwen/Qwen3-Coder-30B-A3B-Instruct

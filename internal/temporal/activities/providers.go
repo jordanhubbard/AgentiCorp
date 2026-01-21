@@ -251,7 +251,7 @@ func (a *ProviderActivities) selectModel(record *internalmodels.Provider, availa
 		configured = strings.TrimSpace(record.Model)
 	}
 	if configured == "" {
-		configured = "NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+		configured = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
 	}
 	record.ConfiguredModel = configured
 

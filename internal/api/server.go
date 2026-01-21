@@ -2,27 +2,37 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
+	"github.com/jordanhubbard/agenticorp/internal/auth"
 	"github.com/jordanhubbard/agenticorp/internal/keymanager"
 	"github.com/jordanhubbard/agenticorp/pkg/config"
+	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // Server represents the HTTP API server
 type Server struct {
-	agenticorp *agenticorp.AgentiCorp
-	keyManager *keymanager.KeyManager
-	config  *config.Config
+	agenticorp  *agenticorp.AgentiCorp
+	keyManager  *keymanager.KeyManager
+	authManager *auth.Manager
+	config      *config.Config
+	apiFailureMu   sync.Mutex
+	apiFailureLast map[string]time.Time
 }
 
 // NewServer creates a new API server
-func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, cfg *config.Config) *Server {
+func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.Manager, cfg *config.Config) *Server {
 	return &Server{
-		agenticorp: arb,
-		keyManager: km,
-		config:  cfg,
+		agenticorp:  arb,
+		keyManager:  km,
+		authManager: am,
+		config:      cfg,
+		apiFailureLast: make(map[string]time.Time),
 	}
 }
 
@@ -53,8 +63,23 @@ func (s *Server) SetupRoutes() http.Handler {
 	// Health check
 	mux.HandleFunc("/api/v1/health", s.handleHealth)
 
-	// Authentication
-	mux.HandleFunc("/api/v1/auth/change-password", s.handleChangePassword)
+	// Auth endpoints
+	authHandlers := auth.NewHandlers(s.authManager)
+	mux.HandleFunc("/api/v1/auth/login", authHandlers.HandleLogin)
+	mux.HandleFunc("/api/v1/auth/refresh", authHandlers.HandleRefreshToken)
+	mux.HandleFunc("/api/v1/auth/change-password", authHandlers.HandleChangePassword)
+	mux.HandleFunc("/api/v1/auth/api-keys", authHandlers.HandleCreateAPIKey)
+	mux.HandleFunc("/api/v1/auth/me", authHandlers.HandleGetCurrentUser)
+	mux.HandleFunc("/api/v1/auth/users", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			authHandlers.HandleCreateUser(w, r)
+		case http.MethodGet:
+			authHandlers.HandleListUsers(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
 	// Personas
 	mux.HandleFunc("/api/v1/personas", s.handlePersonas)
@@ -136,10 +161,89 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 // loggingMiddleware logs HTTP requests
 func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Simple logging - in production, use a proper logger
-		// log.Printf("%s %s %s", r.Method, r.URL.Path, r.RemoteAddr)
-		next.ServeHTTP(w, r)
+		recorder := &statusRecorder{ResponseWriter: w}
+		next.ServeHTTP(recorder, r)
+		s.recordAPIFailure(r, recorder.statusCode)
 	})
+}
+
+type statusRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (r *statusRecorder) WriteHeader(code int) {
+	r.statusCode = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
+func (r *statusRecorder) Write(b []byte) (int, error) {
+	if r.statusCode == 0 {
+		r.statusCode = http.StatusOK
+	}
+	return r.ResponseWriter.Write(b)
+}
+
+func (s *Server) recordAPIFailure(r *http.Request, statusCode int) {
+	if statusCode < http.StatusInternalServerError {
+		return
+	}
+	if r == nil || r.URL == nil || s.agenticorp == nil {
+		return
+	}
+
+	key := fmt.Sprintf("%s %s %d", r.Method, r.URL.Path, statusCode)
+	if s.shouldThrottleFailure(key, 2*time.Minute) {
+		return
+	}
+
+	projectID := s.defaultProjectID()
+	if projectID == "" {
+		return
+	}
+
+	title := fmt.Sprintf("P0 - API failure %s", key)
+	description := fmt.Sprintf(
+		"API request failed\n\nMethod: %s\nPath: %s\nStatus: %d\nQuery: %s\nRemote: %s\nUser: %s\nTimestamp: %s\n",
+		r.Method,
+		r.URL.Path,
+		statusCode,
+		r.URL.RawQuery,
+		r.RemoteAddr,
+		auth.GetUserIDFromRequest(r),
+		time.Now().UTC().Format(time.RFC3339),
+	)
+
+	_, _ = s.agenticorp.CreateBead(title, description, models.BeadPriority(0), "task", projectID)
+}
+
+func (s *Server) shouldThrottleFailure(key string, window time.Duration) bool {
+	if key == "" {
+		return true
+	}
+	now := time.Now()
+	s.apiFailureMu.Lock()
+	defer s.apiFailureMu.Unlock()
+	if last, ok := s.apiFailureLast[key]; ok && now.Sub(last) < window {
+		return true
+	}
+	s.apiFailureLast[key] = now
+	return false
+}
+
+func (s *Server) defaultProjectID() string {
+	if s.agenticorp == nil {
+		return ""
+	}
+	if pm := s.agenticorp.GetProjectManager(); pm != nil {
+		if project, err := pm.GetProject("agenticorp"); err == nil && project != nil {
+			return project.ID
+		}
+		if projects := pm.ListProjects(); len(projects) > 0 && projects[0] != nil {
+			return projects[0].ID
+		}
+	}
+	return ""
 }
 
 // corsMiddleware handles CORS headers
@@ -157,7 +261,7 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 		}
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-API-Key")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization")
 
 		// Handle preflight
 		if r.Method == http.MethodOptions {
@@ -174,6 +278,8 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Skip auth for health check, static files, root, and OpenAPI spec
 		if r.URL.Path == "/api/v1/health" ||
+			r.URL.Path == "/api/v1/auth/login" ||
+			r.URL.Path == "/api/v1/auth/refresh" ||
 			r.URL.Path == "/" ||
 			r.URL.Path == "/api/openapi.yaml" ||
 			r.URL.Path == "/api/v1/events/stream" ||
@@ -183,39 +289,13 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Skip auth if disabled
-		if !s.config.Security.EnableAuth {
+		if !s.config.Security.EnableAuth || s.authManager == nil {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// If auth is enabled but no keys are configured, treat auth as disabled.
-		if len(s.config.Security.APIKeys) == 0 {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		// Check API key
-		apiKey := r.Header.Get("X-API-Key")
-		if apiKey == "" {
-			http.Error(w, "Missing API key", http.StatusUnauthorized)
-			return
-		}
-
-		// Validate API key
-		valid := false
-		for _, key := range s.config.Security.APIKeys {
-			if key == apiKey {
-				valid = true
-				break
-			}
-		}
-
-		if !valid {
-			http.Error(w, "Invalid API key", http.StatusUnauthorized)
-			return
-		}
-
-		next.ServeHTTP(w, r)
+		// Apply JWT/API key auth
+		s.authManager.Middleware("")(next).ServeHTTP(w, r)
 	})
 }
 

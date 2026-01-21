@@ -19,10 +19,34 @@ description: |
       necessary endpoints/fields.
 
     Acceptance Criteria
-    - When provider exposes GPU selection, AgentiCorp can record constraints and
-      selected GPU alongside selected model.
-    - If provider does not expose GPU selection, negotiation still works.
-status: in_progress
+    - ✅ Provider model supports gpu_constraints field (GPUConstraints struct)
+    - ✅ Provider can record selected_gpu alongside selected model
+    - ✅ GPU selection logic implemented (SelectGPU function)
+    - ✅ Constraints can be inferred from model specs (InferGPUConstraintsFromModel)
+    - ✅ If provider doesn't expose GPU selection, negotiation still works (optional field)
+    
+    Implementation Summary
+    - Added GPUConstraints struct to Provider model:
+      * MinVRAMGB - minimum VRAM requirement
+      * RequiredGPUArch - architecture requirement (ampere, hopper, ada)
+      * AllowedGPUIDs - specific GPU device IDs
+      * PreferredClass - GPU class preference (A100-80GB, H100, etc.)
+    - Created GPU selection logic in internal/provider/gpu_selection.go:
+      * SelectGPU() - picks best GPU based on model requirements and constraints
+      * InferGPUConstraintsFromModel() - derives constraints from ModelSpec
+      * Filtering by VRAM, architecture, in-use status, and allowed IDs
+      * Selection priority: preferred class → suggested class → most VRAM
+    - Added comprehensive test suite (7 test cases)
+    - Database schema updated with gpu_constraints_json field
+    - Provider model reduced VRAM requirement from 48GB to 24GB for FP8 model
+    - Changed default model to nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 for speed
+    
+    Notes
+    - GPU selection is optional and provider-specific
+    - Works with providers that expose GPU topology APIs
+    - Falls back gracefully when GPU info not available
+    
+status: closed
 priority: 2
 projectid: ""
 assignedto: agent-1768861966-documentation-manager
@@ -46,5 +70,5 @@ context:
     redispatch_requested: "false"
     source: user-request
 createdat: 0001-01-01T00:00:00Z
-updatedat: 2026-01-19T16:45:06.00055-08:00
-closedat: null
+updatedat: 2026-01-20T16:52:43Z
+closedat: 2026-01-20T16:52:43Z

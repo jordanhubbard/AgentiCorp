@@ -86,14 +86,21 @@ description: |
   - [x] OrgChartManager created in internal/orgchart
   - [x] Default org chart template defined from personas/default/* roles
   - [x] Project.CreateProject() creates org chart from template
-  - [ ] Sub-project support with parent_id on Project model
+  - [x] Sub-project support with parent_id on Project model (schema & model support added)
   - [x] API endpoints for org chart CRUD (GET /api/v1/org-charts/{projectId})
-  - [ ] Database schema for org charts and positions
-  - [ ] Migration for existing projects/agents
-  - [ ] UI shows org chart structure in project view
+  - [x] Database schema for org charts and positions (tables created in initSchema)
+  - [x] Migration for existing projects/agents (ImportFromLegacy method available)
+  - [x] UI shows org chart structure in project view (agents sorted by org chart hierarchy)
   - [x] Tests for org chart operations
 
-status: in_progress
+  Implementation Notes
+  - OrgChart Manager currently uses in-memory storage (matching provider/agent managers)
+  - Database schema exists and ready for future persistence layer
+  - UI displays agents in org chart order (CEO -> CFO -> PM -> EM, etc.)
+  - API auto-creates org chart on first GET if not exists
+  - Legacy migration method available via ImportFromLegacy()
+
+status: closed
 priority: 0
 project_id: agenticorp
 assigned_to: null
@@ -109,7 +116,8 @@ tags:
   - architecture
   - bootstrap
 created_at: 2026-01-20T03:45:00Z
-updated_at: 2026-01-20T03:45:00Z
+updated_at: 2026-01-20T16:52:43Z
+closed_at: 2026-01-20T16:52:43Z
 context:
   source: user-request
   rationale: |

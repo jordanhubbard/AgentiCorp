@@ -14,7 +14,7 @@ description: |
     - parsed/derived fields from model name
 
   Model list (must include)
-  - NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
+  - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
   - Qwen2.5-Coder models already supported by the system
   - Qwen/Qwen3-Coder-480B-A35B-Instruct
   - Qwen/Qwen3-Coder-30B-A3B-Instruct

@@ -30,7 +30,7 @@ func DefaultCatalog() *Catalog {
 	defaults := []internalmodels.ModelSpec{
 		withParsed(internalmodels.ModelSpec{Name: "Qwen/Qwen3-Coder-480B-A35B-Instruct", Interactivity: "slow", MinVRAMGB: 320, SuggestedGPUClass: "multi-gpu", Rank: 1}),
 		withParsed(internalmodels.ModelSpec{Name: "Qwen/Qwen3-Coder-30B-A3B-Instruct", Interactivity: "medium", MinVRAMGB: 48, SuggestedGPUClass: "A100-80GB", Rank: 2}),
-		withParsed(internalmodels.ModelSpec{Name: "NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", Interactivity: "fast", MinVRAMGB: 48, SuggestedGPUClass: "A100-80GB", Rank: 3}),
+		withParsed(internalmodels.ModelSpec{Name: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8", Interactivity: "fast", MinVRAMGB: 24, SuggestedGPUClass: "A100-40GB", Rank: 3}),
 		withParsed(internalmodels.ModelSpec{Name: "Qwen2.5-Coder-32B-Instruct", Interactivity: "medium", MinVRAMGB: 48, SuggestedGPUClass: "A100-80GB", Rank: 4}),
 		withParsed(internalmodels.ModelSpec{Name: "Qwen2.5-Coder-7B-Instruct", Interactivity: "fast", MinVRAMGB: 16, SuggestedGPUClass: "L40S", Rank: 5}),
 	}
@@ -75,10 +75,14 @@ func ParseModelName(name string) internalmodels.ModelSpec {
 	}
 
 	if matches := totalParamRe.FindAllStringSubmatch(name, -1); len(matches) > 0 {
+		// Get positions to check context
+		positions := totalParamRe.FindAllStringIndex(name, -1)
 		// prefer the last match that is not the active parameter token
 		for i := len(matches) - 1; i >= 0; i-- {
 			val := matches[i][1]
-			if activeParamRe.MatchString(matches[i][0]) {
+			// Check if this match is preceded by 'A' (making it an active param)
+			pos := positions[i][0]
+			if pos > 0 && (name[pos-1] == 'A' || name[pos-1] == 'a') {
 				continue
 			}
 			spec.TotalParamsB = parseFloat(val)
