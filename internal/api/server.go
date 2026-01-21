@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
+	"github.com/jordanhubbard/agenticorp/internal/analytics"
 	"github.com/jordanhubbard/agenticorp/internal/auth"
 	"github.com/jordanhubbard/agenticorp/internal/keymanager"
 	"github.com/jordanhubbard/agenticorp/pkg/config"
@@ -17,22 +18,33 @@ import (
 
 // Server represents the HTTP API server
 type Server struct {
-	agenticorp     *agenticorp.AgentiCorp
-	keyManager     *keymanager.KeyManager
-	authManager    *auth.Manager
-	config         *config.Config
-	apiFailureMu   sync.Mutex
-	apiFailureLast map[string]time.Time
+	agenticorp      *agenticorp.AgentiCorp
+	keyManager      *keymanager.KeyManager
+	authManager     *auth.Manager
+	analyticsLogger *analytics.Logger
+	config          *config.Config
+	apiFailureMu    sync.Mutex
+	apiFailureLast  map[string]time.Time
 }
 
 // NewServer creates a new API server
 func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.Manager, cfg *config.Config) *Server {
+	// Initialize analytics logger with default privacy config
+	var analyticsLogger *analytics.Logger
+	if arb != nil && arb.GetDatabase() != nil {
+		storage, err := analytics.NewDatabaseStorage(arb.GetDatabase().DB())
+		if err == nil {
+			analyticsLogger = analytics.NewLogger(storage, analytics.DefaultPrivacyConfig())
+		}
+	}
+
 	return &Server{
-		agenticorp:     arb,
-		keyManager:     km,
-		authManager:    am,
-		config:         cfg,
-		apiFailureLast: make(map[string]time.Time),
+		agenticorp:      arb,
+		keyManager:      km,
+		authManager:     am,
+		analyticsLogger: analyticsLogger,
+		config:          cfg,
+		apiFailureLast:  make(map[string]time.Time),
 	}
 }
 

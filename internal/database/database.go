@@ -56,6 +56,11 @@ func (d *Database) Close() error {
 	return d.db.Close()
 }
 
+// DB returns the underlying sql.DB instance
+func (d *Database) DB() *sql.DB {
+	return d.db
+}
+
 // initSchema creates the database tables
 func (d *Database) initSchema() error {
 	schema := `
