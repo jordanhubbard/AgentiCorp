@@ -15,7 +15,9 @@ let state = {
     personas: [],
     decisions: [],
     providers: [],
-    systemStatus: null
+    systemStatus: null,
+    users: [],
+    apiKeys: []
 };
 
 let uiState = {
@@ -65,6 +67,71 @@ function initUI() {
     const beadAssigned = document.getElementById('bead-assigned');
     const beadTag = document.getElementById('bead-tag');
     const beadClear = document.getElementById('bead-clear-filters');
+
+    // User management controls
+    const createUserBtn = document.getElementById('create-user-btn');
+    const cancelUserBtn = document.getElementById('cancel-user-btn');
+    const userForm = document.getElementById('user-form');
+    const refreshUsersBtn = document.getElementById('refresh-users-btn');
+    
+    createUserBtn?.addEventListener('click', () => {
+        const form = document.getElementById('create-user-form');
+        if (form) form.style.display = 'block';
+    });
+    
+    cancelUserBtn?.addEventListener('click', () => {
+        const form = document.getElementById('create-user-form');
+        if (form) form.style.display = 'none';
+        document.getElementById('user-form')?.reset();
+    });
+    
+    userForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleCreateUser();
+    });
+    
+    refreshUsersBtn?.addEventListener('click', () => {
+        loadUsers();
+        loadAPIKeys();
+        render();
+    });
+
+    // API key controls
+    const createAPIKeyBtn = document.getElementById('create-apikey-btn');
+    const cancelAPIKeyBtn = document.getElementById('cancel-apikey-btn');
+    const apiKeyForm = document.getElementById('apikey-form');
+    const closeAPIKeyDisplayBtn = document.getElementById('close-apikey-display-btn');
+    const copyAPIKeyBtn = document.getElementById('copy-apikey-btn');
+    
+    createAPIKeyBtn?.addEventListener('click', () => {
+        const form = document.getElementById('create-apikey-form');
+        if (form) form.style.display = 'block';
+    });
+    
+    cancelAPIKeyBtn?.addEventListener('click', () => {
+        const form = document.getElementById('create-apikey-form');
+        if (form) form.style.display = 'none';
+        document.getElementById('apikey-form')?.reset();
+    });
+    
+    apiKeyForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleCreateAPIKey();
+    });
+    
+    closeAPIKeyDisplayBtn?.addEventListener('click', () => {
+        const display = document.getElementById('apikey-display');
+        if (display) display.style.display = 'none';
+    });
+    
+    copyAPIKeyBtn?.addEventListener('click', () => {
+        const keyValue = document.getElementById('apikey-value')?.textContent;
+        if (keyValue) {
+            navigator.clipboard.writeText(keyValue).then(() => {
+                showToast('API key copied to clipboard', 'success');
+            });
+        }
+    });
 
     beadSearch?.addEventListener('input', (e) => {
         uiState.bead.search = e.target.value || '';
@@ -258,7 +325,9 @@ async function loadAll() {
         loadProjects(),
         loadPersonas(),
         loadDecisions(),
-        loadSystemStatus()
+        loadSystemStatus(),
+        loadUsers(),
+        loadAPIKeys()
     ]);
     render();
 }
@@ -506,6 +575,7 @@ function render() {
     renderProjects();
     renderPersonas();
     renderDecisions();
+    renderUsers();
 }
 
 function renderProjectViewer() {
@@ -2527,4 +2597,194 @@ function formModal({ title, submitText = 'Submit', cancelText = 'Cancel', fields
             if (first) first.focus();
         }, 0);
     });
+}
+
+// ============================================================================
+// User Management Functions
+// ============================================================================
+
+function renderUsers() {
+    const container = document.getElementById('users-list');
+    if (!container) return;
+
+    const users = state.users || [];
+    const apiKeys = state.apiKeys || [];
+
+    if (users.length === 0) {
+        container.innerHTML = renderEmptyState(
+            'No Users',
+            'User management requires admin access. Login as admin to view users.',
+            ''
+        );
+        return;
+    }
+
+    container.innerHTML = `
+        <table class="data-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${users.map(user => `
+                    <tr>
+                        <td><strong>${escapeHtml(user.username)}</strong></td>
+                        <td>${escapeHtml(user.email || '-')}</td>
+                        <td><span class="badge badge-${getRoleBadgeClass(user.role)}">${escapeHtml(user.role)}</span></td>
+                        <td>${user.is_active ? '<span style="color: var(--success-color);">Active</span>' : '<span style="color: var(--text-muted);">Inactive</span>'}</td>
+                        <td class="small">${formatDate(user.created_at)}</td>
+                        <td class="small">${formatDate(user.updated_at)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    // Render API keys
+    const apikeysContainer = document.getElementById('apikeys-list');
+    if (!apikeysContainer) return;
+
+    if (apiKeys.length === 0) {
+        apikeysContainer.innerHTML = `<p class="small" style="color: var(--text-muted); margin-top: 1rem;">No API keys. Generate one to access the API programmatically.</p>`;
+        return;
+    }
+
+    apikeysContainer.innerHTML = `
+        <table class="data-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Key Prefix</th>
+                    <th>Permissions</th>
+                    <th>Status</th>
+                    <th>Expires</th>
+                    <th>Last Used</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${apiKeys.map(key => {
+                    const isExpired = key.expires_at && new Date(key.expires_at) < new Date();
+                    return `
+                        <tr>
+                            <td><strong>${escapeHtml(key.name)}</strong></td>
+                            <td><code>${escapeHtml(key.key_prefix)}...</code></td>
+                            <td class="small">${(key.permissions || []).join(', ')}</td>
+                            <td>${key.is_active && !isExpired ? '<span style="color: var(--success-color);">Active</span>' : '<span style="color: var(--error-color);">Inactive</span>'}</td>
+                            <td class="small">${key.expires_at ? formatDate(key.expires_at) : 'Never'}</td>
+                            <td class="small">${key.last_used ? formatDate(key.last_used) : 'Never'}</td>
+                            <td><button type="button" class="secondary small" onclick="revokeAPIKey('${escapeHtml(key.id)}')">Revoke</button></td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function getRoleBadgeClass(role) {
+    const map = {
+        admin: 'error',
+        user: 'info',
+        viewer: 'warning',
+        service: 'neutral'
+    };
+    return map[role] || 'neutral';
+}
+
+async function handleCreateUser() {
+    const username = document.getElementById('user-username')?.value;
+    const email = document.getElementById('user-email')?.value;
+    const password = document.getElementById('user-password')?.value;
+    const role = document.getElementById('user-role')?.value;
+
+    if (!username || !password || !role) {
+        showToast('Username, password, and role are required', 'error');
+        return;
+    }
+
+    try {
+        await apiCall('/auth/users', {
+            method: 'POST',
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+                role
+            })
+        });
+
+        showToast(`User ${username} created successfully`, 'success');
+        document.getElementById('create-user-form').style.display = 'none';
+        document.getElementById('user-form').reset();
+        await loadUsers();
+        render();
+    } catch (e) {
+        showToast(`Failed to create user: ${e.message}`, 'error');
+    }
+}
+
+async function handleCreateAPIKey() {
+    const name = document.getElementById('apikey-name')?.value;
+    const permissionsEl = document.getElementById('apikey-permissions');
+    const expiresIn = parseInt(document.getElementById('apikey-expires')?.value || '0');
+
+    if (!name) {
+        showToast('API key name is required', 'error');
+        return;
+    }
+
+    const permissions = Array.from(permissionsEl?.selectedOptions || []).map(opt => opt.value);
+
+    try {
+        const response = await apiCall('/auth/api-keys', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                permissions,
+                expires_in: expiresIn
+            })
+        });
+
+        // Hide form, show key display
+        document.getElementById('create-apikey-form').style.display = 'none';
+        document.getElementById('apikey-form').reset();
+        
+        const display = document.getElementById('apikey-display');
+        const valueEl = document.getElementById('apikey-value');
+        if (display && valueEl && response.key) {
+            valueEl.textContent = response.key;
+            display.style.display = 'block';
+        }
+
+        showToast('API key created successfully', 'success');
+        await loadAPIKeys();
+        render();
+    } catch (e) {
+        showToast(`Failed to create API key: ${e.message}`, 'error');
+    }
+}
+
+async function revokeAPIKey(keyId) {
+    if (!confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        await apiCall(`/auth/api-keys/${keyId}`, {
+            method: 'DELETE'
+        });
+
+        showToast('API key revoked', 'success');
+        await loadAPIKeys();
+        render();
+    } catch (e) {
+        showToast(`Failed to revoke API key: ${e.message}`, 'error');
+    }
 }

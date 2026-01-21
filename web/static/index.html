@@ -25,6 +25,7 @@
                 <li><a href="#projects" aria-label="Jump to Projects section">Projects</a></li>
                 <li><a href="#repl" aria-label="Jump to CEO REPL section">CEO REPL</a></li>
                 <li><a href="#streaming-test" aria-label="Jump to Streaming Test section">Streaming Test</a></li>
+                <li><a href="#users" aria-label="Jump to Users section">Users</a></li>
             </ul>
         </nav>
     </header>
@@ -40,6 +41,7 @@
             <button class="view-tab" data-target="decisions" role="tab" aria-selected="false">Decisions</button>
             <button class="view-tab" data-target="repl" role="tab" aria-selected="false">CEO REPL</button>
             <button class="view-tab" data-target="streaming-test" role="tab" aria-selected="false">Streaming Test</button>
+            <button class="view-tab" data-target="users" role="tab" aria-selected="false">Users</button>
         </div>
 
         <!-- Project Viewer Section -->
@@ -250,6 +252,113 @@
                 </div>
                 <div id="stream-test-stats" class="small" style="color: var(--text-muted); margin-top: 0.5rem;"></div>
                 <div id="stream-test-response" class="repl-response" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="view-panel" role="tabpanel" aria-label="Users" hidden>
+            <h2><span aria-hidden="true">👥</span> User Management</h2>
+            <p class="small" style="margin-bottom: 1rem;">Manage users, roles, and API keys. (Admin only)</p>
+            
+            <div class="toolbar">
+                <button type="button" id="create-user-btn" class="primary">Create User</button>
+                <button type="button" id="refresh-users-btn" class="secondary">Refresh</button>
+            </div>
+
+            <div id="users-list"></div>
+
+            <!-- Create User Form (hidden by default) -->
+            <div id="create-user-form" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-secondary);">
+                <h3>Create New User</h3>
+                <form id="user-form">
+                    <div class="field">
+                        <label for="user-username">Username *</label>
+                        <input type="text" id="user-username" required>
+                    </div>
+                    <div class="field">
+                        <label for="user-email">Email</label>
+                        <input type="email" id="user-email">
+                    </div>
+                    <div class="field">
+                        <label for="user-password">Password *</label>
+                        <input type="password" id="user-password" required>
+                    </div>
+                    <div class="field">
+                        <label for="user-role">Role *</label>
+                        <select id="user-role" required>
+                            <option value="admin">Admin - Full system access</option>
+                            <option value="user" selected>User - Read/write access</option>
+                            <option value="viewer">Viewer - Read-only access</option>
+                            <option value="service">Service - API key only</option>
+                        </select>
+                    </div>
+                    <div class="controls">
+                        <button type="submit" class="primary">Create User</button>
+                        <button type="button" id="cancel-user-btn" class="secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- API Keys Section -->
+            <div style="margin-top: 2rem;">
+                <h3><span aria-hidden="true">🔑</span> My API Keys</h3>
+                <p class="small">Manage your personal API keys for programmatic access.</p>
+                
+                <div class="toolbar">
+                    <button type="button" id="create-apikey-btn" class="primary">Generate API Key</button>
+                </div>
+                
+                <div id="apikeys-list"></div>
+
+                <!-- Create API Key Form -->
+                <div id="create-apikey-form" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-secondary);">
+                    <h4>Generate New API Key</h4>
+                    <form id="apikey-form">
+                        <div class="field">
+                            <label for="apikey-name">Key Name *</label>
+                            <input type="text" id="apikey-name" placeholder="e.g., CI/CD Pipeline" required>
+                        </div>
+                        <div class="field">
+                            <label for="apikey-permissions">Permissions</label>
+                            <select id="apikey-permissions" multiple size="6">
+                                <option value="*:*">*:* - All permissions</option>
+                                <option value="agents:read">agents:read</option>
+                                <option value="agents:write">agents:write</option>
+                                <option value="beads:read" selected>beads:read</option>
+                                <option value="beads:write" selected>beads:write</option>
+                                <option value="providers:read">providers:read</option>
+                                <option value="projects:read">projects:read</option>
+                            </select>
+                            <p class="small">Hold Ctrl/Cmd to select multiple</p>
+                        </div>
+                        <div class="field">
+                            <label for="apikey-expires">Expires In</label>
+                            <select id="apikey-expires">
+                                <option value="0">Never</option>
+                                <option value="86400">1 day</option>
+                                <option value="604800">7 days</option>
+                                <option value="2592000" selected>30 days</option>
+                                <option value="7776000">90 days</option>
+                                <option value="31536000">1 year</option>
+                            </select>
+                        </div>
+                        <div class="controls">
+                            <button type="submit" class="primary">Generate Key</button>
+                            <button type="button" id="cancel-apikey-btn" class="secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- API Key Display (shown after creation) -->
+                <div id="apikey-display" style="display: none; margin-top: 1rem; padding: 1rem; border: 2px solid var(--success-color); border-radius: 4px; background: var(--bg-secondary);">
+                    <h4 style="color: var(--success-color);">✓ API Key Created</h4>
+                    <p><strong>Save this key now - it will only be shown once!</strong></p>
+                    <div style="font-family: monospace; background: var(--bg-primary); padding: 1rem; margin: 0.5rem 0; border-radius: 4px; word-break: break-all;">
+                        <code id="apikey-value" style="user-select: all;"></code>
+                    </div>
+                    <button type="button" id="copy-apikey-btn" class="primary">Copy to Clipboard</button>
+                    <button type="button" id="close-apikey-display-btn" class="secondary">Close</button>
+                </div>
             </div>
         </section>
     </main>

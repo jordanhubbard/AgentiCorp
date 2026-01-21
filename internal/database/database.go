@@ -37,6 +37,12 @@ func New(dbPath string) (*Database, error) {
 		return nil, fmt.Errorf("failed to initialize schema: %w", err)
 	}
 
+	// Run migrations
+	if err := d.migrateProviderOwnership(); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("failed to migrate provider ownership: %w", err)
+	}
+
 	return d, nil
 }
 
@@ -71,6 +77,8 @@ func (d *Database) initSchema() error {
 		description TEXT,
 		requires_key BOOLEAN NOT NULL DEFAULT 0,
 		key_id TEXT,
+		owner_id TEXT,
+		is_shared BOOLEAN NOT NULL DEFAULT 1,
 		status TEXT NOT NULL DEFAULT 'active',
 		last_heartbeat_at DATETIME,
 		last_heartbeat_latency_ms INTEGER,
@@ -508,8 +516,8 @@ func (d *Database) UpsertProvider(provider *internalmodels.Provider) error {
 	provider.UpdatedAt = time.Now()
 
 	query := `
-		INSERT INTO providers (id, name, type, endpoint, model, configured_model, selected_model, selection_reason, model_score, selected_gpu, description, requires_key, key_id, status, last_heartbeat_at, last_heartbeat_latency_ms, last_heartbeat_error, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO providers (id, name, type, endpoint, model, configured_model, selected_model, selection_reason, model_score, selected_gpu, description, requires_key, key_id, owner_id, is_shared, status, last_heartbeat_at, last_heartbeat_latency_ms, last_heartbeat_error, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			name = excluded.name,
 			type = excluded.type,
@@ -523,6 +531,8 @@ func (d *Database) UpsertProvider(provider *internalmodels.Provider) error {
 			description = excluded.description,
 			requires_key = excluded.requires_key,
 			key_id = excluded.key_id,
+			owner_id = excluded.owner_id,
+			is_shared = excluded.is_shared,
 			status = excluded.status,
 			last_heartbeat_at = excluded.last_heartbeat_at,
 			last_heartbeat_latency_ms = excluded.last_heartbeat_latency_ms,
@@ -544,6 +554,8 @@ func (d *Database) UpsertProvider(provider *internalmodels.Provider) error {
 		provider.Description,
 		provider.RequiresKey,
 		provider.KeyID,
+		provider.OwnerID,
+		provider.IsShared,
 		provider.Status,
 		provider.LastHeartbeatAt,
 		provider.LastHeartbeatLatencyMs,
@@ -626,7 +638,7 @@ func (d *Database) GetProvider(id string) (*internalmodels.Provider, error) {
 // ListProviders retrieves all providers
 func (d *Database) ListProviders() ([]*internalmodels.Provider, error) {
 	query := `
-		SELECT id, name, type, endpoint, model, configured_model, selected_model, selection_reason, model_score, selected_gpu, description, requires_key, key_id, status, last_heartbeat_at, last_heartbeat_latency_ms, last_heartbeat_error, created_at, updated_at
+		SELECT id, name, type, endpoint, model, configured_model, selected_model, selection_reason, model_score, selected_gpu, description, requires_key, key_id, owner_id, is_shared, status, last_heartbeat_at, last_heartbeat_latency_ms, last_heartbeat_error, created_at, updated_at
 		FROM providers
 		ORDER BY created_at DESC
 	`
@@ -640,6 +652,8 @@ func (d *Database) ListProviders() ([]*internalmodels.Provider, error) {
 	var providers []*internalmodels.Provider
 	for rows.Next() {
 		provider := &internalmodels.Provider{}
+		var ownerID sql.NullString
+		var isShared sql.NullBool
 		err := rows.Scan(
 			&provider.ID,
 			&provider.Name,
@@ -654,6 +668,69 @@ func (d *Database) ListProviders() ([]*internalmodels.Provider, error) {
 			&provider.Description,
 			&provider.RequiresKey,
 			&provider.KeyID,
+			&ownerID,
+			&isShared,
+			&provider.Status,
+			&provider.LastHeartbeatAt,
+			&provider.LastHeartbeatLatencyMs,
+			&provider.LastHeartbeatError,
+			&provider.CreatedAt,
+			&provider.UpdatedAt,
+		)
+		if ownerID.Valid {
+			provider.OwnerID = ownerID.String
+		}
+		if isShared.Valid {
+			provider.IsShared = isShared.Bool
+		} else {
+			provider.IsShared = true // Default to shared for backwards compat
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan provider: %w", err)
+		}
+		providers = append(providers, provider)
+	}
+
+	return providers, nil
+}
+
+// ListProvidersForUser retrieves providers accessible to a specific user
+// Returns providers owned by the user OR shared providers
+func (d *Database) ListProvidersForUser(userID string) ([]*internalmodels.Provider, error) {
+	query := `
+		SELECT id, name, type, endpoint, model, configured_model, selected_model, selection_reason, model_score, selected_gpu, description, requires_key, key_id, owner_id, is_shared, status, last_heartbeat_at, last_heartbeat_latency_ms, last_heartbeat_error, created_at, updated_at
+		FROM providers
+		WHERE owner_id = ? OR is_shared = 1 OR owner_id IS NULL
+		ORDER BY created_at DESC
+	`
+
+	rows, err := d.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list providers for user: %w", err)
+	}
+	defer rows.Close()
+
+	var providers []*internalmodels.Provider
+	for rows.Next() {
+		provider := &internalmodels.Provider{}
+		var ownerID sql.NullString
+		var isShared sql.NullBool
+		err := rows.Scan(
+			&provider.ID,
+			&provider.Name,
+			&provider.Type,
+			&provider.Endpoint,
+			&provider.Model,
+			&provider.ConfiguredModel,
+			&provider.SelectedModel,
+			&provider.SelectionReason,
+			&provider.ModelScore,
+			&provider.SelectedGPU,
+			&provider.Description,
+			&provider.RequiresKey,
+			&provider.KeyID,
+			&ownerID,
+			&isShared,
 			&provider.Status,
 			&provider.LastHeartbeatAt,
 			&provider.LastHeartbeatLatencyMs,
@@ -664,6 +741,16 @@ func (d *Database) ListProviders() ([]*internalmodels.Provider, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan provider: %w", err)
 		}
+
+		if ownerID.Valid {
+			provider.OwnerID = ownerID.String
+		}
+		if isShared.Valid {
+			provider.IsShared = isShared.Bool
+		} else {
+			provider.IsShared = true
+		}
+
 		providers = append(providers, provider)
 	}
 

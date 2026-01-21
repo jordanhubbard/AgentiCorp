@@ -25,6 +25,8 @@ type Provider struct {
 	Description            string          `json:"description"`
 	RequiresKey            bool            `json:"requires_key"` // Whether this provider needs API credentials
 	KeyID                  string          `json:"key_id"`       // Reference to encrypted key in key manager
+	OwnerID                string          `json:"owner_id"`     // User ID who owns this provider (for multi-tenant)
+	IsShared               bool            `json:"is_shared"`    // If true, provider available to all users
 	Status                 string          `json:"status"`       // active, inactive, etc.
 	LastHeartbeatAt        time.Time       `json:"last_heartbeat_at"`
 	LastHeartbeatLatencyMs int64           `json:"last_heartbeat_latency_ms"`
