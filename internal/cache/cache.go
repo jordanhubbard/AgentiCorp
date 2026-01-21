@@ -43,8 +43,22 @@ func DefaultConfig() *Config {
 	}
 }
 
+// CacheBackend is the interface for cache storage backends
+type CacheBackend interface {
+	Get(ctx context.Context, key string) (*Entry, bool)
+	Set(ctx context.Context, key string, response interface{}, ttl time.Duration, metadata map[string]interface{}) error
+	Delete(ctx context.Context, key string)
+	Clear(ctx context.Context)
+	GetStats(ctx context.Context) *Stats
+	InvalidateByProvider(ctx context.Context, providerID string) int
+	InvalidateByModel(ctx context.Context, modelName string) int
+	InvalidateByAge(ctx context.Context, maxAge time.Duration) int
+	InvalidateByPattern(ctx context.Context, pattern string) int
+}
+
 // Cache provides intelligent response caching
 type Cache struct {
+	backend CacheBackend
 	config  *Config
 	entries map[string]*Entry
 	mu      sync.RWMutex
@@ -63,7 +77,7 @@ type Stats struct {
 	AvgLatencySavedMs int64 `json:"avg_latency_saved_ms"`
 }
 
-// New creates a new cache instance
+// New creates a new in-memory cache instance
 func New(config *Config) *Cache {
 	if config == nil {
 		config = DefaultConfig()
@@ -81,6 +95,15 @@ func New(config *Config) *Cache {
 	}
 
 	return c
+}
+
+// NewFromRedis creates a cache instance backed by Redis
+func NewFromRedis(redisCache *RedisCache) *Cache {
+	return &Cache{
+		backend: redisCache,
+		config:  redisCache.config,
+		stats:   redisCache.stats,
+	}
 }
 
 // GenerateKey creates a cache key from request parameters
@@ -109,6 +132,12 @@ func (c *Cache) Get(ctx context.Context, key string) (*Entry, bool) {
 		return nil, false
 	}
 
+	// Use backend if available
+	if c.backend != nil {
+		return c.backend.Get(ctx, key)
+	}
+
+	// In-memory implementation
 	c.mu.RLock()
 	entry, exists := c.entries[key]
 	c.mu.RUnlock()

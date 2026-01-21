@@ -60,7 +60,21 @@ func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.M
 		if cacheConfig.CleanupPeriod == 0 {
 			cacheConfig.CleanupPeriod = 5 * time.Minute
 		}
-		responseCache = cache.New(cacheConfig)
+
+		// Use Redis backend if configured, fallback to memory
+		if cfg.Cache.Backend == "redis" && cfg.Cache.RedisURL != "" {
+			redisCache, err := cache.NewRedisCache(cfg.Cache.RedisURL, cacheConfig)
+			if err != nil {
+				// Redis failed - fallback to in-memory cache with warning
+				fmt.Printf("[WARN] Redis cache initialization failed: %v, falling back to in-memory cache\n", err)
+				responseCache = cache.New(cacheConfig)
+			} else {
+				// Wrap Redis cache to match Cache interface
+				responseCache = cache.NewFromRedis(redisCache)
+			}
+		} else {
+			responseCache = cache.New(cacheConfig)
+		}
 	}
 
 	return &Server{

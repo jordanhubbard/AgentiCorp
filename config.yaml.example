@@ -48,10 +48,12 @@ temporal:
 
 cache:
   enabled: true               # Enable response caching
+  backend: memory             # Cache backend: "memory" (default) or "redis"
   default_ttl: 1h             # Default time-to-live for cache entries
-  max_size: 10000             # Maximum number of cached entries
-  max_memory_mb: 500          # Maximum memory usage (approximate)
-  cleanup_period: 5m          # How often to clean expired entries
+  max_size: 10000             # Maximum number of cached entries (memory backend only)
+  max_memory_mb: 500          # Maximum memory usage in MB (memory backend only)
+  cleanup_period: 5m          # How often to clean expired entries (memory backend only)
+  redis_url: ""               # Redis URL (e.g., redis://localhost:6379/0) - required for redis backend
 
 projects:
   - id: agenticorp-self
