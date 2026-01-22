@@ -205,11 +205,14 @@ func (s *Server) checkDatabase(ctx context.Context) DepHealth {
 	}
 
 	// Check if we can get active instances (for distributed deployments)
-	instanceCount := 1
 	if s.agenticorp.GetDatabase().SupportsHA() {
-		instances, err := s.agenticorp.GetDatabase().ListActiveInstances(ctx)
-		if err == nil {
-			instanceCount = len(instances)
+		_, err := s.agenticorp.GetDatabase().ListActiveInstances(ctx)
+		if err != nil {
+			return DepHealth{
+				Status:  "degraded",
+				Message: "connected (instance query failed)",
+				Latency: time.Since(start).Milliseconds(),
+			}
 		}
 	}
 

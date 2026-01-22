@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jordanhubbard/agenticorp/pkg/config"
 	"github.com/jordanhubbard/agenticorp/pkg/server"
@@ -14,6 +15,16 @@ func main() {
 
 	// Load or create default configuration
 	cfg := config.DefaultConfig()
+
+	// Override with environment variables if set
+	if temporalHost := os.Getenv("TEMPORAL_HOST"); temporalHost != "" {
+		cfg.Temporal.Host = temporalHost
+		log.Printf("Using Temporal host from environment: %s", temporalHost)
+	}
+	if temporalNamespace := os.Getenv("TEMPORAL_NAMESPACE"); temporalNamespace != "" {
+		cfg.Temporal.Namespace = temporalNamespace
+		log.Printf("Using Temporal namespace from environment: %s", temporalNamespace)
+	}
 
 	fmt.Println("\nAgentiCorp Worker System initialized")
 	fmt.Println("See docs/WORKER_SYSTEM.md for usage information")
