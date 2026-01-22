@@ -363,8 +363,11 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 // authMiddleware handles authentication
 func (s *Server) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Skip auth for health check, static files, root, and OpenAPI spec
+		// Skip auth for health check endpoints (all variants for monitoring/probes)
 		if r.URL.Path == "/api/v1/health" ||
+			r.URL.Path == "/health" ||
+			r.URL.Path == "/health/live" ||
+			r.URL.Path == "/health/ready" ||
 			r.URL.Path == "/api/v1/auth/login" ||
 			r.URL.Path == "/api/v1/auth/refresh" ||
 			r.URL.Path == "/" ||
