@@ -209,12 +209,31 @@ func (m *WorkerManager) RestoreAgentWorker(ctx context.Context, agent *models.Ag
 		agent.Role = deriveRoleFromPersonaName(agent.PersonaName)
 	}
 
-	if len(m.agents) >= m.maxAgents {
-		return nil, fmt.Errorf("maximum number of agents (%d) reached", m.maxAgents)
+	// If agent already exists, update it and ensure worker exists
+	if existing, exists := m.agents[agent.ID]; exists {
+		// Update existing agent's provider and status
+		existing.ProviderID = agent.ProviderID
+		existing.Status = agent.Status
+		existing.LastActive = time.Now()
+		if existing.Persona == nil && agent.Persona != nil {
+			existing.Persona = agent.Persona
+		}
+		
+		// Ensure worker exists for this agent with the correct provider
+		if agent.ProviderID != "" {
+			if _, err := m.workerPool.SpawnWorker(existing, existing.ProviderID); err != nil {
+				log.Printf("Warning: Failed to spawn/update worker for agent %s: %v", existing.ID, err)
+			}
+		}
+		
+		m.persistAgent(existing)
+		log.Printf("Updated existing agent %s with provider %s, status %s", existing.Name, existing.ProviderID, existing.Status)
+		return existing, nil
 	}
 
-	if _, exists := m.agents[agent.ID]; exists {
-		return agent, nil
+	// Agent doesn't exist - create new one
+	if len(m.agents) >= m.maxAgents {
+		return nil, fmt.Errorf("maximum number of agents (%d) reached", m.maxAgents)
 	}
 
 	// Ensure required fields.

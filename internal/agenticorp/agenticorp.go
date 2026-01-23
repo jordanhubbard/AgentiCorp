@@ -2031,9 +2031,16 @@ func (a *AgentiCorp) ResumeAgentsWaitingForProvider(ctx context.Context, provide
 		// Resume the paused agent
 		agent.Status = "idle"
 		agent.LastActive = time.Now()
+		
+		// Write-through: Update database first
 		if err := a.database.UpsertAgent(agent); err != nil {
 			fmt.Printf("Warning: failed to resume agent %s: %v\n", agent.ID, err)
 			continue
+		}
+		
+		// Write-through: Update in-memory cache
+		if err := a.agentManager.UpdateAgentStatus(agent.ID, "idle"); err != nil {
+			fmt.Printf("Warning: failed to update agent %s status in memory: %v\n", agent.ID, err)
 		}
 	}
 
@@ -2106,16 +2113,24 @@ func (a *AgentiCorp) attachProviderToPausedAgents(ctx context.Context, providerI
 			}
 			ag.Persona = persona
 		}
+		
+		// Update agent with provider
 		ag.ProviderID = providerID
 		ag.Status = "idle"
+		ag.LastActive = time.Now()
+		
+		// Write-through cache: Update database first (source of truth)
 		if err := a.database.UpsertAgent(ag); err != nil {
 			log.Printf("Failed to upsert agent %s with provider %s: %v", ag.ID, providerID, err)
 			continue
 		}
+		
+		// Write-through cache: Update in-memory cache (RestoreAgentWorker handles both new and existing agents)
 		if _, err := a.agentManager.RestoreAgentWorker(ctx, ag); err != nil {
-			log.Printf("Failed to restore agent worker %s: %v", ag.ID, err)
+			log.Printf("Failed to restore/update agent worker %s: %v", ag.ID, err)
 			continue
 		}
+		
 		if ag.ProjectID != "" {
 			_ = a.projectManager.AddAgentToProject(ag.ProjectID, ag.ID)
 		}

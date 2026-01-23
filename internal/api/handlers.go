@@ -179,9 +179,13 @@ func (s *Server) handleAgent(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// Persist to database
+		// Write-through cache: Persist to database
+		// Note: agent is already updated in-memory since GetAgent returns a pointer to the cached object
 		if s.agenticorp.GetDatabase() != nil {
-			_ = s.agenticorp.GetDatabase().UpsertAgent(agent)
+			if err := s.agenticorp.GetDatabase().UpsertAgent(agent); err != nil {
+				s.respondError(w, http.StatusInternalServerError, "Failed to update agent in database")
+				return
+			}
 		}
 
 		s.respondJSON(w, http.StatusOK, agent)
