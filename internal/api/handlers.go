@@ -106,7 +106,13 @@ func (s *Server) handleAgents(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		agent, err := s.agenticorp.SpawnAgent(context.Background(), req.Name, req.PersonaName, req.ProjectID, req.ProviderID)
+		// Normalize persona name: prepend "default/" if not a namespaced path
+		personaName := req.PersonaName
+		if !strings.Contains(personaName, "/") {
+			personaName = "default/" + personaName
+		}
+
+		agent, err := s.agenticorp.SpawnAgent(context.Background(), req.Name, personaName, req.ProjectID, req.ProviderID)
 		if err != nil {
 			s.respondError(w, http.StatusInternalServerError, err.Error())
 			return
