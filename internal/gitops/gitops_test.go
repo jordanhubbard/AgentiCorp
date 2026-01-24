@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
@@ -107,31 +106,38 @@ func TestCommitChanges(t *testing.T) {
 		t.Fatalf("CloneProject failed: %v", err)
 	}
 
-	// Create a test file
+	// Get hash before making changes
 	workDir := mgr.GetProjectWorkDir(project.ID)
+	oldHash, err := mgr.GetCurrentCommit(workDir)
+	if err != nil {
+		t.Fatalf("GetCurrentCommit (before) failed: %v", err)
+	}
+
+	// Create a test file
 	testFile := filepath.Join(workDir, "test-gitops.txt")
 	if err := os.WriteFile(testFile, []byte("test content"), 0644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
 	// Commit the change
-	err := mgr.CommitChanges(ctx, project, "Test commit from gitops", "Test Agent", "agent@test.local")
+	err = mgr.CommitChanges(ctx, project, "Test commit from gitops", "Test Agent", "agent@test.local")
 	if err != nil {
 		t.Fatalf("CommitChanges failed: %v", err)
 	}
 
-	// Verify commit was created
-	oldHash := project.LastCommitHash
-	time.Sleep(100 * time.Millisecond) // Give git time to finish
-
 	// Check that commit hash changed
 	newHash, err := mgr.GetCurrentCommit(workDir)
 	if err != nil {
-		t.Fatalf("GetCurrentCommit failed: %v", err)
+		t.Fatalf("GetCurrentCommit (after) failed: %v", err)
 	}
 
 	if newHash == oldHash {
-		t.Error("Commit hash did not change after commit")
+		t.Errorf("Commit hash did not change after commit (old: %s, new: %s)", oldHash, newHash)
+	}
+
+	// Verify project.LastCommitHash was updated
+	if project.LastCommitHash != newHash {
+		t.Errorf("Project.LastCommitHash not updated (expected: %s, got: %s)", newHash, project.LastCommitHash)
 	}
 }
 

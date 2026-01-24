@@ -21,6 +21,9 @@ func newTestAgentiCorp(t *testing.T) (*AgentiCorp, string) {
 	cfg := &config.Config{
 		Agents: config.AgentsConfig{MaxConcurrent: 1, DefaultPersonaPath: "./personas", HeartbeatInterval: 10 * time.Second, FileLockTimeout: 10 * time.Minute},
 		Beads:  config.BeadsConfig{BDPath: ""},
+		Projects: []config.ProjectConfig{
+			{BeadsPath: tmp}, // Use temp directory for gitops
+		},
 		Temporal: config.TemporalConfig{
 			Host: "",
 		},

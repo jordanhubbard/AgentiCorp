@@ -136,15 +136,14 @@ func TestKeyManagerWrongPassword(t *testing.T) {
 
 	km1.Lock()
 
-	// Try to unlock with wrong password
+	// Try to unlock with wrong password - should fail at Unlock()
 	km2 := NewKeyManager(storePath)
-	if err := km2.Unlock(wrongPassword); err != nil {
-		t.Fatalf("Failed to unlock (unlock always succeeds): %v", err)
+	if err := km2.Unlock(wrongPassword); err == nil {
+		t.Fatal("Expected Unlock to fail with wrong password")
 	}
 
-	// Try to retrieve key - should fail due to wrong password
-	_, err := km2.GetKey(keyID)
-	if err == nil {
-		t.Error("Expected error when decrypting with wrong password")
+	// Verify key manager is not unlocked
+	if km2.IsUnlocked() {
+		t.Error("Key manager should not be unlocked with wrong password")
 	}
 }

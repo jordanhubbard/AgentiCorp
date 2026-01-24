@@ -99,8 +99,8 @@ func TestStreamingContextCancellation(t *testing.T) {
 			flusher.Flush()
 		}
 
-		// Block forever
-		select {}
+		// Block until request context is done (allows proper cleanup)
+		<-r.Context().Done()
 	}))
 	defer server.Close()
 

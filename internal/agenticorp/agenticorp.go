@@ -108,12 +108,10 @@ func New(cfg *config.Config) (*AgentiCorp, error) {
 	}
 
 	// Initialize gitops manager for project repository management
-	gitWorkDir := cfg.Projects[0].BeadsPath
-	if gitWorkDir == "" {
-		gitWorkDir = "/app/src"
-	} else {
+	gitWorkDir := "/app/src"
+	if len(cfg.Projects) > 0 && cfg.Projects[0].BeadsPath != "" {
 		// Use parent directory of beads path as work directory base
-		gitWorkDir = filepath.Join(filepath.Dir(gitWorkDir), "src")
+		gitWorkDir = filepath.Join(filepath.Dir(cfg.Projects[0].BeadsPath), "src")
 	}
 	gitopsMgr, err := gitops.NewManager(gitWorkDir)
 	if err != nil {
