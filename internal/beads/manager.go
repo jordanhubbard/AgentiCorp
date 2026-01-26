@@ -16,28 +16,32 @@ import (
 
 // Manager integrates with the bd (beads) CLI tool
 type Manager struct {
-	bdPath    string
-	beadsPath string
-	mu        sync.RWMutex
-	beads     map[string]*models.Bead
-	beadFiles map[string]string
-	workGraph *models.WorkGraph
-	nextID    int // For generating IDs when bd CLI is not available
+	bdPath          string
+	beadsPath       string
+	mu              sync.RWMutex
+	beads           map[string]*models.Bead
+	beadFiles       map[string]string
+	workGraph       *models.WorkGraph
+	nextID          int               // For generating IDs when bd CLI is not available
+	projectPrefixes map[string]string // Project ID -> bead prefix (e.g., "agenticorp-self" -> "ac")
+	projectNextIDs  map[string]int    // Per-project next ID counter
 }
 
 // NewManager creates a new beads manager
 func NewManager(bdPath string) *Manager {
 	return &Manager{
-		bdPath:    bdPath,
-		beadsPath: ".beads",
-		beads:     make(map[string]*models.Bead),
-		beadFiles: make(map[string]string),
-		workGraph: &models.WorkGraph{
+		bdPath:          bdPath,
+		beadsPath:       ".beads",
+		beads:           make(map[string]*models.Bead),
+		beadFiles:       make(map[string]string),
+		workGraph:       &models.WorkGraph{
 			Beads:     make(map[string]*models.Bead),
 			Edges:     []models.Edge{},
 			UpdatedAt: time.Now(),
 		},
-		nextID: 1,
+		nextID:          1,
+		projectPrefixes: make(map[string]string),
+		projectNextIDs:  make(map[string]int),
 	}
 }
 
@@ -49,11 +53,57 @@ func (m *Manager) Reset() {
 	m.beadFiles = make(map[string]string)
 	m.workGraph = &models.WorkGraph{Beads: make(map[string]*models.Bead), Edges: []models.Edge{}, UpdatedAt: time.Now()}
 	m.nextID = 1
+	m.projectPrefixes = make(map[string]string)
+	m.projectNextIDs = make(map[string]int)
 }
 
 // SetBeadsPath sets the path to the beads directory
 func (m *Manager) SetBeadsPath(path string) {
 	m.beadsPath = path
+}
+
+// SetProjectPrefix sets the bead ID prefix for a project
+func (m *Manager) SetProjectPrefix(projectID, prefix string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.projectPrefixes[projectID] = prefix
+	if _, exists := m.projectNextIDs[projectID]; !exists {
+		m.projectNextIDs[projectID] = 1
+	}
+}
+
+// GetProjectPrefix returns the prefix for a project, defaulting to "bd" if not set
+func (m *Manager) GetProjectPrefix(projectID string) string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if prefix, ok := m.projectPrefixes[projectID]; ok && prefix != "" {
+		return prefix
+	}
+	return "bd" // Default prefix
+}
+
+// LoadProjectPrefixFromConfig reads the issue-prefix from a project's .beads/config.yaml
+func (m *Manager) LoadProjectPrefixFromConfig(projectID, beadsPath string) error {
+	configPath := filepath.Join(beadsPath, "config.yaml")
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil // Config doesn't exist, use default
+		}
+		return fmt.Errorf("failed to read beads config: %w", err)
+	}
+
+	var config struct {
+		IssuePrefix string `yaml:"issue-prefix"`
+	}
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return fmt.Errorf("failed to parse beads config: %w", err)
+	}
+
+	if config.IssuePrefix != "" {
+		m.SetProjectPrefix(projectID, config.IssuePrefix)
+	}
+	return nil
 }
 
 // CreateBead creates a new bead using bd CLI or filesystem fallback
@@ -63,6 +113,12 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 
 	var beadID string
 	var bead *models.Bead
+
+	// Get project-specific prefix
+	prefix := "bd" // default
+	if p, ok := m.projectPrefixes[projectID]; ok && p != "" {
+		prefix = p
+	}
 
 	// Try bd CLI first if available
 	if m.bdPath != "" {
@@ -78,24 +134,32 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 		if err == nil {
 			// Parse output to get bead ID
 			outputStr := string(output)
-			beadID = m.extractBeadID(outputStr)
+			beadID = m.extractBeadIDWithPrefix(outputStr, prefix)
 		}
 	}
 
 	// Fallback to filesystem-based bead creation
 	if beadID == "" {
-		// Generate a new ID
-		beadID = fmt.Sprintf("bd-%03d", m.nextID)
-		m.nextID++
+		// Get or initialize project-specific counter
+		nextID := m.projectNextIDs[projectID]
+		if nextID == 0 {
+			nextID = 1
+		}
+
+		// Generate a new ID with project prefix
+		beadID = fmt.Sprintf("%s-%03d", prefix, nextID)
+		nextID++
 
 		// Check for existing beads to avoid ID collision
 		for {
 			if _, exists := m.beads[beadID]; !exists {
 				break
 			}
-			beadID = fmt.Sprintf("bd-%03d", m.nextID)
-			m.nextID++
+			beadID = fmt.Sprintf("%s-%03d", prefix, nextID)
+			nextID++
 		}
+
+		m.projectNextIDs[projectID] = nextID
 	}
 
 	// Create internal bead representation
@@ -403,10 +467,15 @@ func (m *Manager) GetWorkGraph(projectID string) (*models.WorkGraph, error) {
 // Helper functions
 
 func (m *Manager) extractBeadID(output string) string {
-	// Look for pattern like "bd-xxxxx" or "Created bd-xxxxx"
+	return m.extractBeadIDWithPrefix(output, "bd")
+}
+
+func (m *Manager) extractBeadIDWithPrefix(output, prefix string) string {
+	// Look for pattern like "<prefix>-xxxxx" or "Created <prefix>-xxxxx"
 	parts := strings.Fields(output)
+	prefixDash := prefix + "-"
 	for _, part := range parts {
-		if strings.HasPrefix(part, "bd-") {
+		if strings.HasPrefix(part, prefixDash) {
 			return part
 		}
 	}

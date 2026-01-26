@@ -112,8 +112,9 @@ type Project struct {
 	Name        string            `json:"name"`
 	GitRepo     string            `json:"git_repo"`
 	Branch      string            `json:"branch"`
-	BeadsPath   string            `json:"beads_path"`          // Path to .beads directory
-	ParentID    string            `json:"parent_id,omitempty"` // For sub-projects
+	BeadsPath   string            `json:"beads_path"`           // Path to .beads directory
+	BeadPrefix  string            `json:"bead_prefix"`          // Prefix for bead IDs (e.g., "ac" for ac-001)
+	ParentID    string            `json:"parent_id,omitempty"`  // For sub-projects
 	Context     map[string]string `json:"context"`             // Additional context for agents
 	Status      ProjectStatus     `json:"status"`              // Current project status
 	IsPerpetual bool              `json:"is_perpetual"`        // If true, project never closes

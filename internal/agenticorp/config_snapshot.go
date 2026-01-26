@@ -218,6 +218,12 @@ func (a *AgentiCorp) ReloadFromDatabase(ctx context.Context) error {
 			continue
 		}
 		a.beadsManager.SetBeadsPath(p.BeadsPath)
+		// Load project prefix from config
+		_ = a.beadsManager.LoadProjectPrefixFromConfig(p.ID, p.BeadsPath)
+		// Use project's BeadPrefix if set in the model
+		if p.BeadPrefix != "" {
+			a.beadsManager.SetProjectPrefix(p.ID, p.BeadPrefix)
+		}
 		_ = a.beadsManager.LoadBeadsFromFilesystem(p.BeadsPath)
 	}
 
