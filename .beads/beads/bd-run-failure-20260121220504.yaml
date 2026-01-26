@@ -674,7 +674,7 @@ description: |
     agenticorp           | 2026/01/21 22:05:00 main.go:50: failed to create agenticorp: failed to initialize temporal: failed to create temporal client: failed to create temporal client: failed reaching server: last connection error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:7233: connect: connection refused"
     [Kagenticorp exited with code 1 (restarting)
 
-status: open
+status: closed
 priority: 0
 project_id: agenticorp
 assigned_to: null
@@ -688,7 +688,7 @@ tags:
   - run
 created_at: 2026-01-21T22:05:04Z
 updated_at: 2026-01-21T22:05:04Z
-closed_at: null
+closed_at: 2026-01-26T19:00:00Z
 context:
   source: makefile
   target: run

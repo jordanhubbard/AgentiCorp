@@ -106,7 +106,7 @@ description: |
     target agenticorp: failed to solve: process "/bin/sh -c CGO_ENABLED=1 GOOS=linux go build     -ldflags=\"-w -s\"     -o agenticorp     ./cmd/agenticorp" did not complete successfully: exit code: 1
     
 
-status: open
+status: closed
 priority: 0
 project_id: agenticorp
 assigned_to: null
@@ -120,7 +120,7 @@ tags:
   - build
 created_at: 2026-01-22T23:50:08Z
 updated_at: 2026-01-22T23:50:08Z
-closed_at: null
+closed_at: 2026-01-26T19:00:00Z
 context:
   source: makefile
   target: build
