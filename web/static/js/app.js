@@ -9,7 +9,7 @@ let loginInFlight = null;
 
 // Feature flag: Set to false to disable authentication in the UI
 // Should match server-side config.yaml security.enable_auth setting
-const AUTH_ENABLED = false;
+const AUTH_ENABLED = true;
 
 // State
 let state = {
@@ -3704,7 +3704,9 @@ async function loadMotivations() {
         ]);
 
         if (motivationsRes.ok) {
-            motivationsState.motivations = await motivationsRes.json();
+            const data = await motivationsRes.json();
+            // API returns {count, motivations}, extract the array
+            motivationsState.motivations = data.motivations || data || [];
         }
         if (rolesRes.ok) {
             motivationsState.roles = await rolesRes.json();
