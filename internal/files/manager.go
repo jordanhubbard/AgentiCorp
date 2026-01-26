@@ -50,6 +50,11 @@ type PatchResult struct {
 	Output  string `json:"output,omitempty"`
 }
 
+type WriteResult struct {
+	Path         string `json:"path"`
+	BytesWritten int64  `json:"bytes_written"`
+}
+
 func NewManager(resolver WorkDirResolver) *Manager {
 	return &Manager{WorkDirs: resolver}
 }
@@ -257,6 +262,58 @@ func (m *Manager) ApplyPatch(ctx context.Context, projectID, patch string) (*Pat
 		return &PatchResult{Applied: false, Output: strings.TrimSpace(out.String())}, err
 	}
 	return &PatchResult{Applied: true, Output: strings.TrimSpace(out.String())}, nil
+}
+
+func (m *Manager) WriteFile(ctx context.Context, projectID, relPath, content string) (*WriteResult, error) {
+	if strings.TrimSpace(relPath) == "" {
+		return nil, fmt.Errorf("path is required")
+	}
+	workDir, err := m.resolveWorkDir(projectID)
+	if err != nil {
+		return nil, err
+	}
+	target, err := safeJoin(workDir, relPath)
+	if err != nil {
+		return nil, err
+	}
+	if isBlockedPath(target) {
+		return nil, fmt.Errorf("path is not allowed")
+	}
+
+	// Ensure parent directory exists
+	dir := filepath.Dir(target)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create directory: %w", err)
+	}
+
+	// Write file atomically via temp file
+	tmpFile, err := os.CreateTemp(dir, ".write-*")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temp file: %w", err)
+	}
+	tmpPath := tmpFile.Name()
+
+	n, writeErr := tmpFile.WriteString(content)
+	closeErr := tmpFile.Close()
+	if writeErr != nil {
+		os.Remove(tmpPath)
+		return nil, fmt.Errorf("failed to write file: %w", writeErr)
+	}
+	if closeErr != nil {
+		os.Remove(tmpPath)
+		return nil, fmt.Errorf("failed to close file: %w", closeErr)
+	}
+
+	// Rename temp file to target (atomic on most filesystems)
+	if err := os.Rename(tmpPath, target); err != nil {
+		os.Remove(tmpPath)
+		return nil, fmt.Errorf("failed to rename temp file: %w", err)
+	}
+
+	return &WriteResult{
+		Path:         relPath,
+		BytesWritten: int64(n),
+	}, nil
 }
 
 func (m *Manager) resolveWorkDir(projectID string) (string, error) {

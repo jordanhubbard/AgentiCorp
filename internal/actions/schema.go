@@ -12,6 +12,7 @@ const (
 	ActionAskFollowup = "ask_followup"
 	ActionReadCode    = "read_code"
 	ActionEditCode    = "edit_code"
+	ActionWriteFile   = "write_file"
 	ActionRunCommand  = "run_command"
 	ActionCreateBead  = "create_bead"
 	ActionEscalateCEO = "escalate_ceo"
@@ -34,6 +35,7 @@ type Action struct {
 	Question string `json:"question,omitempty"`
 
 	Path     string `json:"path,omitempty"`
+	Content  string `json:"content,omitempty"`
 	Patch    string `json:"patch,omitempty"`
 	Query    string `json:"query,omitempty"`
 	MaxDepth int    `json:"max_depth,omitempty"`
@@ -187,6 +189,10 @@ func validateAction(action Action) error {
 	case ActionEditCode:
 		if action.Path == "" || action.Patch == "" {
 			return errors.New("edit_code requires path and patch")
+		}
+	case ActionWriteFile:
+		if action.Path == "" || action.Content == "" {
+			return errors.New("write_file requires path and content")
 		}
 	case ActionReadFile:
 		if action.Path == "" {

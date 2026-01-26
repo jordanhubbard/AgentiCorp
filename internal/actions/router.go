@@ -23,6 +23,7 @@ type CommandExecutor interface {
 
 type FileManager interface {
 	ReadFile(ctx context.Context, projectID, path string) (*files.FileResult, error)
+	WriteFile(ctx context.Context, projectID, path, content string) (*files.WriteResult, error)
 	ReadTree(ctx context.Context, projectID, path string, maxDepth, limit int) ([]files.TreeEntry, error)
 	SearchText(ctx context.Context, projectID, path, query string, limit int) ([]files.SearchMatch, error)
 	ApplyPatch(ctx context.Context, projectID, patch string) (*files.PatchResult, error)
@@ -143,6 +144,23 @@ func (r *Router) executeAction(ctx context.Context, action Action, actx ActionCo
 			Status:     "executed",
 			Message:    "patch applied",
 			Metadata:   map[string]interface{}{"output": res.Output},
+		}
+	case ActionWriteFile:
+		if r.Files == nil {
+			return r.createBeadFromAction("Write file", fmt.Sprintf("%s\n\nContent:\n%s", action.Path, truncateContent(action.Content, 500)), actx)
+		}
+		res, err := r.Files.WriteFile(ctx, actx.ProjectID, action.Path, action.Content)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{
+			ActionType: action.Type,
+			Status:     "executed",
+			Message:    "file written",
+			Metadata: map[string]interface{}{
+				"path":          res.Path,
+				"bytes_written": res.BytesWritten,
+			},
 		}
 	case ActionReadFile:
 		if r.Files == nil {
@@ -338,4 +356,11 @@ func (r *Router) createBeadFromAction(title, detail string, actx ActionContext) 
 		Message:    "bead created",
 		Metadata:   map[string]interface{}{"bead_id": bead.ID},
 	}
+}
+
+func truncateContent(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen-3] + "..."
 }
