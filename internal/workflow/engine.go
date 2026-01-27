@@ -41,6 +41,11 @@ func NewEngine(db Database, beads BeadManager) *Engine {
 	}
 }
 
+// GetDatabase returns the underlying database interface
+func (e *Engine) GetDatabase() Database {
+	return e.db
+}
+
 // StartWorkflow initiates a workflow for a bead
 func (e *Engine) StartWorkflow(beadID, workflowID, projectID string) (*WorkflowExecution, error) {
 	// Check if execution already exists

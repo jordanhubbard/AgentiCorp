@@ -554,6 +554,12 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 		} else {
 			log.Printf("Default workflows directory not found: %s", workflowsDir)
 		}
+
+		// Set workflow engine in dispatcher for workflow-aware routing
+		if a.dispatcher != nil {
+			a.dispatcher.SetWorkflowEngine(a.workflowEngine)
+			log.Printf("Workflow engine connected to dispatcher")
+		}
 	}
 
 	return nil
@@ -756,6 +762,11 @@ func (a *AgentiCorp) GetMotivationEngine() *motivation.Engine {
 // GetIdleDetector returns the idle detector
 func (a *AgentiCorp) GetIdleDetector() *motivation.IdleDetector {
 	return a.idleDetector
+}
+
+// GetWorkflowEngine returns the workflow engine
+func (a *AgentiCorp) GetWorkflowEngine() *workflow.Engine {
+	return a.workflowEngine
 }
 
 // GetWorkerManager returns the agent worker manager

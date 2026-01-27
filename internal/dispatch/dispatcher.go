@@ -16,6 +16,7 @@ import (
 	"github.com/jordanhubbard/agenticorp/internal/provider"
 	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
 	"github.com/jordanhubbard/agenticorp/internal/worker"
+	"github.com/jordanhubbard/agenticorp/internal/workflow"
 	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
@@ -49,6 +50,7 @@ type Dispatcher struct {
 	agents         *agent.WorkerManager
 	providers      *provider.Registry
 	eventBus       *eventbus.EventBus
+	workflowEngine *workflow.Engine
 	personaMatcher *PersonaMatcher
 	autoBugRouter  *AutoBugRouter
 
@@ -78,6 +80,13 @@ func (d *Dispatcher) GetSystemStatus() SystemStatus {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 	return d.status
+}
+
+// SetWorkflowEngine sets the workflow engine for workflow-aware dispatching
+func (d *Dispatcher) SetWorkflowEngine(engine *workflow.Engine) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.workflowEngine = engine
 }
 
 // DispatchOnce finds at most one ready bead and asks an idle agent to work on it.
@@ -217,6 +226,39 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			break
 		}
 
+		// Check if bead has a workflow and needs specific role
+		var workflowRoleRequired string
+		if d.workflowEngine != nil {
+			execution, err := d.ensureBeadHasWorkflow(ctx, b)
+			if err != nil {
+				log.Printf("[Workflow] Error ensuring workflow for bead %s: %v", b.ID, err)
+			} else if execution != nil {
+				workflowRoleRequired = d.getWorkflowRoleRequirement(execution)
+				if workflowRoleRequired != "" {
+					log.Printf("[Workflow] Bead %s requires role: %s", b.ID, workflowRoleRequired)
+
+					// Find agent with matching role
+					for _, agent := range idleAgents {
+						if agent != nil && agent.Role == workflowRoleRequired {
+							ag = agent
+							candidate = b
+							log.Printf("[Workflow] Matched bead %s to agent %s by workflow role %s", b.ID, agent.Name, workflowRoleRequired)
+							break
+						}
+					}
+
+					if ag != nil {
+						break // Found workflow-matched agent
+					}
+
+					// No agent with required role available
+					skippedReasons["workflow_role_not_available"]++
+					log.Printf("[Workflow] Bead %s requires role %s but no agent available with that role", b.ID, workflowRoleRequired)
+					continue
+				}
+			}
+		}
+
 		// Try persona-based routing first, but fall back to any idle agent
 		personaHint := d.personaMatcher.ExtractPersonaHint(b)
 		if personaHint != "" {
@@ -345,6 +387,20 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			}
 			_ = d.eventBus.PublishBeadEvent(eventbus.EventTypeBeadStatusChange, candidate.ID, selectedProjectID, map[string]interface{}{"status": status})
 		}
+
+		// Handle workflow failure
+		if d.workflowEngine != nil {
+			execution, err := d.workflowEngine.GetDatabase().GetWorkflowExecutionByBeadID(candidate.ID)
+			if err == nil && execution != nil {
+				// Report failure to workflow
+				if err := d.workflowEngine.FailNode(execution.ID, ag.ID, execErr.Error()); err != nil {
+					log.Printf("[Workflow] Failed to report failure to workflow for bead %s: %v", candidate.ID, err)
+				} else {
+					log.Printf("[Workflow] Reported failure to workflow for bead %s", candidate.ID)
+				}
+			}
+		}
+
 		return &DispatchResult{Dispatched: true, ProjectID: selectedProjectID, BeadID: candidate.ID, AgentID: ag.ID, ProviderID: ag.ProviderID, Error: execErr.Error()}, nil
 	}
 
@@ -380,6 +436,29 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			status = string(models.BeadStatusOpen)
 		}
 		_ = d.eventBus.PublishBeadEvent(eventbus.EventTypeBeadStatusChange, candidate.ID, selectedProjectID, map[string]interface{}{"status": status})
+	}
+
+	// Advance workflow after successful task execution
+	if d.workflowEngine != nil && !loopDetected {
+		execution, err := d.workflowEngine.GetDatabase().GetWorkflowExecutionByBeadID(candidate.ID)
+		if err == nil && execution != nil {
+			// Advance workflow with success condition
+			resultData := map[string]string{
+				"agent_id":     ag.ID,
+				"output":       result.Response,
+				"tokens_used":  fmt.Sprintf("%d", result.TokensUsed),
+			}
+			if err := d.workflowEngine.AdvanceWorkflow(execution.ID, workflow.EdgeConditionSuccess, ag.ID, resultData); err != nil {
+				log.Printf("[Workflow] Failed to advance workflow for bead %s: %v", candidate.ID, err)
+			} else {
+				// Get updated execution to check status
+				updatedExec, _ := d.workflowEngine.GetDatabase().GetWorkflowExecution(execution.ID)
+				if updatedExec != nil {
+					log.Printf("[Workflow] Advanced workflow for bead %s: status=%s, node=%s, cycle=%d",
+						candidate.ID, updatedExec.Status, updatedExec.CurrentNodeKey, updatedExec.CycleCount)
+				}
+			}
+		}
 	}
 
 	d.setStatus(StatusParked, "idle")
@@ -565,4 +644,86 @@ After creating the approval bead:
 Provide your investigation as a series of actions following the workflow above.
 Use the "notes" field in your JSON response to explain your reasoning at each step.
 `
+}
+
+// ensureBeadHasWorkflow checks if a bead has a workflow execution, and if not, starts one
+func (d *Dispatcher) ensureBeadHasWorkflow(ctx context.Context, bead *models.Bead) (*workflow.WorkflowExecution, error) {
+	if d.workflowEngine == nil {
+		return nil, nil // Workflow engine not available
+	}
+
+	// Check if bead already has a workflow
+	execution, err := d.workflowEngine.GetDatabase().GetWorkflowExecutionByBeadID(bead.ID)
+	if err != nil {
+		log.Printf("[Workflow] Error checking workflow for bead %s: %v", bead.ID, err)
+		return nil, err
+	}
+
+	if execution != nil {
+		// Bead already has a workflow
+		return execution, nil
+	}
+
+	// Determine workflow type from bead
+	workflowType := "bug" // Default
+	title := strings.ToLower(bead.Title)
+	if strings.Contains(title, "feature") || strings.Contains(title, "enhancement") {
+		workflowType = "feature"
+	} else if strings.Contains(title, "ui") || strings.Contains(title, "design") || strings.Contains(title, "css") || strings.Contains(title, "html") {
+		workflowType = "ui"
+	}
+
+	// Get default workflow for this type
+	workflows, err := d.workflowEngine.GetDatabase().ListWorkflows(workflowType, bead.ProjectID)
+	if err != nil || len(workflows) == 0 {
+		log.Printf("[Workflow] No workflow found for type %s, bead %s", workflowType, bead.ID)
+		return nil, nil // No workflow available
+	}
+
+	// Start workflow for this bead
+	execution, err = d.workflowEngine.StartWorkflow(bead.ID, workflows[0].ID, bead.ProjectID)
+	if err != nil {
+		log.Printf("[Workflow] Failed to start workflow for bead %s: %v", bead.ID, err)
+		return nil, err
+	}
+
+	log.Printf("[Workflow] Started workflow %s for bead %s", workflows[0].Name, bead.ID)
+	return execution, nil
+}
+
+// getWorkflowRoleRequirement returns the role required for the current workflow node, if any
+func (d *Dispatcher) getWorkflowRoleRequirement(execution *workflow.WorkflowExecution) string {
+	if d.workflowEngine == nil || execution == nil {
+		return ""
+	}
+
+	// If at workflow start (no current node), get first node
+	if execution.CurrentNodeKey == "" {
+		// Get first node from workflow
+		wf, err := d.workflowEngine.GetDatabase().GetWorkflow(execution.WorkflowID)
+		if err != nil {
+			return ""
+		}
+
+		// Find edges from start (empty FromNodeKey)
+		for _, edge := range wf.Edges {
+			if edge.FromNodeKey == "" && edge.Condition == workflow.EdgeConditionSuccess {
+				// Found start edge, get target node
+				for _, node := range wf.Nodes {
+					if node.NodeKey == edge.ToNodeKey {
+						return node.RoleRequired
+					}
+				}
+			}
+		}
+		return ""
+	}
+
+	// Get current node
+	node, err := d.workflowEngine.GetCurrentNode(execution.ID)
+	if err != nil || node == nil {
+		return ""
+	}
+
+	return node.RoleRequired
 }
