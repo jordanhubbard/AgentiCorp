@@ -170,8 +170,35 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			skippedReasons["decision_type"]++
 			continue
 		}
+		// Allow redispatch for in_progress beads (multi-step investigations)
+		// This is a temporary fix until workflow system is implemented
 		if b.Context != nil {
-			if b.Context["redispatch_requested"] != "true" && b.Context["last_run_at"] != "" {
+			// Track dispatch count to prevent infinite loops
+			dispatchCountStr := b.Context["dispatch_count"]
+			dispatchCount := 0
+			if dispatchCountStr != "" {
+				fmt.Sscanf(dispatchCountStr, "%d", &dispatchCount)
+			}
+
+			// Escalate to CEO after 10 dispatches (safety limit)
+			if dispatchCount >= 10 {
+				log.Printf("[Dispatcher] WARNING: Bead %s has been dispatched %d times, escalating to CEO", b.ID, dispatchCount)
+				// TODO: Create CEO escalation bead when workflow system is ready
+				skippedReasons["excessive_dispatches"]++
+				continue
+			}
+
+			// Warn if dispatch count is getting high
+			if dispatchCount >= 5 {
+				log.Printf("[Dispatcher] WARNING: Bead %s has been dispatched %d times", b.ID, dispatchCount)
+			}
+
+			// Skip beads that have already run UNLESS:
+			// 1. They explicitly request redispatch, OR
+			// 2. They are still in_progress (multi-step work not complete)
+			if b.Context["redispatch_requested"] != "true" &&
+			   b.Status != "in_progress" &&
+			   b.Context["last_run_at"] != "" {
 				skippedReasons["already_run"]++
 				continue
 			}
@@ -246,6 +273,28 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			return &DispatchResult{Dispatched: false, ProjectID: projectID}, nil
 		}
 	}
+
+	// Increment dispatch count for tracking multi-step investigations
+	dispatchCount := 0
+	if candidate.Context != nil {
+		if countStr := candidate.Context["dispatch_count"]; countStr != "" {
+			fmt.Sscanf(countStr, "%d", &dispatchCount)
+		}
+	}
+	dispatchCount++
+
+	// Update bead context with incremented dispatch count
+	countUpdates := map[string]interface{}{
+		"context": map[string]string{
+			"dispatch_count": fmt.Sprintf("%d", dispatchCount),
+		},
+	}
+	if err := d.beads.UpdateBead(candidate.ID, countUpdates); err != nil {
+		log.Printf("[Dispatcher] WARNING: Failed to update dispatch count for bead %s: %v", candidate.ID, err)
+		// Don't fail dispatch on this error - just log it
+	}
+	log.Printf("[Dispatcher] Bead %s dispatch count: %d", candidate.ID, dispatchCount)
+
 	_ = d.agents.AssignBead(ag.ID, candidate.ID)
 	if d.eventBus != nil {
 		_ = d.eventBus.PublishBeadEvent(eventbus.EventTypeBeadAssigned, candidate.ID, selectedProjectID, map[string]interface{}{"assigned_to": ag.ID})
