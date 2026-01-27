@@ -16,6 +16,7 @@ import (
 	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
 	"github.com/jordanhubbard/agenticorp/internal/api"
 	"github.com/jordanhubbard/agenticorp/internal/auth"
+	"github.com/jordanhubbard/agenticorp/internal/hotreload"
 	"github.com/jordanhubbard/agenticorp/internal/keymanager"
 	"github.com/jordanhubbard/agenticorp/pkg/config"
 )
@@ -66,6 +67,21 @@ func main() {
 		log.Fatalf("failed to initialize agenticorp: %v", err)
 	}
 
+	// Initialize hot-reload for development
+	var hrManager *hotreload.Manager
+	if cfg.HotReload.Enabled {
+		hrManager, err = hotreload.NewManager(
+			cfg.HotReload.Enabled,
+			cfg.HotReload.WatchDirs,
+			cfg.HotReload.Patterns,
+		)
+		if err != nil {
+			log.Printf("Hot-reload initialization failed: %v", err)
+		} else {
+			defer hrManager.Close()
+		}
+	}
+
 	// Initialize key manager for encrypted API keys
 	keyStorePath := filepath.Join(".", ".keys.json")
 	km := keymanager.NewKeyManager(keyStorePath)
@@ -95,6 +111,16 @@ func main() {
 
 	apiServer := api.NewServer(arb, km, authManager, cfg)
 	handler := apiServer.SetupRoutes()
+
+	// Add hot-reload WebSocket endpoint if enabled
+	if hrManager != nil && hrManager.IsEnabled() {
+		mux := http.NewServeMux()
+		mux.Handle("/", handler)
+		mux.HandleFunc("/ws/hotreload", hrManager.GetServer().HandleWebSocket)
+		mux.HandleFunc("/api/v1/hotreload/status", hrManager.GetServer().HandleStatus)
+		handler = mux
+		log.Println("[HotReload] WebSocket endpoint registered at /ws/hotreload")
+	}
 
 	httpSrv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.HTTPPort),
