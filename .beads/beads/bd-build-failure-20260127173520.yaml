@@ -1,0 +1,180 @@
+id: bd-build-failure-20260127173520
+type: task
+title: "P0 - build failed"
+description: |
+  Command: docker compose build
+  Exit code: 1
+
+  Output:
+     Image agenticorp:latest Building 
+     Image agenticorp-agenticorp-test Building 
+    #1 [internal] load local bake definitions
+    #1 reading from stdin 1.00kB done
+    #1 DONE 0.0s
+    
+    #2 [agenticorp internal] load build definition from Dockerfile
+    #2 DONE 0.0s
+    
+    #2 [agenticorp-test internal] load build definition from Dockerfile
+    #2 transferring dockerfile: 2.03kB 0.0s done
+    #2 DONE 0.0s
+    
+    #3 [auth] library/alpine:pull token for registry-1.docker.io
+    #3 DONE 0.0s
+    
+    #4 [agenticorp internal] load metadata for docker.io/library/golang:1.24-alpine
+    #4 ...
+    
+    #5 [auth] library/golang:pull token for registry-1.docker.io
+    #5 DONE 0.0s
+    
+    #4 [agenticorp internal] load metadata for docker.io/library/golang:1.24-alpine
+    #4 DONE 0.7s
+    
+    #6 [agenticorp-test internal] load .dockerignore
+    #6 transferring context: 353B done
+    #6 DONE 0.0s
+    
+    #7 [agenticorp-test builder 1/8] FROM docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986
+    #7 resolve docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986 done
+    #7 DONE 0.0s
+    
+    #8 [agenticorp-test internal] load build context
+    #8 transferring context: 1.84MB 0.2s done
+    #8 DONE 0.3s
+    
+    #6 [agenticorp internal] load .dockerignore
+    #6 transferring context: 353B done
+    #6 DONE 0.0s
+    
+    #7 [agenticorp builder 1/8] FROM docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986
+    #7 resolve docker.io/library/golang:1.24-alpine@sha256:598dbb5f4658bd66f3ad7bfda86a9af580812b57065d8854add882e64480d986 done
+    #7 DONE 0.0s
+    
+    #9 [agenticorp internal] load metadata for docker.io/library/alpine:latest
+    #9 DONE 0.9s
+    
+    #10 [agenticorp stage-1  1/14] FROM docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+    #10 resolve docker.io/library/alpine:latest@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 0.0s done
+    #10 DONE 0.0s
+    
+    #11 [agenticorp-test builder 2/8] RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+    #11 CACHED
+    
+    #12 [agenticorp-test builder 4/8] COPY go.mod ./
+    #12 CACHED
+    
+    #13 [agenticorp-test builder 3/8] WORKDIR /build
+    #13 CACHED
+    
+    #14 [agenticorp-test builder 5/8] COPY go.sum ./
+    #14 CACHED
+    
+    #15 [agenticorp-test builder 6/8] RUN go mod download
+    #15 CACHED
+    
+    #16 [agenticorp-test builder 7/8] COPY . .
+    #16 DONE 5.2s
+    
+    #17 [agenticorp-test builder 8/8] RUN CGO_ENABLED=1 GOOS=linux go build     -ldflags="-w -s"     -o agenticorp     ./cmd/agenticorp
+    #17 DONE 65.8s
+    
+    #18 [agenticorp-test] exporting to image
+    #18 exporting layers
+    #18 ...
+    
+    #19 [agenticorp stage-1  2/14] RUN apk add --no-cache ca-certificates tzdata git openssh-client
+    #19 CACHED
+    
+    #20 [agenticorp stage-1 12/14] RUN mkdir -p /app/data && chown agenticorp:agenticorp /app/data
+    #20 CACHED
+    
+    #21 [agenticorp stage-1 13/14] RUN chown -R agenticorp:agenticorp /app
+    #21 CACHED
+    
+    #22 [agenticorp stage-1  3/14] RUN addgroup -g 1000 agenticorp &&     adduser -D -u 1000 -G agenticorp agenticorp
+    #22 CACHED
+    
+    #23 [agenticorp stage-1  5/14] COPY --from=builder /build/agenticorp /app/agenticorp
+    #23 CACHED
+    
+    #24 [agenticorp stage-1  6/14] COPY --from=builder /build/config.yaml /app/config.yaml
+    #24 CACHED
+    
+    #25 [agenticorp stage-1  9/14] COPY --from=builder /build/web/static /app/web/static
+    #25 CACHED
+    
+    #26 [agenticorp stage-1  7/14] COPY --from=builder /build/personas /app/personas
+    #26 CACHED
+    
+    #27 [agenticorp stage-1  8/14] COPY --from=builder /build/workflows /app/workflows
+    #27 CACHED
+    
+    #28 [agenticorp stage-1  4/14] WORKDIR /app
+    #28 CACHED
+    
+    #29 [agenticorp stage-1 10/14] RUN mkdir -p /home/agenticorp/.ssh &&     chown -R agenticorp:agenticorp /home/agenticorp/.ssh &&     chmod 700 /home/agenticorp/.ssh
+    #29 CACHED
+    
+    #30 [agenticorp stage-1 11/14] RUN mkdir -p /app/src && chown agenticorp:agenticorp /app/src
+    #30 CACHED
+    
+    #31 [agenticorp stage-1 14/14] RUN git config --global core.sshCommand "ssh -i /home/agenticorp/.ssh/id_ecdsa -o UserKnownHostsFile=/home/agenticorp/.ssh/known_hosts"
+    #31 CACHED
+    
+    #32 [agenticorp] exporting to image
+    #32 exporting layers done
+    #32 exporting manifest sha256:10271f0aa0b5b0163c502969226247dbb8d67b5d104425279d056d371734a936 done
+    #32 exporting config sha256:ee322969d03626bd62be6d95d71a140a20fe4f8f29559798b1710db2a1da15ff done
+    #32 exporting attestation manifest sha256:1401be5c991dd091e1882b1e09535e90092f49db72854598684b317ff02771f4 0.0s done
+    #32 exporting manifest list sha256:61dba91d8ca84f8d73a42229799be36c493b7d855f68fa914a6dbd24399128c0 done
+    #32 naming to docker.io/library/agenticorp:latest done
+    #32 unpacking to docker.io/library/agenticorp:latest 0.0s done
+    #32 DONE 0.1s
+    
+    #18 [agenticorp-test] exporting to image
+    #18 ...
+    
+    #33 [agenticorp] resolving provenance for metadata file
+    #33 DONE 0.0s
+    
+    #18 [agenticorp-test] exporting to image
+    #18 exporting layers 11.5s done
+    #18 exporting manifest sha256:5f07f5263e3c8c96e63c1a64e381ff5462eee2414f2e218f2d8f1c7ff1803a04
+    #18 exporting manifest sha256:5f07f5263e3c8c96e63c1a64e381ff5462eee2414f2e218f2d8f1c7ff1803a04 done
+    #18 exporting config sha256:cd8944a1860e98f8eebe99c29612e1dac43598b5af055e524d2cf51c8deec6f7 done
+    #18 exporting attestation manifest sha256:147b04b5fc796a8f8ec5025ddd2a1b5feaf626512ea5745d3d1af184aed1c29b 0.0s done
+    #18 exporting manifest list sha256:85512889667c9a7e1e2f4cec54a6db359caf3ce403329517b864fe62f6f03c7f done
+    #18 naming to docker.io/library/agenticorp-agenticorp-test:latest done
+    #18 unpacking to docker.io/library/agenticorp-agenticorp-test:latest 0.0s done
+    #18 ERROR: failed to prepare extraction snapshot "extract-577176086-KCiI sha256:f580ec4bd197bb9109f0b65a8ca8321dbf91a4b19454f095f366fe7ec0f67aeb": parent snapshot sha256:6a1ae494026360675e8f0dad284cab6adc57c475177f6e1bb4d2928621d0f68d does not exist: not found
+    ------
+     > [agenticorp-test] exporting to image:
+    ------
+    target agenticorp-test: failed to solve: failed to prepare extraction snapshot "extract-577176086-KCiI sha256:f580ec4bd197bb9109f0b65a8ca8321dbf91a4b19454f095f366fe7ec0f67aeb": parent snapshot sha256:6a1ae494026360675e8f0dad284cab6adc57c475177f6e1bb4d2928621d0f68d does not exist: not found
+    
+
+status: closed
+priority: 0
+project_id: agenticorp
+assigned_to: claude-sonnet-4.5
+blocked_by: []
+blocks: []
+parent: null
+children: []
+tags:
+  - p0
+  - failure
+  - build
+  - resolved
+created_at: 2026-01-27T17:35:20Z
+updated_at: 2026-01-27T17:49:30Z
+closed_at: 2026-01-27T17:49:30Z
+resolution: |
+  Docker BuildKit cache corruption resolved by running:
+  docker builder prune -af
+
+  Reclaimed 21.91GB of corrupted cache. Build now completes successfully.
+context:
+  source: makefile
+  target: build

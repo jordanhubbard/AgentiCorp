@@ -138,9 +138,19 @@ func (m *Manager) CommitChanges(ctx context.Context, project *models.Project, me
 	if authorName != "" && authorEmail != "" {
 		args = append(args, "--author", fmt.Sprintf("%s <%s>", authorName, authorEmail))
 	}
-
-	if err := m.runGitCommand(ctx, workDir, args...); err != nil {
-		return fmt.Errorf("git commit failed: %w", err)
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = workDir
+	if authorName != "" && authorEmail != "" {
+		cmd.Env = append(os.Environ(),
+			fmt.Sprintf("GIT_AUTHOR_NAME=%s", authorName),
+			fmt.Sprintf("GIT_AUTHOR_EMAIL=%s", authorEmail),
+			fmt.Sprintf("GIT_COMMITTER_NAME=%s", authorName),
+			fmt.Sprintf("GIT_COMMITTER_EMAIL=%s", authorEmail),
+		)
+	}
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("git commit failed: %w\nOutput: %s", err, string(output))
 	}
 
 	// Update commit hash

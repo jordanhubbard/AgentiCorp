@@ -206,8 +206,8 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			// 1. They explicitly request redispatch, OR
 			// 2. They are still in_progress (multi-step work not complete)
 			if b.Context["redispatch_requested"] != "true" &&
-			   b.Status != "in_progress" &&
-			   b.Context["last_run_at"] != "" {
+				b.Status != "in_progress" &&
+				b.Context["last_run_at"] != "" {
 				skippedReasons["already_run"]++
 				continue
 			}
@@ -218,7 +218,6 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 			assigned, ok := idleByID[b.AssignedTo]
 			if !ok {
 				skippedReasons["assigned_agent_not_idle"]++
-				log.Printf("[Dispatcher] Bead %s assigned to %s but agent not idle", b.ID, b.AssignedTo)
 				continue
 			}
 			ag = assigned
@@ -242,11 +241,10 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 
 				workflowRoleRequired = d.getWorkflowRoleRequirement(execution)
 				if workflowRoleRequired != "" {
-					log.Printf("[Workflow] Bead %s requires role: %s", b.ID, workflowRoleRequired)
-
+					requiredRoleKey := normalizeRoleName(workflowRoleRequired)
 					// Find agent with matching role
 					for _, agent := range idleAgents {
-						if agent != nil && agent.Role == workflowRoleRequired {
+						if agent != nil && normalizeRoleName(agent.Role) == requiredRoleKey {
 							ag = agent
 							candidate = b
 							log.Printf("[Workflow] Matched bead %s to agent %s by workflow role %s", b.ID, agent.Name, workflowRoleRequired)
@@ -260,7 +258,6 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 
 					// No agent with required role available
 					skippedReasons["workflow_role_not_available"]++
-					log.Printf("[Workflow] Bead %s requires role %s but no agent available with that role", b.ID, workflowRoleRequired)
 					continue
 				}
 			}
@@ -451,9 +448,9 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 		if err == nil && execution != nil {
 			// Advance workflow with success condition
 			resultData := map[string]string{
-				"agent_id":     ag.ID,
-				"output":       result.Response,
-				"tokens_used":  fmt.Sprintf("%d", result.TokensUsed),
+				"agent_id":    ag.ID,
+				"output":      result.Response,
+				"tokens_used": fmt.Sprintf("%d", result.TokensUsed),
 			}
 			if err := d.workflowEngine.AdvanceWorkflow(execution.ID, workflow.EdgeConditionSuccess, ag.ID, resultData); err != nil {
 				log.Printf("[Workflow] Failed to advance workflow for bead %s: %v", candidate.ID, err)
@@ -792,4 +789,28 @@ func (d *Dispatcher) getWorkflowRoleRequirement(execution *workflow.WorkflowExec
 	}
 
 	return node.RoleRequired
+}
+
+func normalizeRoleName(role string) string {
+	role = strings.TrimSpace(strings.ToLower(role))
+	if role == "" {
+		return ""
+	}
+
+	if strings.Contains(role, "/") {
+		parts := strings.Split(role, "/")
+		role = parts[len(parts)-1]
+	}
+
+	if idx := strings.Index(role, "("); idx != -1 {
+		role = strings.TrimSpace(role[:idx])
+	}
+
+	role = strings.ReplaceAll(role, "_", "-")
+	role = strings.ReplaceAll(role, " ", "-")
+	for strings.Contains(role, "--") {
+		role = strings.ReplaceAll(role, "--", "-")
+	}
+	role = strings.Trim(role, "-")
+	return role
 }

@@ -22,47 +22,49 @@ import (
 	"github.com/jordanhubbard/agenticorp/internal/files"
 	"github.com/jordanhubbard/agenticorp/internal/gitops"
 	"github.com/jordanhubbard/agenticorp/internal/logging"
+	"github.com/jordanhubbard/agenticorp/internal/metrics"
 	"github.com/jordanhubbard/agenticorp/internal/modelcatalog"
 	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	"github.com/jordanhubbard/agenticorp/internal/motivation"
 	"github.com/jordanhubbard/agenticorp/internal/orgchart"
 	"github.com/jordanhubbard/agenticorp/internal/persona"
 	"github.com/jordanhubbard/agenticorp/internal/project"
 	"github.com/jordanhubbard/agenticorp/internal/provider"
 	"github.com/jordanhubbard/agenticorp/internal/routing"
-	"github.com/jordanhubbard/agenticorp/internal/motivation"
-	"github.com/jordanhubbard/agenticorp/internal/workflow"
 	"github.com/jordanhubbard/agenticorp/internal/temporal"
 	temporalactivities "github.com/jordanhubbard/agenticorp/internal/temporal/activities"
 	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
 	"github.com/jordanhubbard/agenticorp/internal/temporal/workflows"
+	"github.com/jordanhubbard/agenticorp/internal/workflow"
 	"github.com/jordanhubbard/agenticorp/pkg/config"
 	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
 
 // AgentiCorp is the main orchestrator
 type AgentiCorp struct {
-	config           *config.Config
-	agentManager     *agent.WorkerManager
-	actionRouter     *actions.Router
-	projectManager   *project.Manager
-	personaManager   *persona.Manager
-	beadsManager     *beads.Manager
-	decisionManager  *decision.Manager
-	fileLockManager  *FileLockManager
-	orgChartManager  *orgchart.Manager
-	providerRegistry *provider.Registry
-	database         *database.Database
-	dispatcher       *dispatch.Dispatcher
-	eventBus         *eventbus.EventBus
-	temporalManager  *temporal.Manager
-	modelCatalog     *modelcatalog.Catalog
-	gitopsManager    *gitops.Manager
-	shellExecutor        *executor.ShellExecutor
-	logManager           *logging.Manager
-	motivationRegistry   *motivation.Registry
-	motivationEngine     *motivation.Engine
-	idleDetector         *motivation.IdleDetector
-	workflowEngine       *workflow.Engine
+	config             *config.Config
+	agentManager       *agent.WorkerManager
+	actionRouter       *actions.Router
+	projectManager     *project.Manager
+	personaManager     *persona.Manager
+	beadsManager       *beads.Manager
+	decisionManager    *decision.Manager
+	fileLockManager    *FileLockManager
+	orgChartManager    *orgchart.Manager
+	providerRegistry   *provider.Registry
+	database           *database.Database
+	dispatcher         *dispatch.Dispatcher
+	eventBus           *eventbus.EventBus
+	temporalManager    *temporal.Manager
+	modelCatalog       *modelcatalog.Catalog
+	gitopsManager      *gitops.Manager
+	shellExecutor      *executor.ShellExecutor
+	logManager         *logging.Manager
+	motivationRegistry *motivation.Registry
+	motivationEngine   *motivation.Engine
+	idleDetector       *motivation.IdleDetector
+	workflowEngine     *workflow.Engine
+	metrics            *metrics.Metrics
 }
 
 // New creates a new AgentiCorp instance
@@ -156,25 +158,26 @@ func New(cfg *config.Config) (*AgentiCorp, error) {
 	}
 
 	arb := &AgentiCorp{
-		config:           cfg,
-		agentManager:     agentMgr,
-		projectManager:   project.NewManager(),
-		personaManager:   persona.NewManager(personaPath),
-		beadsManager:     beads.NewManager(cfg.Beads.BDPath),
-		decisionManager:  decision.NewManager(),
-		fileLockManager:  NewFileLockManager(cfg.Agents.FileLockTimeout),
-		orgChartManager:  orgchart.NewManager(),
-		providerRegistry: providerRegistry,
-		database:         db,
-		eventBus:         eb,
-		temporalManager:  temporalMgr,
-		modelCatalog:     modelCatalog,
-		gitopsManager:    gitopsMgr,
-		shellExecutor:        shellExec,
-		logManager:           logMgr,
-		motivationRegistry:   motivationRegistry,
-		idleDetector:         idleDetector,
-		workflowEngine:       workflowEngine,
+		config:             cfg,
+		agentManager:       agentMgr,
+		projectManager:     project.NewManager(),
+		personaManager:     persona.NewManager(personaPath),
+		beadsManager:       beads.NewManager(cfg.Beads.BDPath),
+		decisionManager:    decision.NewManager(),
+		fileLockManager:    NewFileLockManager(cfg.Agents.FileLockTimeout),
+		orgChartManager:    orgchart.NewManager(),
+		providerRegistry:   providerRegistry,
+		database:           db,
+		eventBus:           eb,
+		temporalManager:    temporalMgr,
+		modelCatalog:       modelCatalog,
+		gitopsManager:      gitopsMgr,
+		shellExecutor:      shellExec,
+		logManager:         logMgr,
+		motivationRegistry: motivationRegistry,
+		idleDetector:       idleDetector,
+		workflowEngine:     workflowEngine,
+		metrics:            metrics.NewMetrics(),
 	}
 
 	actionRouter := &actions.Router{
@@ -198,6 +201,52 @@ func New(cfg *config.Config) (*AgentiCorp, error) {
 	arb.setupProviderMetrics()
 
 	return arb, nil
+}
+
+// setupProviderMetrics sets up metrics tracking callback for provider requests
+func (a *AgentiCorp) setupProviderMetrics() {
+	if a.metrics == nil || a.providerRegistry == nil {
+		return
+	}
+
+	// Set metrics callback to record provider requests
+	a.providerRegistry.SetMetricsCallback(func(providerID string, success bool, latencyMs int64, totalTokens int64) {
+		// Update provider metrics
+		if a.metrics != nil {
+			a.metrics.RecordProviderRequest(providerID, "", success, latencyMs, totalTokens)
+		}
+
+		// Also update provider model metrics if available
+		if a.database == nil {
+			return
+		}
+		provider, err := a.database.GetProvider(providerID)
+		if err != nil || provider == nil {
+			return
+		}
+		// Record success/failure on provider model
+		if success {
+			provider.RecordSuccess(latencyMs, totalTokens)
+		} else {
+			provider.RecordFailure(latencyMs)
+		}
+		// Persist updated metrics
+		_ = a.database.UpsertProvider(provider)
+
+		// Emit event for real-time updates
+		if a.eventBus != nil {
+			_ = a.eventBus.Publish(&eventbus.Event{
+				Type: eventbus.EventTypeProviderUpdated,
+				Data: map[string]interface{}{
+					"provider_id":   providerID,
+					"success":       success,
+					"latency_ms":    latencyMs,
+					"total_tokens":  totalTokens,
+					"overall_score": provider.GetScore(),
+				},
+			})
+		}
+	})
 }
 
 // Initialize sets up the agenticorp
@@ -2003,8 +2052,7 @@ func extractOriginalBugID(description string) string {
 			// Extract the bead ID after the pattern
 			start := idx + len(pattern)
 			end := start
-			for end < len(description) && (
-				(description[end] >= 'a' && description[end] <= 'z') ||
+			for end < len(description) && ((description[end] >= 'a' && description[end] <= 'z') ||
 				(description[end] >= '0' && description[end] <= '9') ||
 				description[end] == '-') {
 				end++

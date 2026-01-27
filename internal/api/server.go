@@ -12,11 +12,13 @@ import (
 	"github.com/jordanhubbard/agenticorp/internal/analytics"
 	"github.com/jordanhubbard/agenticorp/internal/auth"
 	"github.com/jordanhubbard/agenticorp/internal/cache"
+	"github.com/jordanhubbard/agenticorp/internal/files"
 	"github.com/jordanhubbard/agenticorp/internal/keymanager"
 	"github.com/jordanhubbard/agenticorp/internal/logging"
-	"github.com/jordanhubbard/agenticorp/internal/files"
+	"github.com/jordanhubbard/agenticorp/internal/metrics"
 	"github.com/jordanhubbard/agenticorp/pkg/config"
 	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Server represents the HTTP API server
@@ -29,6 +31,7 @@ type Server struct {
 	cache           *cache.Cache
 	config          *config.Config
 	fileManager     *files.Manager
+	metrics         *metrics.Metrics
 	apiFailureMu    sync.Mutex
 	apiFailureLast  map[string]time.Time
 }
@@ -92,6 +95,9 @@ func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.M
 		fileManager = files.NewManager(arb.GetGitOpsManager())
 	}
 
+	// Initialize Prometheus metrics
+	promMetrics := metrics.NewMetrics()
+
 	return &Server{
 		agenticorp:      arb,
 		keyManager:      km,
@@ -101,6 +107,7 @@ func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.M
 		cache:           responseCache,
 		config:          cfg,
 		fileManager:     fileManager,
+		metrics:         promMetrics,
 		apiFailureLast:  make(map[string]time.Time),
 	}
 }
@@ -131,6 +138,9 @@ func (s *Server) SetupRoutes() http.Handler {
 
 	// Health check
 	mux.HandleFunc("/api/v1/health", s.handleHealth)
+
+	// Prometheus metrics endpoint
+	mux.Handle("/metrics", promhttp.Handler())
 
 	// Auth endpoints
 	authHandlers := auth.NewHandlers(s.authManager)
@@ -475,4 +485,9 @@ func (s *Server) extractID(path, prefix string) string {
 	}
 
 	return id
+}
+
+// GetMetrics returns the Prometheus metrics instance
+func (s *Server) GetMetrics() *metrics.Metrics {
+	return s.metrics
 }
