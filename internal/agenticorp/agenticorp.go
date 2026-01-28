@@ -415,7 +415,7 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 			}
 
 			// Load beads from the cloned repository
-			beadsPath := filepath.Join(workDir, p.BeadsPath, "beads")
+			beadsPath := filepath.Join(workDir, p.BeadsPath)
 			a.beadsManager.SetBeadsPath(beadsPath)
 			// Load project prefix from config
 			configPath := filepath.Join(workDir, p.BeadsPath)
@@ -424,7 +424,7 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 			if p.BeadPrefix != "" {
 				a.beadsManager.SetProjectPrefix(p.ID, p.BeadPrefix)
 			}
-			_ = a.beadsManager.LoadBeadsFromFilesystem(beadsPath)
+			_ = a.beadsManager.LoadBeadsFromFilesystem(p.ID, beadsPath)
 		} else {
 			// Local project (AgentiCorp itself), load beads directly
 			a.beadsManager.SetBeadsPath(p.BeadsPath)
@@ -434,7 +434,7 @@ func (a *AgentiCorp) Initialize(ctx context.Context) error {
 			if p.BeadPrefix != "" {
 				a.beadsManager.SetProjectPrefix(p.ID, p.BeadPrefix)
 			}
-			_ = a.beadsManager.LoadBeadsFromFilesystem(p.BeadsPath)
+			_ = a.beadsManager.LoadBeadsFromFilesystem(p.ID, p.BeadsPath)
 		}
 	}
 

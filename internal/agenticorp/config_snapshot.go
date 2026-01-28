@@ -224,7 +224,7 @@ func (a *AgentiCorp) ReloadFromDatabase(ctx context.Context) error {
 		if p.BeadPrefix != "" {
 			a.beadsManager.SetProjectPrefix(p.ID, p.BeadPrefix)
 		}
-		_ = a.beadsManager.LoadBeadsFromFilesystem(p.BeadsPath)
+		_ = a.beadsManager.LoadBeadsFromFilesystem(p.ID, p.BeadsPath)
 	}
 
 	providers, err := a.database.ListProviders()

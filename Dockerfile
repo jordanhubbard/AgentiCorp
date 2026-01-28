@@ -14,6 +14,9 @@ COPY go.sum ./
 # Download dependencies
 RUN go mod download
 
+# Install bd CLI for bead operations
+RUN CGO_ENABLED=1 go install github.com/steveyegge/beads/cmd/bd@latest
+
 # Copy source code
 COPY . .
 
@@ -38,6 +41,9 @@ WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /build/agenticorp /app/agenticorp
+
+# Copy bd CLI
+COPY --from=builder /go/bin/bd /usr/local/bin/bd
 
 # Copy config file
 COPY --from=builder /build/config.yaml /app/config.yaml

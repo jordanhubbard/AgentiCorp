@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -30,11 +31,11 @@ type Manager struct {
 // NewManager creates a new beads manager
 func NewManager(bdPath string) *Manager {
 	return &Manager{
-		bdPath:          bdPath,
-		beadsPath:       ".beads",
-		beads:           make(map[string]*models.Bead),
-		beadFiles:       make(map[string]string),
-		workGraph:       &models.WorkGraph{
+		bdPath:    bdPath,
+		beadsPath: ".beads",
+		beads:     make(map[string]*models.Bead),
+		beadFiles: make(map[string]string),
+		workGraph: &models.WorkGraph{
 			Beads:     make(map[string]*models.Bead),
 			Edges:     []models.Edge{},
 			UpdatedAt: time.Now(),
@@ -120,6 +121,7 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 		prefix = p
 	}
 
+	usedBD := false
 	// Try bd CLI first if available
 	if m.bdPath != "" {
 		args := []string{"create", title, "-p", fmt.Sprintf("%d", priority)}
@@ -129,13 +131,23 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 		}
 
 		cmd := exec.Command(m.bdPath, args...)
-		output, err := cmd.CombinedOutput()
-
-		if err == nil {
-			// Parse output to get bead ID
-			outputStr := string(output)
-			beadID = m.extractBeadIDWithPrefix(outputStr, prefix)
+		if dir := beadsRootDir(m.beadsPath); dir != "" {
+			cmd.Dir = dir
 		}
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("bd create failed: %w: %s", err, strings.TrimSpace(string(output)))
+		}
+
+		outputStr := string(output)
+		beadID = m.extractBeadIDWithPrefix(outputStr, prefix)
+		if beadID == "" {
+			beadID = m.extractBeadID(outputStr)
+		}
+		if beadID == "" {
+			return nil, fmt.Errorf("bd create did not return bead id: %s", strings.TrimSpace(outputStr))
+		}
+		usedBD = true
 	}
 
 	// Fallback to filesystem-based bead creation
@@ -179,10 +191,12 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 	m.workGraph.Beads[beadID] = bead
 	m.workGraph.UpdatedAt = time.Now()
 
-	// Save to filesystem
-	if err := m.SaveBeadToFilesystem(bead, m.beadsPath); err != nil {
-		// Log error but don't fail - the bead is in memory
-		fmt.Fprintf(os.Stderr, "Warning: failed to save bead to filesystem: %v\n", err)
+	// Save to filesystem only when not using bd CLI
+	if !usedBD {
+		if err := m.SaveBeadToFilesystem(bead, m.beadsPath); err != nil {
+			// Log error but don't fail - the bead is in memory
+			fmt.Fprintf(os.Stderr, "Warning: failed to save bead to filesystem: %v\n", err)
+		}
 	}
 
 	return bead, nil
@@ -467,7 +481,14 @@ func (m *Manager) GetWorkGraph(projectID string) (*models.WorkGraph, error) {
 // Helper functions
 
 func (m *Manager) extractBeadID(output string) string {
-	return m.extractBeadIDWithPrefix(output, "bd")
+	fields := strings.Fields(output)
+	for _, field := range fields {
+		cleaned := strings.Trim(field, ",.:;[](){}")
+		if beadIDPattern.MatchString(cleaned) {
+			return cleaned
+		}
+	}
+	return ""
 }
 
 func (m *Manager) extractBeadIDWithPrefix(output, prefix string) string {
@@ -482,9 +503,29 @@ func (m *Manager) extractBeadIDWithPrefix(output, prefix string) string {
 	return ""
 }
 
+var beadIDPattern = regexp.MustCompile(`(?i)\b[a-z0-9]{2,8}-[a-z0-9]+\b`)
+
+func beadsRootDir(beadsPath string) string {
+	if beadsPath == "" {
+		return ""
+	}
+
+	cleaned := filepath.Clean(beadsPath)
+	if filepath.Base(cleaned) == "beads" {
+		cleaned = filepath.Dir(cleaned)
+	}
+	if filepath.Base(cleaned) == ".beads" {
+		return filepath.Dir(cleaned)
+	}
+	return filepath.Dir(cleaned)
+}
+
 func (m *Manager) fetchBeadFromBD(id string) (*models.Bead, error) {
 	// Execute: bd show <id> --json
 	cmd := exec.Command(m.bdPath, "show", id, "--json")
+	if dir := beadsRootDir(m.beadsPath); dir != "" {
+		cmd.Dir = dir
+	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch bead: %w", err)
@@ -540,10 +581,18 @@ func (m *Manager) matchesFilters(bead *models.Bead, filters map[string]interface
 	return true
 }
 
-// LoadBeadsFromFilesystem loads beads from .beads directory when bd CLI is not available
-func (m *Manager) LoadBeadsFromFilesystem(beadsPath string) error {
+// LoadBeadsFromFilesystem loads beads using bd CLI when available, with YAML fallback.
+func (m *Manager) LoadBeadsFromFilesystem(projectID, beadsPath string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	if m.bdPath != "" {
+		if err := m.loadBeadsFromBD(projectID, beadsPath); err == nil {
+			return nil
+		} else {
+			fmt.Fprintf(os.Stderr, "Warning: failed to load beads via bd CLI: %v\n", err)
+		}
+	}
 
 	beadsDir := filepath.Join(beadsPath, "beads")
 
@@ -578,6 +627,9 @@ func (m *Manager) LoadBeadsFromFilesystem(beadsPath string) error {
 		}
 
 		// Add to internal cache
+		if bead.ProjectID == "" && projectID != "" {
+			bead.ProjectID = projectID
+		}
 		m.beads[bead.ID] = &bead
 		m.workGraph.Beads[bead.ID] = &bead
 		m.beadFiles[bead.ID] = beadPath
@@ -586,6 +638,79 @@ func (m *Manager) LoadBeadsFromFilesystem(beadsPath string) error {
 
 	if loadedCount > 0 {
 		fmt.Fprintf(os.Stderr, "Loaded %d bead(s) from %s\n", loadedCount, beadsDir)
+	}
+
+	m.workGraph.UpdatedAt = time.Now()
+	return nil
+}
+
+type bdIssue struct {
+	ID          string     `json:"id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Status      string     `json:"status"`
+	Priority    int        `json:"priority"`
+	IssueType   string     `json:"issue_type"`
+	Assignee    string     `json:"assignee"`
+	Labels      []string   `json:"labels"`
+	Parent      string     `json:"parent"`
+	Children    []string   `json:"children"`
+	BlockedBy   []string   `json:"blocked_by"`
+	Blocks      []string   `json:"blocks"`
+	RelatedTo   []string   `json:"related_to"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	ClosedAt    *time.Time `json:"closed_at"`
+}
+
+func (m *Manager) loadBeadsFromBD(projectID, beadsPath string) error {
+	cmd := exec.Command(m.bdPath, "list", "--json", "--limit", "0")
+	if dir := beadsRootDir(beadsPath); dir != "" {
+		cmd.Dir = dir
+	}
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("bd list failed: %w: %s", err, strings.TrimSpace(string(output)))
+	}
+
+	trimmed := strings.TrimSpace(string(output))
+	if trimmed == "" {
+		return nil
+	}
+
+	var issues []bdIssue
+	if err := json.Unmarshal([]byte(trimmed), &issues); err != nil {
+		return fmt.Errorf("failed to parse bd list output: %w", err)
+	}
+
+	for _, issue := range issues {
+		beadType := issue.IssueType
+		if beadType == "" {
+			beadType = "task"
+		}
+
+		bead := &models.Bead{
+			ID:          issue.ID,
+			Type:        beadType,
+			Title:       issue.Title,
+			Description: issue.Description,
+			Status:      models.BeadStatus(issue.Status),
+			Priority:    models.BeadPriority(issue.Priority),
+			ProjectID:   projectID,
+			AssignedTo:  issue.Assignee,
+			BlockedBy:   issue.BlockedBy,
+			Blocks:      issue.Blocks,
+			RelatedTo:   issue.RelatedTo,
+			Parent:      issue.Parent,
+			Children:    issue.Children,
+			Tags:        issue.Labels,
+			CreatedAt:   issue.CreatedAt,
+			UpdatedAt:   issue.UpdatedAt,
+			ClosedAt:    issue.ClosedAt,
+		}
+
+		m.beads[bead.ID] = bead
+		m.workGraph.Beads[bead.ID] = bead
 	}
 
 	m.workGraph.UpdatedAt = time.Now()
