@@ -1,6 +1,6 @@
 # AgentiCorp Architecture Guide
 
-**Last Updated**: January 25, 2026 (Motivation System v1.2)
+**Last Updated**: January 28, 2026 (Readiness gate + per-project git keys)
 
 This document describes the architecture of AgentiCorp, the Agent Orchestration System for managing distributed AI workflows.
 
@@ -58,13 +58,13 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - `docs/BEADS_WORKFLOW.md`
 
 **Concepts**:
-- **Bead**: A YAML-defined work item with type, priority, and dependencies
+- **Bead**: A JSONL-defined work item managed by the `bd` CLI
 - **Status**: `open`, `in_progress`, `done`, `blocked`
 - **Type**: Describes the work (feature, bugfix, test, decision, etc.)
 - **Dependencies**: `blocked_by`, `blocks`, `parent`, `children`
 
 **Workflow**:
-1. Beads are YAML files in `.beads/beads/` directories
+1. Beads are stored in `.beads/issues.jsonl` (managed by `bd`)
 2. Each bead has a unique ID and metadata
 3. Beads are loaded at startup and on project changes
 4. Agents process ready beads (no blocking dependencies)
@@ -680,7 +680,7 @@ make run
 All state is persisted to:
 1. **SQLite Database**: Core application state
 2. **Temporal Server**: Workflow execution state
-3. **Bead YAML Files**: Work item definitions
+3. **Bead JSONL Files**: Work item definitions (`.beads/issues.jsonl`)
 
 State survives container restarts. Clean with:
 
@@ -690,7 +690,7 @@ make distclean  # Wipes database and Temporal state
 
 ## High-Level Architecture Diagram
 
-**Last Updated**: January 20, 2026
+**Last Updated**: January 28, 2026
 
 ### System Component Diagram
 
@@ -711,10 +711,12 @@ graph TB
             OC[Org Chart Manager]
             PRM[Provider Registry]
             PSM[Persona Manager]
+            GM[GitOps Manager]
         end
         
         subgraph "Orchestration"
             DISP[Dispatcher<br/>Routes work to agents]
+            RG[Readiness Gate<br/>Git + beads checks]
             EB[Event Bus<br/>Real-time notifications]
             WG[Work Graph<br/>Dependency tracking]
         end
@@ -730,7 +732,8 @@ graph TB
     subgraph "External Services"
         TP[Temporal Server<br/>:7233]
         DB[(SQLite Database<br/>State persistence)]
-        GIT[Git Repositories<br/>Bead sources]
+        GIT[Git Repositories<br/>code + .beads/issues.jsonl]
+        KEYS[(Project SSH Keys<br/>/app/data/projects)]
     end
 
     subgraph "LLM Providers"
@@ -747,6 +750,7 @@ graph TB
     API --> DM
     API --> PRM
     API --> OC
+    API --> GM
     
     PM --> DB
     AM --> DB
@@ -755,7 +759,10 @@ graph TB
     PRM --> DB
     OC --> DB
     
-    PM -.loads beads.-> GIT
+    PM --> GM
+    GM -.syncs.-> GIT
+    GM --> KEYS
+    BM -.loads .beads/issues.jsonl.-> GIT
     PM --> OC
     OC -.defines roles.-> AM
     
@@ -763,6 +770,9 @@ graph TB
     DISP --> BM
     DISP --> WG
     DISP --> TM
+    DISP --> RG
+    RG --> GM
+    RG --> BM
     
     TM --> TP
     AGW --> TP
@@ -789,6 +799,7 @@ graph TB
     style DB fill:#fff4e1
     style TP fill:#fff4e1
     style GIT fill:#fff4e1
+    style KEYS fill:#fff4e1
     style PROV1 fill:#e8f5e9
     style PROV2 fill:#e8f5e9
     style PROV3 fill:#e8f5e9
@@ -801,20 +812,26 @@ sequenceDiagram
     participant User
     participant Git
     participant PM as Project Manager
+    participant GM as GitOps Manager
     participant BM as Bead Manager
     participant WG as Work Graph
     participant DISP as Dispatcher
+    participant RG as Readiness Gate
     participant AM as Agent Manager
     participant PROV as Provider
     participant TP as Temporal
     participant DB as Database
 
-    User->>Git: Push .beads/beads/*.yaml
-    PM->>Git: Pull project beads
-    PM->>BM: Load beads
+    User->>Git: Push .beads/issues.jsonl
+    PM->>GM: Sync project repo
+    GM->>Git: git fetch/pull (SSH key)
+    PM->>BM: Load beads (bd JSONL)
     BM->>WG: Update dependency graph
     BM->>DB: Persist beads
     
+    DISP->>RG: Validate readiness
+    RG->>GM: Check git access
+    RG->>BM: Verify beads path
     DISP->>WG: Get ready beads
     WG-->>DISP: Beads with no blockers
     DISP->>AM: Get available agents
