@@ -60,8 +60,8 @@ cache:
   cleanup_period: 5m          # How often to clean expired entries
 
 providers:
-  - id: puck-local
-    name: Puck Local
+  - id: plubbit-local
+    name: Plubbit Local
     type: local
     endpoint: http://plubbit.local:8000/v1
     model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
