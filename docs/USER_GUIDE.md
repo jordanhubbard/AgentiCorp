@@ -127,9 +127,34 @@ latency weighted) with the AgentiCorp persona context.
 2. Enter your question and click **Send**.
 3. Review the response and provider/model metadata.
 
+## Configuration
+
+AgentiCorp is configured via `config.yaml`. Key sections include:
+
+### Dispatch Configuration
+
+```yaml
+dispatch:
+  max_hops: 5  # Maximum times a bead can be redispatched before escalation
+```
+
+**Dispatch Hop Limit**: When a bead is dispatched (assigned to an agent) more than `max_hops` times without being closed, it is automatically escalated to P0 priority and a CEO decision bead is created. This prevents infinite redispatch loops and ensures stuck work gets human attention.
+
+The system automatically enables redispatch for open and in-progress beads, allowing them to be picked up by idle agents. Dispatch history is tracked in the bead's context.
+
+### Other Configuration Sections
+
+- `agents`: Agent concurrency, personas, heartbeat intervals
+- `beads`: Bead CLI path, auto-sync settings
+- `security`: Authentication, CORS, PKI settings
+- `temporal`: Workflow orchestration connection
+
+See `config.yaml` for full configuration options.
+
 ## Troubleshooting
 
 - If beads fail to load, confirm `.beads/issues.jsonl` exists and `bd list` works.
 - If providers are missing, register them in the Providers UI and re-negotiate models.
 - If providers show as disabled, check heartbeat errors and verify the provider endpoint.
 - If no work is dispatched, check the Project Viewer for blocked beads, missing agents, or readiness gate failures.
+- If beads are repeatedly dispatched without progress, check the dispatch hop count in the bead's context. The system will escalate to P0 after `max_hops` dispatches.

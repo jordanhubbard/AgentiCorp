@@ -167,6 +167,22 @@ if b.Priority == models.BeadPriorityP0 && !isAutoFiled {
 
 This allows critical auto-filed bugs to be immediately dispatched to technical agents.
 
+### Dispatch Hop Limit
+
+To prevent infinite redispatch loops, the dispatcher tracks how many times a bead has been dispatched. If a bead exceeds the configured `max_hops` (default: 5), it is escalated to P0 priority and a CEO decision bead is created:
+
+```go
+// Check dispatch count and escalate if needed
+if dispatchCount >= maxHops {
+    // Escalate to P0 and create CEO decision
+    updates["priority"] = models.BeadPriorityP0
+    updates["status"] = models.BeadStatusOpen
+    updates["assigned_to"] = ""
+}
+```
+
+This ensures stuck beads don't cycle indefinitely and receive human attention.
+
 ## Agent Investigation Guidelines
 
 When an agent receives an auto-filed bug bead, the following context is available:

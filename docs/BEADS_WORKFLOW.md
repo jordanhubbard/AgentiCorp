@@ -78,6 +78,16 @@ curl -X PATCH http://localhost:8080/api/v1/beads/ac-XXX \
 - **blocked**: Waiting on another bead or decision
 - **closed**: Completed
 
+## Dispatch and Redispatch
+
+AgentiCorp automatically dispatches open beads to idle agents. The system tracks dispatch history in the bead's context:
+
+- **Auto-redispatch**: Open and in-progress beads are automatically marked for redispatch, allowing them to be picked up by idle agents if work stalls
+- **Dispatch hop limit**: If a bead is dispatched more than `max_hops` times (default: 5) without being closed, it is escalated to **P0 priority** and a **CEO decision bead** is created
+- **Escalation prevents loops**: This ensures stuck or problematic work doesn't cycle indefinitely and gets human attention
+
+Dispatch history is stored in the bead's `context.dispatch_history` field and includes timestamps, agent IDs, and outcomes.
+
 ## Best Practices
 
 1. **File beads early**: Create a bead when you start work, not when you're done
@@ -86,6 +96,7 @@ curl -X PATCH http://localhost:8080/api/v1/beads/ac-XXX \
 4. **Link dependencies**: Use `blocks` and `blocked_by` to show relationships
 5. **Use appropriate priority**: Help others understand urgency
 6. **Add context**: Branch names, related issues, or other relevant info
+7. **Close beads when done**: Prevent unnecessary redispatch by closing completed work
 
 ## Example Workflow
 
