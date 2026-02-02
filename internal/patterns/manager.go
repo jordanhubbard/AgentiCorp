@@ -13,6 +13,7 @@ type Manager struct {
 	cacheAnalyzer   *cache.Analyzer
 	patternAnalyzer *Analyzer
 	optimizer       *Optimizer
+	promptOptimizer *PromptOptimizer
 	config          *AnalysisConfig
 }
 
@@ -27,6 +28,7 @@ func NewManager(storage analytics.Storage, config *AnalysisConfig) *Manager {
 		cacheAnalyzer:   cache.NewAnalyzer(storage, nil),
 		patternAnalyzer: NewAnalyzer(storage, config),
 		optimizer:       NewOptimizer(config),
+		promptOptimizer: NewPromptOptimizer(storage, nil),
 		config:          config,
 	}
 }
@@ -114,4 +116,14 @@ func (m *Manager) GetAnomalies(ctx context.Context) ([]*PatternAnomaly, error) {
 	}
 
 	return patternReport.Anomalies, nil
+}
+
+// AnalyzePrompts runs prompt optimization analysis
+func (m *Manager) AnalyzePrompts(ctx context.Context) (*PromptAnalysisReport, error) {
+	return m.promptOptimizer.AnalyzePrompts(ctx)
+}
+
+// GetPromptOptimizations returns top prompt optimization opportunities
+func (m *Manager) GetPromptOptimizations(ctx context.Context, limit int) ([]*PromptOptimization, error) {
+	return m.promptOptimizer.GetTopOptimizations(ctx, limit)
 }

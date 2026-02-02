@@ -262,6 +262,8 @@ func (s *Server) SetupRoutes() http.Handler {
 	mux.HandleFunc("/api/v1/patterns/expensive", s.handleExpensivePatterns)
 	mux.HandleFunc("/api/v1/patterns/anomalies", s.handleAnomalies)
 	mux.HandleFunc("/api/v1/optimizations", s.handleOptimizations)
+	mux.HandleFunc("/api/v1/prompts/analysis", s.handlePromptAnalysis)
+	mux.HandleFunc("/api/v1/prompts/optimizations", s.handlePromptOptimizations)
 	mux.HandleFunc("/api/v1/optimizations/substitutions", s.handleSubstitutions)
 	mux.HandleFunc("/api/v1/optimizations/", s.handleOptimizationActions)
 

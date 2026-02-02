@@ -238,3 +238,66 @@ func (s *Server) handleOptimizationActions(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+// handlePromptAnalysis handles GET /api/v1/prompts/analysis
+func (s *Server) handlePromptAnalysis(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Get pattern manager
+	patternManager := s.agenticorp.GetPatternManager()
+	if patternManager == nil {
+		http.Error(w, "Pattern analysis not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	// Run prompt analysis
+	report, err := patternManager.AnalyzePrompts(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(report)
+}
+
+// handlePromptOptimizations handles GET /api/v1/prompts/optimizations
+func (s *Server) handlePromptOptimizations(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse limit parameter
+	limit := 10
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if val, err := strconv.Atoi(limitStr); err == nil {
+			limit = val
+		}
+	}
+
+	// Get pattern manager
+	patternManager := s.agenticorp.GetPatternManager()
+	if patternManager == nil {
+		http.Error(w, "Pattern analysis not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	// Get prompt optimizations
+	optimizations, err := patternManager.GetPromptOptimizations(r.Context(), limit)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"optimizations": optimizations,
+		"count":         len(optimizations),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
