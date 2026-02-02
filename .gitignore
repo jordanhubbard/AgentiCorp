@@ -42,3 +42,4 @@ arbiter-*
 # Web UI build artifacts
 web/dist/
 agenticorp-self/
+.keys.json
