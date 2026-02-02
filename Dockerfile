@@ -1,8 +1,8 @@
 # Build stage
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
-# Install build dependencies (including gcc for CGO/sqlite3)
-RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev openssh-client
+# Install build dependencies (including gcc for CGO/sqlite3 and icu-dev for beads)
+RUN apk add --no-cache git ca-certificates tzdata gcc g++ musl-dev openssh-client icu-dev
 
 # Set working directory
 WORKDIR /build
