@@ -18,6 +18,16 @@ func newTestAgentiCorp(t *testing.T) (*AgentiCorp, string) {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
 
+	// Create subdirectories for test isolation
+	keysDir := tmp + "/keys"
+	srcDir := tmp + "/src"
+	if err := os.MkdirAll(keysDir, 0755); err != nil {
+		t.Fatalf("failed to create keys dir: %v", err)
+	}
+	if err := os.MkdirAll(srcDir, 0755); err != nil {
+		t.Fatalf("failed to create src dir: %v", err)
+	}
+
 	cfg := &config.Config{
 		Agents: config.AgentsConfig{MaxConcurrent: 1, DefaultPersonaPath: "./personas", HeartbeatInterval: 10 * time.Second, FileLockTimeout: 10 * time.Minute},
 		Beads:  config.BeadsConfig{BDPath: ""},
@@ -28,6 +38,9 @@ func newTestAgentiCorp(t *testing.T) (*AgentiCorp, string) {
 			Host: "",
 		},
 		Database: config.DatabaseConfig{Type: "", Path: ""},
+		Git: config.GitConfig{
+			ProjectKeyDir: keysDir,
+		},
 	}
 
 	a, err := New(cfg)

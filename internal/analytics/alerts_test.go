@@ -63,13 +63,12 @@ func TestMonthlyBudgetAlert(t *testing.T) {
 	ctx := context.Background()
 
 	now := time.Now()
-	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-
-	// Add logs throughout the month that exceed budget
+	// Add logs in the past few hours (all within current month and before "now")
+	// to ensure they're included in the query
 	for i := 0; i < 10; i++ {
 		storage.SaveLog(ctx, &RequestLog{
 			ID:        fmt.Sprintf("log-%d", i),
-			Timestamp: startOfMonth.Add(time.Duration(i*24) * time.Hour),
+			Timestamp: now.Add(-time.Duration(i+1) * time.Hour), // Go backwards from now
 			UserID:    "user-test",
 			CostUSD:   250.0, // Total: $2500, exceeds $2000 budget
 		})
@@ -81,6 +80,20 @@ func TestMonthlyBudgetAlert(t *testing.T) {
 	}
 
 	checker := NewAlertChecker(storage, config)
+
+	// Debug: Check what stats we're getting
+	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+	stats, statsErr := storage.GetLogStats(ctx, &LogFilter{
+		UserID:    "user-test",
+		StartTime: startOfMonth,
+		EndTime:   now,
+	})
+	if statsErr != nil {
+		t.Fatalf("GetLogStats failed: %v", statsErr)
+	}
+	t.Logf("Stats: TotalRequests=%d, TotalCost=$%.2f, Budget=$%.2f",
+		stats.TotalRequests, stats.TotalCostUSD, config.MonthlyBudgetUSD)
+
 	alerts, err := checker.CheckAlerts(ctx)
 
 	if err != nil {
@@ -88,7 +101,8 @@ func TestMonthlyBudgetAlert(t *testing.T) {
 	}
 
 	if len(alerts) == 0 {
-		t.Fatal("Expected monthly budget alert, got none")
+		t.Fatalf("Expected monthly budget alert, got none. Total cost: $%.2f, Budget: $%.2f",
+			stats.TotalCostUSD, config.MonthlyBudgetUSD)
 	}
 
 	alert := alerts[0]
