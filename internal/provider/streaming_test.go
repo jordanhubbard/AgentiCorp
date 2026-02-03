@@ -30,7 +30,7 @@ func TestStreamingChatCompletion(t *testing.T) {
 		}
 
 		for _, chunk := range chunks {
-			w.Write([]byte(chunk + "\n\n"))
+			_, _ = w.Write([]byte(chunk + "\n\n"))
 			if flusher, ok := w.(http.Flusher); ok {
 				flusher.Flush()
 			}
@@ -94,7 +94,7 @@ func TestStreamingContextCancellation(t *testing.T) {
 		w.Header().Set("Content-Type", "text/event-stream")
 
 		// Send one chunk then hang
-		w.Write([]byte(`data: {"id":"1","object":"chat.completion.chunk","created":1234,"model":"test","choices":[{"index":0,"delta":{"content":"test"}}]}` + "\n\n"))
+		_, _ = w.Write([]byte(`data: {"id":"1","object":"chat.completion.chunk","created":1234,"model":"test","choices":[{"index":0,"delta":{"content":"test"}}]}` + "\n\n"))
 		if flusher, ok := w.(http.Flusher); ok {
 			flusher.Flush()
 		}

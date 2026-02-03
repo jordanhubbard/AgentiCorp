@@ -101,7 +101,9 @@ func TestPromptOptimizer_DetectVerbosity(t *testing.T) {
 		RequestBody:      string(requestBody),
 	}
 
-	storage.SaveLog(context.Background(), log)
+	if err := storage.SaveLog(context.Background(), log); err != nil {
+		t.Fatalf("Failed to save log: %v", err)
+	}
 
 	// Run analysis
 	report, err := optimizer.AnalyzePrompts(context.Background())
@@ -163,7 +165,9 @@ func TestPromptOptimizer_DetectRepetition(t *testing.T) {
 		RequestBody:      string(requestBody),
 	}
 
-	storage.SaveLog(context.Background(), log)
+	if err := storage.SaveLog(context.Background(), log); err != nil {
+		t.Fatalf("Failed to save log: %v", err)
+	}
 
 	// Run analysis
 	report, err := optimizer.AnalyzePrompts(context.Background())
@@ -213,7 +217,9 @@ func TestPromptOptimizer_DetectUnclearInstructions(t *testing.T) {
 		RequestBody:      string(requestBody),
 	}
 
-	storage.SaveLog(context.Background(), log)
+	if err := storage.SaveLog(context.Background(), log); err != nil {
+		t.Fatalf("Failed to save log: %v", err)
+	}
 
 	// Run analysis
 	report, err := optimizer.AnalyzePrompts(context.Background())
@@ -264,7 +270,9 @@ func TestPromptOptimizer_ChatMessages(t *testing.T) {
 		RequestBody:      string(requestBody),
 	}
 
-	storage.SaveLog(context.Background(), log)
+	if err := storage.SaveLog(context.Background(), log); err != nil {
+		t.Fatalf("Failed to save log: %v", err)
+	}
 
 	// Run analysis
 	report, err := optimizer.AnalyzePrompts(context.Background())
@@ -301,7 +309,9 @@ func TestPromptOptimizer_ReportMetrics(t *testing.T) {
 			RequestBody:      string(requestBody),
 		}
 
-		storage.SaveLog(context.Background(), log)
+		if err := storage.SaveLog(context.Background(), log); err != nil {
+			t.Fatalf("Failed to save log: %v", err)
+		}
 	}
 
 	// Run analysis
@@ -353,7 +363,9 @@ func TestPromptOptimizer_MinimumThresholds(t *testing.T) {
 		RequestBody:      string(requestBody),
 	}
 
-	storage.SaveLog(context.Background(), log)
+	if err := storage.SaveLog(context.Background(), log); err != nil {
+		t.Fatalf("Failed to save log: %v", err)
+	}
 
 	// Run analysis
 	report, err := optimizer.AnalyzePrompts(context.Background())

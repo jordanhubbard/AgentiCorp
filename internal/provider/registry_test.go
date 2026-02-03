@@ -123,7 +123,7 @@ func TestProviderTypes(t *testing.T) {
 
 			// Clean up successful registrations
 			if err == nil {
-				registry.Unregister(config.ID)
+				_ = registry.Unregister(config.ID)
 			}
 		})
 	}

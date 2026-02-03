@@ -174,5 +174,7 @@ func (s *Server) Close() error {
 // HandleStatus returns hot-reload status as JSON
 func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(s.GetStats())
+	if err := json.NewEncoder(w).Encode(s.GetStats()); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }

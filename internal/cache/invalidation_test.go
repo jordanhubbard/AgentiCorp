@@ -19,7 +19,9 @@ func TestInvalidateByProvider(t *testing.T) {
 				"provider_id": provider,
 				"model_name":  "gpt-4",
 			}
-			c.Set(ctx, key, map[string]interface{}{"result": "test"}, 1*time.Hour, metadata)
+			if err := c.Set(ctx, key, map[string]interface{}{"result": "test"}, 1*time.Hour, metadata); err != nil {
+				t.Fatalf("Failed to set cache: %v", err)
+			}
 		}
 	}
 
@@ -67,7 +69,9 @@ func TestInvalidateByModel(t *testing.T) {
 				"provider_id": "provider-1",
 				"model_name":  model,
 			}
-			c.Set(ctx, key, map[string]interface{}{"result": "test"}, 1*time.Hour, metadata)
+			if err := c.Set(ctx, key, map[string]interface{}{"result": "test"}, 1*time.Hour, metadata); err != nil {
+				t.Fatalf("Failed to set cache: %v", err)
+			}
 		}
 	}
 
@@ -95,7 +99,9 @@ func TestInvalidateByAge(t *testing.T) {
 	ctx := context.Background()
 
 	// Add old entry
-	c.Set(ctx, "old-key", map[string]interface{}{"result": "old"}, 1*time.Hour, nil)
+	if err := c.Set(ctx, "old-key", map[string]interface{}{"result": "old"}, 1*time.Hour, nil); err != nil {
+		t.Fatalf("Failed to set cache: %v", err)
+	}
 
 	// Manually set cached time to 2 hours ago
 	c.mu.Lock()
@@ -105,7 +111,9 @@ func TestInvalidateByAge(t *testing.T) {
 	c.mu.Unlock()
 
 	// Add recent entry
-	c.Set(ctx, "new-key", map[string]interface{}{"result": "new"}, 1*time.Hour, nil)
+	if err := c.Set(ctx, "new-key", map[string]interface{}{"result": "new"}, 1*time.Hour, nil); err != nil {
+		t.Fatalf("Failed to set cache: %v", err)
+	}
 
 	// Should have 2 entries
 	stats := c.GetStats(ctx)
@@ -137,10 +145,10 @@ func TestInvalidateByPattern(t *testing.T) {
 	ctx := context.Background()
 
 	// Add entries with different key patterns
-	c.Set(ctx, "prefix-test-1", map[string]interface{}{"result": "1"}, 1*time.Hour, nil)
-	c.Set(ctx, "prefix-test-2", map[string]interface{}{"result": "2"}, 1*time.Hour, nil)
-	c.Set(ctx, "other-key-1", map[string]interface{}{"result": "3"}, 1*time.Hour, nil)
-	c.Set(ctx, "prefix-demo-1", map[string]interface{}{"result": "4"}, 1*time.Hour, nil)
+	_ = c.Set(ctx, "prefix-test-1", map[string]interface{}{"result": "1"}, 1*time.Hour, nil)
+	_ = c.Set(ctx, "prefix-test-2", map[string]interface{}{"result": "2"}, 1*time.Hour, nil)
+	_ = c.Set(ctx, "other-key-1", map[string]interface{}{"result": "3"}, 1*time.Hour, nil)
+	_ = c.Set(ctx, "prefix-demo-1", map[string]interface{}{"result": "4"}, 1*time.Hour, nil)
 
 	// Should have 4 entries
 	stats := c.GetStats(ctx)

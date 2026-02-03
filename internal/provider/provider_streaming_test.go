@@ -26,7 +26,7 @@ func TestOllamaStreamingChatCompletion(t *testing.T) {
 		}
 
 		for _, chunk := range chunks {
-			w.Write([]byte(chunk + "\n"))
+			_, _ = w.Write([]byte(chunk + "\n"))
 			if flusher, ok := w.(http.Flusher); ok {
 				flusher.Flush()
 			}
