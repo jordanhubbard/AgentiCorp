@@ -137,7 +137,7 @@ func TestEventFilter(t *testing.T) {
 		ProjectID: "project-1",
 		Data:      map[string]interface{}{},
 	}
-	eb.Publish(event1)
+	_ = eb.Publish(event1)
 
 	// Publish event for project-2 (should be filtered out)
 	event2 := &Event{
@@ -146,7 +146,7 @@ func TestEventFilter(t *testing.T) {
 		ProjectID: "project-2",
 		Data:      map[string]interface{}{},
 	}
-	eb.Publish(event2)
+	_ = eb.Publish(event2)
 
 	// Should only receive event1
 	select {
@@ -197,7 +197,7 @@ func TestMultipleSubscribers(t *testing.T) {
 		ProjectID: "test-project",
 		Data:      map[string]interface{}{},
 	}
-	eb.Publish(event)
+	_ = eb.Publish(event)
 
 	// Both subscribers should receive the event
 	receivedCount := 0

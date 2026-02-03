@@ -110,52 +110,52 @@ func TestCreateApplyFixBead(t *testing.T) {
 
 func TestApplyFixTriggerConditions(t *testing.T) {
 	tests := []struct {
-		name         string
-		beadTitle    string
-		beadType     string
-		closeReason  string
+		name          string
+		beadTitle     string
+		beadType      string
+		closeReason   string
 		shouldTrigger bool
 	}{
 		{
-			name:         "approved code fix",
-			beadTitle:    "[CEO] Code Fix Approval: Fix bug",
-			beadType:     "decision",
-			closeReason:  "Approved. Apply the fix.",
+			name:          "approved code fix",
+			beadTitle:     "[CEO] Code Fix Approval: Fix bug",
+			beadType:      "decision",
+			closeReason:   "Approved. Apply the fix.",
 			shouldTrigger: true,
 		},
 		{
-			name:         "approved with lowercase",
-			beadTitle:    "[ceo] code fix approval: another fix",
-			beadType:     "decision",
-			closeReason:  "approved - looks good",
+			name:          "approved with lowercase",
+			beadTitle:     "[ceo] code fix approval: another fix",
+			beadType:      "decision",
+			closeReason:   "approved - looks good",
 			shouldTrigger: true,
 		},
 		{
-			name:         "rejected code fix",
-			beadTitle:    "[CEO] Code Fix Approval: Fix bug",
-			beadType:     "decision",
-			closeReason:  "Rejected. Needs more work.",
+			name:          "rejected code fix",
+			beadTitle:     "[CEO] Code Fix Approval: Fix bug",
+			beadType:      "decision",
+			closeReason:   "Rejected. Needs more work.",
 			shouldTrigger: false,
 		},
 		{
-			name:         "not a decision bead",
-			beadTitle:    "[CEO] Code Fix Approval: Fix bug",
-			beadType:     "task",
-			closeReason:  "Approved",
+			name:          "not a decision bead",
+			beadTitle:     "[CEO] Code Fix Approval: Fix bug",
+			beadType:      "task",
+			closeReason:   "Approved",
 			shouldTrigger: false,
 		},
 		{
-			name:         "not a code fix approval",
-			beadTitle:    "[CEO] Strategic Review",
-			beadType:     "decision",
-			closeReason:  "Approved",
+			name:          "not a code fix approval",
+			beadTitle:     "[CEO] Strategic Review",
+			beadType:      "decision",
+			closeReason:   "Approved",
 			shouldTrigger: false,
 		},
 		{
-			name:         "closed without approval",
-			beadTitle:    "[CEO] Code Fix Approval: Fix bug",
-			beadType:     "decision",
-			closeReason:  "Closing for other reason",
+			name:          "closed without approval",
+			beadTitle:     "[CEO] Code Fix Approval: Fix bug",
+			beadType:      "decision",
+			closeReason:   "Closing for other reason",
 			shouldTrigger: false,
 		},
 	}

@@ -83,20 +83,20 @@ func (a *Analyzer) Analyze(ctx context.Context) (*AnalysisReport, error) {
 	}
 
 	report := &AnalysisReport{
-		AnalyzedAt:         now,
-		TimeWindow:         a.config.TimeWindow,
-		TimeWindowStart:    startTime,
-		TimeWindowEnd:      now,
-		TotalRequests:      int64(len(logs)),
-		UniqueRequests:     int64(len(duplicates)),
-		DuplicateCount:     duplicateCount,
-		DuplicatePercent:   duplicatePercent,
-		Opportunities:      opportunities,
-		TotalSavingsUSD:    totalSavings,
-		TotalTokensSaved:   totalTokens,
-		TotalLatencySaved:  totalLatency,
-		MonthlyProjection:  monthlyProjection,
-		Recommendations:    recommendations,
+		AnalyzedAt:        now,
+		TimeWindow:        a.config.TimeWindow,
+		TimeWindowStart:   startTime,
+		TimeWindowEnd:     now,
+		TotalRequests:     int64(len(logs)),
+		UniqueRequests:    int64(len(duplicates)),
+		DuplicateCount:    duplicateCount,
+		DuplicatePercent:  duplicatePercent,
+		Opportunities:     opportunities,
+		TotalSavingsUSD:   totalSavings,
+		TotalTokensSaved:  totalTokens,
+		TotalLatencySaved: totalLatency,
+		MonthlyProjection: monthlyProjection,
+		Recommendations:   recommendations,
 	}
 
 	return report, nil
@@ -156,17 +156,17 @@ func (a *Analyzer) detectDuplicates(logs []*analytics.RequestLog) []*DuplicateRe
 		}
 
 		dup := &DuplicateRequest{
-			RequestHash:      hash,
-			FirstSeen:        firstSeen,
-			LastSeen:         lastSeen,
-			OccurrenceCount:  len(groupLogs),
-			ProviderID:       groupLogs[0].ProviderID,
-			ModelName:        groupLogs[0].ModelName,
-			TotalTokens:      totalTokens,
-			TotalCost:        totalCost,
-			AvgLatencyMs:     avgLatency,
-			SampleRequest:    truncateString(groupLogs[0].RequestBody, 200),
-			RequestIDs:       requestIDs,
+			RequestHash:     hash,
+			FirstSeen:       firstSeen,
+			LastSeen:        lastSeen,
+			OccurrenceCount: len(groupLogs),
+			ProviderID:      groupLogs[0].ProviderID,
+			ModelName:       groupLogs[0].ModelName,
+			TotalTokens:     totalTokens,
+			TotalCost:       totalCost,
+			AvgLatencyMs:    avgLatency,
+			SampleRequest:   truncateString(groupLogs[0].RequestBody, 200),
+			RequestIDs:      requestIDs,
 		}
 
 		duplicates = append(duplicates, dup)

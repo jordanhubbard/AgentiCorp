@@ -4,12 +4,12 @@ import "github.com/jordanhubbard/agenticorp/internal/cache"
 
 // ComprehensiveReport combines all analysis results
 type ComprehensiveReport struct {
-	PatternAnalysis        *PatternReport           `json:"pattern_analysis"`
-	CacheOpportunities     []*cache.CacheOpportunity `json:"cache_opportunities"`
-	BatchingOpportunities  []BatchOpportunity       `json:"batching_opportunities"`
-	Optimizations          []*Optimization          `json:"optimizations"`
-	TotalSavingsUSD        float64                  `json:"total_savings_usd"`
-	MonthlySavingsUSD      float64                  `json:"monthly_savings_usd"`
+	PatternAnalysis       *PatternReport            `json:"pattern_analysis"`
+	CacheOpportunities    []*cache.CacheOpportunity `json:"cache_opportunities"`
+	BatchingOpportunities []BatchOpportunity        `json:"batching_opportunities"`
+	Optimizations         []*Optimization           `json:"optimizations"`
+	TotalSavingsUSD       float64                   `json:"total_savings_usd"`
+	MonthlySavingsUSD     float64                   `json:"monthly_savings_usd"`
 }
 
 // BatchOpportunity represents a batching opportunity

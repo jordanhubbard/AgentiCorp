@@ -102,7 +102,7 @@ func TestMilestoneProgress(t *testing.T) {
 
 func TestDefaultDeadlineThresholds(t *testing.T) {
 	thresholds := DefaultDeadlineThresholds()
-	
+
 	if thresholds[UrgencyLevelCritical] != 3 {
 		t.Errorf("expected critical threshold of 3, got %d", thresholds[UrgencyLevelCritical])
 	}

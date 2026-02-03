@@ -6,17 +6,17 @@ import (
 
 // DuplicateRequest represents a detected duplicate request pattern
 type DuplicateRequest struct {
-	RequestHash      string            `json:"request_hash"`
-	FirstSeen        time.Time         `json:"first_seen"`
-	LastSeen         time.Time         `json:"last_seen"`
-	OccurrenceCount  int               `json:"occurrence_count"`
-	ProviderID       string            `json:"provider_id"`
-	ModelName        string            `json:"model_name"`
-	TotalTokens      int64             `json:"total_tokens"`
-	TotalCost        float64           `json:"total_cost"`
-	AvgLatencyMs     int64             `json:"avg_latency_ms"`
-	SampleRequest    string            `json:"sample_request,omitempty"`
-	RequestIDs       []string          `json:"request_ids,omitempty"`
+	RequestHash     string    `json:"request_hash"`
+	FirstSeen       time.Time `json:"first_seen"`
+	LastSeen        time.Time `json:"last_seen"`
+	OccurrenceCount int       `json:"occurrence_count"`
+	ProviderID      string    `json:"provider_id"`
+	ModelName       string    `json:"model_name"`
+	TotalTokens     int64     `json:"total_tokens"`
+	TotalCost       float64   `json:"total_cost"`
+	AvgLatencyMs    int64     `json:"avg_latency_ms"`
+	SampleRequest   string    `json:"sample_request,omitempty"`
+	RequestIDs      []string  `json:"request_ids,omitempty"`
 }
 
 // CacheOpportunity represents a caching optimization opportunity
@@ -40,21 +40,21 @@ type CacheOpportunity struct {
 
 // AnalysisReport provides a comprehensive cache analysis
 type AnalysisReport struct {
-	AnalyzedAt         time.Time           `json:"analyzed_at"`
-	TimeWindow         time.Duration       `json:"time_window"`
-	TimeWindowStart    time.Time           `json:"time_window_start"`
-	TimeWindowEnd      time.Time           `json:"time_window_end"`
-	TotalRequests      int64               `json:"total_requests"`
-	UniqueRequests     int64               `json:"unique_requests"`
-	DuplicateCount     int64               `json:"duplicate_count"`
-	DuplicatePercent   float64             `json:"duplicate_percent"`
-	Opportunities      []*CacheOpportunity `json:"opportunities"`
-	TotalSavingsUSD    float64             `json:"total_savings_usd"`
-	TotalTokensSaved   int64               `json:"total_tokens_saved"`
-	TotalLatencySaved  int64               `json:"total_latency_saved_ms"`
-	MonthlyProjection  float64             `json:"monthly_projection_usd"`
-	Recommendations    []string            `json:"recommendations"`
-	AutoOptimizations  []string            `json:"auto_optimizations,omitempty"`
+	AnalyzedAt        time.Time           `json:"analyzed_at"`
+	TimeWindow        time.Duration       `json:"time_window"`
+	TimeWindowStart   time.Time           `json:"time_window_start"`
+	TimeWindowEnd     time.Time           `json:"time_window_end"`
+	TotalRequests     int64               `json:"total_requests"`
+	UniqueRequests    int64               `json:"unique_requests"`
+	DuplicateCount    int64               `json:"duplicate_count"`
+	DuplicatePercent  float64             `json:"duplicate_percent"`
+	Opportunities     []*CacheOpportunity `json:"opportunities"`
+	TotalSavingsUSD   float64             `json:"total_savings_usd"`
+	TotalTokensSaved  int64               `json:"total_tokens_saved"`
+	TotalLatencySaved int64               `json:"total_latency_saved_ms"`
+	MonthlyProjection float64             `json:"monthly_projection_usd"`
+	Recommendations   []string            `json:"recommendations"`
+	AutoOptimizations []string            `json:"auto_optimizations,omitempty"`
 }
 
 // AnalysisConfig configures the cache analysis
@@ -81,10 +81,10 @@ func DefaultAnalysisConfig() *AnalysisConfig {
 
 // OptimizationResult represents the result of applying optimizations
 type OptimizationResult struct {
-	AppliedCount      int      `json:"applied_count"`
-	SkippedCount      int      `json:"skipped_count"`
-	TotalSavingsUSD   float64  `json:"total_savings_usd"`
-	AppliedPatterns   []string `json:"applied_patterns"`
-	SkippedPatterns   []string `json:"skipped_patterns,omitempty"`
-	Errors            []string `json:"errors,omitempty"`
+	AppliedCount    int      `json:"applied_count"`
+	SkippedCount    int      `json:"skipped_count"`
+	TotalSavingsUSD float64  `json:"total_savings_usd"`
+	AppliedPatterns []string `json:"applied_patterns"`
+	SkippedPatterns []string `json:"skipped_patterns,omitempty"`
+	Errors          []string `json:"errors,omitempty"`
 }

@@ -359,7 +359,7 @@ func (r *Router) executeAction(ctx context.Context, action Action, actx ActionCo
 		}
 		// Advance workflow with approved condition
 		resultData := map[string]string{
-			"approved_by": actx.AgentID,
+			"approved_by":     actx.AgentID,
 			"approval_reason": action.Reason,
 		}
 		err := r.Workflow.AdvanceWorkflowWithCondition(action.BeadID, actx.AgentID, "approved", resultData)
@@ -378,7 +378,7 @@ func (r *Router) executeAction(ctx context.Context, action Action, actx ActionCo
 		}
 		// Advance workflow with rejected condition
 		resultData := map[string]string{
-			"rejected_by": actx.AgentID,
+			"rejected_by":      actx.AgentID,
 			"rejection_reason": action.Reason,
 		}
 		err := r.Workflow.AdvanceWorkflowWithCondition(action.BeadID, actx.AgentID, "rejected", resultData)

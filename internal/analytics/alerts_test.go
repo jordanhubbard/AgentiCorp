@@ -336,9 +336,9 @@ func TestEmailNotificationDisabled(t *testing.T) {
 func containsString(str, substr string) bool {
 	return len(str) > 0 && len(substr) > 0 &&
 		(str == substr || len(str) >= len(substr) &&
-		(str[:len(substr)] == substr ||
-		 str[len(str)-len(substr):] == substr ||
-		 findInString(str, substr)))
+			(str[:len(substr)] == substr ||
+				str[len(str)-len(substr):] == substr ||
+				findInString(str, substr)))
 }
 
 func findInString(str, substr string) bool {

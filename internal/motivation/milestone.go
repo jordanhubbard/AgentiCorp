@@ -8,11 +8,11 @@ import (
 type MilestoneType string
 
 const (
-	MilestoneTypeRelease        MilestoneType = "release"
-	MilestoneTypeSprintEnd      MilestoneType = "sprint_end"
-	MilestoneTypeQuarterReview  MilestoneType = "quarterly_review"
-	MilestoneTypeAnnualReview   MilestoneType = "annual_review"
-	MilestoneTypeCustom         MilestoneType = "custom"
+	MilestoneTypeRelease       MilestoneType = "release"
+	MilestoneTypeSprintEnd     MilestoneType = "sprint_end"
+	MilestoneTypeQuarterReview MilestoneType = "quarterly_review"
+	MilestoneTypeAnnualReview  MilestoneType = "annual_review"
+	MilestoneTypeCustom        MilestoneType = "custom"
 )
 
 // MilestoneStatus represents the current state of a milestone
@@ -45,16 +45,16 @@ type Milestone struct {
 	Description string          `json:"description" db:"description"`
 	Type        MilestoneType   `json:"type" db:"type"`
 	Status      MilestoneStatus `json:"status" db:"status"`
-	
+
 	// Timing
-	DueDate     time.Time   `json:"due_date" db:"due_date"`
-	StartDate   *time.Time  `json:"start_date,omitempty" db:"start_date"`
-	CompletedAt *time.Time  `json:"completed_at,omitempty" db:"completed_at"`
+	DueDate     time.Time  `json:"due_date" db:"due_date"`
+	StartDate   *time.Time `json:"start_date,omitempty" db:"start_date"`
+	CompletedAt *time.Time `json:"completed_at,omitempty" db:"completed_at"`
 
 	// Relationships
-	ParentID    string   `json:"parent_id,omitempty" db:"parent_id"` // Parent milestone (for hierarchical deadlines)
-	BeadIDs     []string `json:"bead_ids,omitempty"`                 // Associated beads
-	DependsOn   []string `json:"depends_on,omitempty"`               // Milestone IDs this depends on
+	ParentID  string   `json:"parent_id,omitempty" db:"parent_id"` // Parent milestone (for hierarchical deadlines)
+	BeadIDs   []string `json:"bead_ids,omitempty"`                 // Associated beads
+	DependsOn []string `json:"depends_on,omitempty"`               // Milestone IDs this depends on
 
 	// Metadata
 	Tags      []string  `json:"tags,omitempty"`
@@ -81,7 +81,7 @@ func (m *Milestone) GetUrgencyLevel() UrgencyLevel {
 	}
 
 	days := m.DaysRemaining()
-	
+
 	if days < 0 {
 		return UrgencyLevelCritical // Overdue
 	}
@@ -112,26 +112,26 @@ type DeadlineInfo struct {
 
 // CalendarEvent represents an event for calendar visualization
 type CalendarEvent struct {
-	ID          string       `json:"id"`
-	Title       string       `json:"title"`
-	Type        string       `json:"type"` // "milestone", "deadline", "motivation_trigger"
-	Date        time.Time    `json:"date"`
-	ProjectID   string       `json:"project_id,omitempty"`
-	EntityID    string       `json:"entity_id"`    // Milestone ID, Bead ID, or Motivation ID
+	ID           string       `json:"id"`
+	Title        string       `json:"title"`
+	Type         string       `json:"type"` // "milestone", "deadline", "motivation_trigger"
+	Date         time.Time    `json:"date"`
+	ProjectID    string       `json:"project_id,omitempty"`
+	EntityID     string       `json:"entity_id"` // Milestone ID, Bead ID, or Motivation ID
 	UrgencyLevel UrgencyLevel `json:"urgency_level,omitempty"`
-	IsRecurring bool         `json:"is_recurring"`
-	Interval    string       `json:"interval,omitempty"` // For recurring: "daily", "weekly", "monthly"
+	IsRecurring  bool         `json:"is_recurring"`
+	Interval     string       `json:"interval,omitempty"` // For recurring: "daily", "weekly", "monthly"
 }
 
 // MilestoneProgress represents progress toward a milestone
 type MilestoneProgress struct {
-	MilestoneID   string  `json:"milestone_id"`
-	TotalBeads    int     `json:"total_beads"`
-	CompletedBeads int    `json:"completed_beads"`
-	InProgressBeads int   `json:"in_progress_beads"`
-	BlockedBeads  int     `json:"blocked_beads"`
-	PercentComplete float64 `json:"percent_complete"`
-	OnTrack       bool    `json:"on_track"` // Based on velocity vs. remaining time
+	MilestoneID         string     `json:"milestone_id"`
+	TotalBeads          int        `json:"total_beads"`
+	CompletedBeads      int        `json:"completed_beads"`
+	InProgressBeads     int        `json:"in_progress_beads"`
+	BlockedBeads        int        `json:"blocked_beads"`
+	PercentComplete     float64    `json:"percent_complete"`
+	OnTrack             bool       `json:"on_track"` // Based on velocity vs. remaining time
 	EstimatedCompletion *time.Time `json:"estimated_completion,omitempty"`
 }
 

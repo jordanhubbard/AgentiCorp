@@ -286,7 +286,7 @@ func TestWorkerTaskExecution(t *testing.T) {
 
 	// Setup
 	registry := provider.NewRegistry()
-	registry.Register(&provider.ProviderConfig{
+	_ = registry.Register(&provider.ProviderConfig{
 		ID:       "test",
 		Name:     "Test",
 		Type:     "custom",
@@ -336,7 +336,7 @@ func TestWorkerTaskExecution(t *testing.T) {
 // TestWorkerPoolLimits tests the worker pool limits
 func TestWorkerPoolLimits(t *testing.T) {
 	registry := provider.NewRegistry()
-	registry.Register(&provider.ProviderConfig{
+	_ = registry.Register(&provider.ProviderConfig{
 		ID:       "test",
 		Name:     "Test",
 		Type:     "custom",

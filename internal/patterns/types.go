@@ -19,62 +19,62 @@ type UsagePattern struct {
 	CostTrend        string    `json:"cost_trend"`        // "increasing", "stable", "decreasing"
 
 	// Additional context for certain pattern types
-	ProviderID       string  `json:"provider_id,omitempty"`
-	ModelName        string  `json:"model_name,omitempty"`
-	UserID           string  `json:"user_id,omitempty"`
-	CostBand         string  `json:"cost_band,omitempty"`
-	LatencyBand      string  `json:"latency_band,omitempty"`
-	AvgContextWindow int     `json:"avg_context_window,omitempty"`
-	UsesFunction     bool    `json:"uses_function,omitempty"`
-	UsesVision       bool    `json:"uses_vision,omitempty"`
-	AvgTokens        int64   `json:"avg_tokens,omitempty"`
+	ProviderID       string `json:"provider_id,omitempty"`
+	ModelName        string `json:"model_name,omitempty"`
+	UserID           string `json:"user_id,omitempty"`
+	CostBand         string `json:"cost_band,omitempty"`
+	LatencyBand      string `json:"latency_band,omitempty"`
+	AvgContextWindow int    `json:"avg_context_window,omitempty"`
+	UsesFunction     bool   `json:"uses_function,omitempty"`
+	UsesVision       bool   `json:"uses_vision,omitempty"`
+	AvgTokens        int64  `json:"avg_tokens,omitempty"`
 }
 
 // ClusterSummary summarizes a cluster of patterns
 type ClusterSummary struct {
-	Type          string  `json:"type"`
-	ClusterCount  int     `json:"cluster_count"`
-	TotalRequests int64   `json:"total_requests"`
-	TotalCost     float64 `json:"total_cost"`
-	AvgClusterSize int    `json:"avg_cluster_size"`
+	Type           string  `json:"type"`
+	ClusterCount   int     `json:"cluster_count"`
+	TotalRequests  int64   `json:"total_requests"`
+	TotalCost      float64 `json:"total_cost"`
+	AvgClusterSize int     `json:"avg_cluster_size"`
 }
 
 // PatternAnomaly represents an anomalous usage pattern
 type PatternAnomaly struct {
-	ID          string    `json:"id"`
-	Type        string    `json:"type"` // "cost-spike", "latency-spike", "error-spike"
-	Description string    `json:"description"`
-	Severity    string    `json:"severity"` // "low", "medium", "high", "critical"
-	DetectedAt  time.Time `json:"detected_at"`
+	ID          string        `json:"id"`
+	Type        string        `json:"type"` // "cost-spike", "latency-spike", "error-spike"
+	Description string        `json:"description"`
+	Severity    string        `json:"severity"` // "low", "medium", "high", "critical"
+	DetectedAt  time.Time     `json:"detected_at"`
 	Pattern     *UsagePattern `json:"pattern,omitempty"`
-	Baseline    float64   `json:"baseline"`
-	Actual      float64   `json:"actual"`
-	Deviation   float64   `json:"deviation"` // standard deviations from baseline
+	Baseline    float64       `json:"baseline"`
+	Actual      float64       `json:"actual"`
+	Deviation   float64       `json:"deviation"` // standard deviations from baseline
 }
 
 // PatternReport contains the results of pattern analysis
 type PatternReport struct {
-	AnalyzedAt       time.Time           `json:"analyzed_at"`
-	TimeWindow       time.Duration       `json:"time_window"`
-	TotalRequests    int64               `json:"total_requests"`
-	TotalCost        float64             `json:"total_cost"`
-	Patterns         []*UsagePattern     `json:"patterns"`
-	Anomalies        []*PatternAnomaly   `json:"anomalies"`
+	AnalyzedAt       time.Time                  `json:"analyzed_at"`
+	TimeWindow       time.Duration              `json:"time_window"`
+	TotalRequests    int64                      `json:"total_requests"`
+	TotalCost        float64                    `json:"total_cost"`
+	Patterns         []*UsagePattern            `json:"patterns"`
+	Anomalies        []*PatternAnomaly          `json:"anomalies"`
 	ClusterSummaries map[string]*ClusterSummary `json:"cluster_summaries"`
-	Recommendations  []string            `json:"recommendations"`
+	Recommendations  []string                   `json:"recommendations"`
 }
 
 // AnalysisConfig configures pattern analysis behavior
 type AnalysisConfig struct {
 	TimeWindow          time.Duration `json:"time_window"`
-	MinRequests         int           `json:"min_requests"`          // Minimum requests to form a pattern
-	MinCostUSD          float64       `json:"min_cost_usd"`          // Minimum cost to flag as expensive
-	ExpensivePercentile float64       `json:"expensive_percentile"`  // Top N% considered expensive
-	AnomalyThreshold    float64       `json:"anomaly_threshold"`     // Std deviations for anomaly
+	MinRequests         int           `json:"min_requests"`         // Minimum requests to form a pattern
+	MinCostUSD          float64       `json:"min_cost_usd"`         // Minimum cost to flag as expensive
+	ExpensivePercentile float64       `json:"expensive_percentile"` // Top N% considered expensive
+	AnomalyThreshold    float64       `json:"anomaly_threshold"`    // Std deviations for anomaly
 	EnableClustering    bool          `json:"enable_clustering"`
 	EnableSubstitutions bool          `json:"enable_substitutions"`
 	EnableRateLimiting  bool          `json:"enable_rate_limiting"`
-	RateLimitThreshold  float64       `json:"rate_limit_threshold"`  // Requests per day
+	RateLimitThreshold  float64       `json:"rate_limit_threshold"` // Requests per day
 }
 
 // DefaultAnalysisConfig returns default configuration

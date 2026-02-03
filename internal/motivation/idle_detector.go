@@ -62,8 +62,8 @@ type IdleState struct {
 	PausedAgents  int `json:"paused_agents"`
 
 	// Bead counts
-	TotalBeads    int `json:"total_beads"`
-	OpenBeads     int `json:"open_beads"`
+	TotalBeads      int `json:"total_beads"`
+	OpenBeads       int `json:"open_beads"`
 	InProgressBeads int `json:"in_progress_beads"`
 
 	// Project idle states
@@ -77,12 +77,12 @@ type IdleState struct {
 
 // ProjectIdleState represents idle state for a single project
 type ProjectIdleState struct {
-	ProjectID   string        `json:"project_id"`
-	IsIdle      bool          `json:"is_idle"`
-	IdleSince   *time.Time    `json:"idle_since,omitempty"`
-	IdlePeriod  time.Duration `json:"idle_period"`
-	AgentCount  int           `json:"agent_count"`
-	OpenBeads   int           `json:"open_beads"`
+	ProjectID  string        `json:"project_id"`
+	IsIdle     bool          `json:"is_idle"`
+	IdleSince  *time.Time    `json:"idle_since,omitempty"`
+	IdlePeriod time.Duration `json:"idle_period"`
+	AgentCount int           `json:"agent_count"`
+	OpenBeads  int           `json:"open_beads"`
 }
 
 // IdleDataProvider provides data needed for idle detection

@@ -2006,36 +2006,6 @@ func (a *AgentiCorp) SelectProvider(ctx context.Context, requirements *routing.P
 	return router.SelectProvider(ctx, providers, requirements)
 }
 
-func (a *AgentiCorp) scoreProviderForRepl(p *internalmodels.Provider) float64 {
-	quality := p.ModelScore
-	modelName := p.SelectedModel
-	if modelName == "" {
-		modelName = p.Model
-	}
-	if modelName == "" {
-		modelName = p.ConfiguredModel
-	}
-	if quality == 0 && a.modelCatalog != nil && modelName != "" {
-		spec := modelcatalog.ParseModelName(modelName)
-		spec.Name = modelName
-		quality = a.modelCatalog.Score(spec)
-	}
-	latency := p.LastHeartbeatLatencyMs
-	if latency <= 0 {
-		latency = 120000
-	}
-	return (quality * 1000) - float64(latency)
-}
-
-func providerIsHealthy(status string) bool {
-	switch status {
-	case "healthy", "active":
-		return true
-	default:
-		return false
-	}
-}
-
 func (a *AgentiCorp) buildAgentiCorpPersonaPrompt() string {
 	persona, err := a.personaManager.LoadPersona("agenticorp")
 	if err != nil {

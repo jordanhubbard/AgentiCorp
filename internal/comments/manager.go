@@ -169,12 +169,12 @@ func (m *Manager) UpdateComment(commentID, authorID, content string) error {
 	// Publish event
 	if m.eventBus != nil {
 		comment := &Comment{
-			ID:             commentID,
-			BeadID:         dbComment.BeadID,
-			AuthorID:       authorID,
-			Content:        content,
-			UpdatedAt:      time.Now(),
-			Mentions:       mentions,
+			ID:        commentID,
+			BeadID:    dbComment.BeadID,
+			AuthorID:  authorID,
+			Content:   content,
+			UpdatedAt: time.Now(),
+			Mentions:  mentions,
 		}
 		m.publishCommentEvent("comment.updated", comment)
 	}

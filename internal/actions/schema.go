@@ -9,22 +9,22 @@ import (
 )
 
 const (
-	ActionAskFollowup  = "ask_followup"
-	ActionReadCode     = "read_code"
-	ActionEditCode     = "edit_code"
-	ActionWriteFile    = "write_file"
-	ActionRunCommand   = "run_command"
-	ActionCreateBead   = "create_bead"
-	ActionCloseBead    = "close_bead"
-	ActionEscalateCEO  = "escalate_ceo"
-	ActionReadFile     = "read_file"
-	ActionReadTree     = "read_tree"
-	ActionSearchText   = "search_text"
-	ActionApplyPatch   = "apply_patch"
-	ActionGitStatus    = "git_status"
-	ActionGitDiff      = "git_diff"
-	ActionApproveBead  = "approve_bead"
-	ActionRejectBead   = "reject_bead"
+	ActionAskFollowup = "ask_followup"
+	ActionReadCode    = "read_code"
+	ActionEditCode    = "edit_code"
+	ActionWriteFile   = "write_file"
+	ActionRunCommand  = "run_command"
+	ActionCreateBead  = "create_bead"
+	ActionCloseBead   = "close_bead"
+	ActionEscalateCEO = "escalate_ceo"
+	ActionReadFile    = "read_file"
+	ActionReadTree    = "read_tree"
+	ActionSearchText  = "search_text"
+	ActionApplyPatch  = "apply_patch"
+	ActionGitStatus   = "git_status"
+	ActionGitDiff     = "git_diff"
+	ActionApproveBead = "approve_bead"
+	ActionRejectBead  = "reject_bead"
 )
 
 type ActionEnvelope struct {
@@ -124,7 +124,7 @@ func stripCodeFences(payload []byte) []byte {
 // models output </think> without opening tag (everything before it is thinking)
 func stripThinkTags(payload []byte) []byte {
 	s := string(payload)
-	
+
 	// First, handle paired <think>...</think> blocks
 	for {
 		start := strings.Index(s, "<think>")
@@ -140,13 +140,13 @@ func stripThinkTags(payload []byte) []byte {
 		// Remove the entire <think>...</think> block
 		s = s[:start] + s[start+end+len("</think>"):]
 	}
-	
+
 	// Handle case where model outputs </think> without opening tag
 	// (common with some reasoning models - everything before </think> is reasoning)
 	if closeIdx := strings.Index(s, "</think>"); closeIdx != -1 {
 		s = s[closeIdx+len("</think>"):]
 	}
-	
+
 	return []byte(strings.TrimSpace(s))
 }
 

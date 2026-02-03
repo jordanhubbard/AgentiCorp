@@ -322,14 +322,14 @@ func (s *Server) handleWorkflowAnalytics(w http.ResponseWriter, r *http.Request)
 	defer recentRows.Close()
 
 	type RecentExecution struct {
-		ID              string `json:"id"`
-		BeadID          string `json:"bead_id"`
-		WorkflowID      string `json:"workflow_id"`
-		WorkflowName    string `json:"workflow_name"`
-		CurrentNodeKey  string `json:"current_node_key"`
-		Status          string `json:"status"`
-		CycleCount      int    `json:"cycle_count"`
-		StartedAt       string `json:"started_at"`
+		ID             string `json:"id"`
+		BeadID         string `json:"bead_id"`
+		WorkflowID     string `json:"workflow_id"`
+		WorkflowName   string `json:"workflow_name"`
+		CurrentNodeKey string `json:"current_node_key"`
+		Status         string `json:"status"`
+		CycleCount     int    `json:"cycle_count"`
+		StartedAt      string `json:"started_at"`
 	}
 
 	recentExecutions := []RecentExecution{}
@@ -342,14 +342,14 @@ func (s *Server) handleWorkflowAnalytics(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(map[string]interface{}{
-		"status_counts":      statusCounts,
-		"type_counts":        typeCounts,
-		"average_cycles":     avgCycles,
-		"max_cycles":         maxCycles,
-		"escalation_rate":    escalationRate,
-		"total_executions":   totalCount,
-		"escalated_count":    escalatedCount,
-		"recent_executions":  recentExecutions,
+		"status_counts":     statusCounts,
+		"type_counts":       typeCounts,
+		"average_cycles":    avgCycles,
+		"max_cycles":        maxCycles,
+		"escalation_rate":   escalationRate,
+		"total_executions":  totalCount,
+		"escalated_count":   escalatedCount,
+		"recent_executions": recentExecutions,
 	}); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}

@@ -120,12 +120,12 @@ type CancelOptions struct {
 // MotivationOptions represents options for registering/triggering a motivation
 type MotivationOptions struct {
 	Name            string                 `json:"name"`
-	Type            string                 `json:"type"`              // "calendar", "event", "threshold", "idle", "external"
-	Condition       string                 `json:"condition"`         // Trigger condition
-	AgentRole       string                 `json:"agent_role"`        // Target agent role
-	Enabled         bool                   `json:"enabled"`           // Is motivation enabled
-	CooldownMinutes int                    `json:"cooldown_minutes"`  // Cooldown between triggers
-	Parameters      map[string]interface{} `json:"parameters"`        // Condition parameters
-	CreateBead      bool                   `json:"create_bead"`       // Create stimulus bead on trigger
-	WakeAgent       bool                   `json:"wake_agent"`        // Wake agent on trigger
+	Type            string                 `json:"type"`             // "calendar", "event", "threshold", "idle", "external"
+	Condition       string                 `json:"condition"`        // Trigger condition
+	AgentRole       string                 `json:"agent_role"`       // Target agent role
+	Enabled         bool                   `json:"enabled"`          // Is motivation enabled
+	CooldownMinutes int                    `json:"cooldown_minutes"` // Cooldown between triggers
+	Parameters      map[string]interface{} `json:"parameters"`       // Condition parameters
+	CreateBead      bool                   `json:"create_bead"`      // Create stimulus bead on trigger
+	WakeAgent       bool                   `json:"wake_agent"`       // Wake agent on trigger
 }

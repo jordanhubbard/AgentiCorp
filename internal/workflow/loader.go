@@ -13,13 +13,13 @@ import (
 
 // WorkflowDefinition represents a workflow definition from YAML
 type WorkflowDefinition struct {
-	ID           string                    `yaml:"id"`
-	Name         string                    `yaml:"name"`
-	Description  string                    `yaml:"description"`
-	WorkflowType string                    `yaml:"workflow_type"`
-	IsDefault    bool                      `yaml:"is_default"`
-	Nodes        []WorkflowNodeDefinition  `yaml:"nodes"`
-	Edges        []WorkflowEdgeDefinition  `yaml:"edges"`
+	ID           string                   `yaml:"id"`
+	Name         string                   `yaml:"name"`
+	Description  string                   `yaml:"description"`
+	WorkflowType string                   `yaml:"workflow_type"`
+	IsDefault    bool                     `yaml:"is_default"`
+	Nodes        []WorkflowNodeDefinition `yaml:"nodes"`
+	Edges        []WorkflowEdgeDefinition `yaml:"edges"`
 }
 
 // WorkflowNodeDefinition represents a node definition from YAML

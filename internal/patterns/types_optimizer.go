@@ -25,7 +25,7 @@ type ProviderAlternative struct {
 	CostPerMToken    float64 `json:"cost_per_mtoken"`
 	EstimatedSavings float64 `json:"estimated_savings"`
 	QualityScore     float64 `json:"quality_score"`
-	LatencyDelta     int64   `json:"latency_delta"`  // ms difference
+	LatencyDelta     int64   `json:"latency_delta"` // ms difference
 	CapabilityMatch  bool    `json:"capability_match"`
 }
 

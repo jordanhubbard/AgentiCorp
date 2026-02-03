@@ -11,55 +11,55 @@ import (
 
 // MotivationResponse represents a motivation in API responses
 type MotivationResponse struct {
-	ID               string                 `json:"id"`
-	Name             string                 `json:"name"`
-	Description      string                 `json:"description"`
-	Type             string                 `json:"type"`
-	Condition        string                 `json:"condition"`
-	Status           string                 `json:"status"`
-	AgentRole        string                 `json:"agent_role,omitempty"`
-	AgentID          string                 `json:"agent_id,omitempty"`
-	ProjectID        string                 `json:"project_id,omitempty"`
-	Parameters       map[string]interface{} `json:"parameters,omitempty"`
-	CooldownMinutes  int                    `json:"cooldown_minutes"`
-	LastTriggeredAt  *time.Time             `json:"last_triggered_at,omitempty"`
-	NextTriggerAt    *time.Time             `json:"next_trigger_at,omitempty"`
-	TriggerCount     int                    `json:"trigger_count"`
-	Priority         int                    `json:"priority"`
-	CreateBead       bool                   `json:"create_bead"`
-	WakeAgent        bool                   `json:"wake_agent"`
-	IsBuiltIn        bool                   `json:"is_built_in"`
-	CreatedAt        time.Time              `json:"created_at"`
-	UpdatedAt        time.Time              `json:"updated_at"`
+	ID              string                 `json:"id"`
+	Name            string                 `json:"name"`
+	Description     string                 `json:"description"`
+	Type            string                 `json:"type"`
+	Condition       string                 `json:"condition"`
+	Status          string                 `json:"status"`
+	AgentRole       string                 `json:"agent_role,omitempty"`
+	AgentID         string                 `json:"agent_id,omitempty"`
+	ProjectID       string                 `json:"project_id,omitempty"`
+	Parameters      map[string]interface{} `json:"parameters,omitempty"`
+	CooldownMinutes int                    `json:"cooldown_minutes"`
+	LastTriggeredAt *time.Time             `json:"last_triggered_at,omitempty"`
+	NextTriggerAt   *time.Time             `json:"next_trigger_at,omitempty"`
+	TriggerCount    int                    `json:"trigger_count"`
+	Priority        int                    `json:"priority"`
+	CreateBead      bool                   `json:"create_bead"`
+	WakeAgent       bool                   `json:"wake_agent"`
+	IsBuiltIn       bool                   `json:"is_built_in"`
+	CreatedAt       time.Time              `json:"created_at"`
+	UpdatedAt       time.Time              `json:"updated_at"`
 }
 
 // CreateMotivationRequest represents a request to create a motivation
 type CreateMotivationRequest struct {
-	Name             string                 `json:"name"`
-	Description      string                 `json:"description"`
-	Type             string                 `json:"type"`
-	Condition        string                 `json:"condition"`
-	AgentRole        string                 `json:"agent_role,omitempty"`
-	AgentID          string                 `json:"agent_id,omitempty"`
-	ProjectID        string                 `json:"project_id,omitempty"`
-	Parameters       map[string]interface{} `json:"parameters,omitempty"`
-	CooldownMinutes  int                    `json:"cooldown_minutes"`
-	Priority         int                    `json:"priority"`
-	CreateBead       bool                   `json:"create_bead"`
-	BeadTemplate     string                 `json:"bead_template,omitempty"`
-	WakeAgent        bool                   `json:"wake_agent"`
+	Name            string                 `json:"name"`
+	Description     string                 `json:"description"`
+	Type            string                 `json:"type"`
+	Condition       string                 `json:"condition"`
+	AgentRole       string                 `json:"agent_role,omitempty"`
+	AgentID         string                 `json:"agent_id,omitempty"`
+	ProjectID       string                 `json:"project_id,omitempty"`
+	Parameters      map[string]interface{} `json:"parameters,omitempty"`
+	CooldownMinutes int                    `json:"cooldown_minutes"`
+	Priority        int                    `json:"priority"`
+	CreateBead      bool                   `json:"create_bead"`
+	BeadTemplate    string                 `json:"bead_template,omitempty"`
+	WakeAgent       bool                   `json:"wake_agent"`
 }
 
 // UpdateMotivationRequest represents a request to update a motivation
 type UpdateMotivationRequest struct {
-	Name             *string                `json:"name,omitempty"`
-	Description      *string                `json:"description,omitempty"`
-	Parameters       map[string]interface{} `json:"parameters,omitempty"`
-	CooldownMinutes  *int                   `json:"cooldown_minutes,omitempty"`
-	Priority         *int                   `json:"priority,omitempty"`
-	CreateBead       *bool                  `json:"create_bead,omitempty"`
-	WakeAgent        *bool                  `json:"wake_agent,omitempty"`
-	Enabled          *bool                  `json:"enabled,omitempty"`
+	Name            *string                `json:"name,omitempty"`
+	Description     *string                `json:"description,omitempty"`
+	Parameters      map[string]interface{} `json:"parameters,omitempty"`
+	CooldownMinutes *int                   `json:"cooldown_minutes,omitempty"`
+	Priority        *int                   `json:"priority,omitempty"`
+	CreateBead      *bool                  `json:"create_bead,omitempty"`
+	WakeAgent       *bool                  `json:"wake_agent,omitempty"`
+	Enabled         *bool                  `json:"enabled,omitempty"`
 }
 
 // TriggerHistoryResponse represents a trigger event in API responses
@@ -77,18 +77,18 @@ type TriggerHistoryResponse struct {
 
 // IdleStateResponse represents the system idle state
 type IdleStateResponse struct {
-	IsSystemIdle      bool                      `json:"is_system_idle"`
-	SystemIdlePeriod  string                    `json:"system_idle_period,omitempty"`
-	TotalAgents       int                       `json:"total_agents"`
-	WorkingAgents     int                       `json:"working_agents"`
-	IdleAgents        int                       `json:"idle_agents"`
-	PausedAgents      int                       `json:"paused_agents"`
-	TotalBeads        int                       `json:"total_beads"`
-	OpenBeads         int                       `json:"open_beads"`
-	InProgressBeads   int                       `json:"in_progress_beads"`
-	IdleProjects      []ProjectIdleResponse     `json:"idle_projects,omitempty"`
-	LastAgentActivity time.Time                 `json:"last_agent_activity"`
-	CheckedAt         time.Time                 `json:"checked_at"`
+	IsSystemIdle      bool                  `json:"is_system_idle"`
+	SystemIdlePeriod  string                `json:"system_idle_period,omitempty"`
+	TotalAgents       int                   `json:"total_agents"`
+	WorkingAgents     int                   `json:"working_agents"`
+	IdleAgents        int                   `json:"idle_agents"`
+	PausedAgents      int                   `json:"paused_agents"`
+	TotalBeads        int                   `json:"total_beads"`
+	OpenBeads         int                   `json:"open_beads"`
+	InProgressBeads   int                   `json:"in_progress_beads"`
+	IdleProjects      []ProjectIdleResponse `json:"idle_projects,omitempty"`
+	LastAgentActivity time.Time             `json:"last_agent_activity"`
+	CheckedAt         time.Time             `json:"checked_at"`
 }
 
 // ProjectIdleResponse represents a project's idle state
@@ -115,7 +115,7 @@ func (s *Server) handleMotivations(w http.ResponseWriter, r *http.Request) {
 // handleMotivation handles operations on a single motivation
 func (s *Server) handleMotivation(w http.ResponseWriter, r *http.Request) {
 	id := s.extractID(r.URL.Path, "/api/v1/motivations/")
-	
+
 	// Check for sub-paths
 	if strings.HasSuffix(r.URL.Path, "/enable") {
 		s.handleEnableMotivation(w, r, id)
@@ -157,12 +157,12 @@ func (s *Server) handleListMotivations(w http.ResponseWriter, r *http.Request) {
 		AgentRole: query.Get("agent_role"),
 		ProjectID: query.Get("project_id"),
 	}
-	
+
 	// Handle status filter (active = only active motivations)
 	if query.Get("active") == "true" {
 		filters.Status = motivation.MotivationStatusActive
 	}
-	
+
 	// Handle built_in filter
 	if query.Get("built_in") == "true" {
 		isBuiltIn := true
@@ -173,7 +173,7 @@ func (s *Server) handleListMotivations(w http.ResponseWriter, r *http.Request) {
 	}
 
 	motivations := registry.List(filters)
-	
+
 	responses := make([]MotivationResponse, 0, len(motivations))
 	for _, m := range motivations {
 		responses = append(responses, motivationToResponse(m))
@@ -523,7 +523,7 @@ func (s *Server) handleMotivationRoles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roles := motivation.ListAllRoles()
-	
+
 	// Get motivations for each role
 	roleMotivations := make(map[string][]MotivationResponse)
 	for _, role := range roles {
@@ -560,8 +560,8 @@ func (s *Server) handleMotivationDefaults(w http.ResponseWriter, r *http.Request
 	}
 
 	s.respondJSON(w, http.StatusOK, map[string]interface{}{
-		"status":  "registered",
-		"count":   len(motivation.DefaultMotivations()),
+		"status": "registered",
+		"count":  len(motivation.DefaultMotivations()),
 	})
 }
 

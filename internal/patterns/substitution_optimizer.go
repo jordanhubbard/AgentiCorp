@@ -9,8 +9,8 @@ import (
 
 // ProviderCostEstimate contains cost estimates for different providers/models
 type ProviderCostEstimate struct {
-	ProviderID string
-	ModelName  string
+	ProviderID         string
+	ModelName          string
 	CostPer1KTokensUSD float64
 	QualityScore       float64 // 0.0-1.0, higher is better
 	Tier               string  // "budget", "mid-tier", "premium"
@@ -56,11 +56,11 @@ func FindProviderCostEstimate(providerID, modelName string) *ProviderCostEstimat
 
 	// Return default estimate
 	return &ProviderCostEstimate{
-		ProviderID:          providerID,
-		ModelName:           modelName,
-		CostPer1KTokensUSD:  0.005, // Default mid-tier pricing
-		QualityScore:        0.75,
-		Tier:                "mid-tier",
+		ProviderID:         providerID,
+		ModelName:          modelName,
+		CostPer1KTokensUSD: 0.005, // Default mid-tier pricing
+		QualityScore:       0.75,
+		Tier:               "mid-tier",
 	}
 }
 

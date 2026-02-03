@@ -8,19 +8,19 @@ import (
 
 // MockStateProvider implements StateProvider for testing
 type MockStateProvider struct {
-	currentTime           time.Time
-	upcomingDeadlines     []BeadDeadlineInfo
-	overdueBeads          []BeadDeadlineInfo
-	beadsByStatus         map[string][]string
-	milestones            []*Milestone
-	idleAgents            []string
-	agentsByRole          map[string][]string
-	systemIdle            bool
-	projectIdle           map[string]bool
-	currentSpending       float64
-	budgetThreshold       float64
-	pendingDecisions      []string
-	externalEvents        map[string][]ExternalEvent
+	currentTime       time.Time
+	upcomingDeadlines []BeadDeadlineInfo
+	overdueBeads      []BeadDeadlineInfo
+	beadsByStatus     map[string][]string
+	milestones        []*Milestone
+	idleAgents        []string
+	agentsByRole      map[string][]string
+	systemIdle        bool
+	projectIdle       map[string]bool
+	currentSpending   float64
+	budgetThreshold   float64
+	pendingDecisions  []string
+	externalEvents    map[string][]ExternalEvent
 }
 
 func NewMockStateProvider() *MockStateProvider {
@@ -95,20 +95,20 @@ func (m *MockStateProvider) GetUnprocessedExternalEvents(eventType string) ([]Ex
 
 // MockActionHandler implements ActionHandler for testing
 type MockActionHandler struct {
-	beadsCreated     []string
-	agentsWoken      []string
-	rolesWoken       []string
+	beadsCreated      []string
+	agentsWoken       []string
+	rolesWoken        []string
 	triggersPublished []*MotivationTrigger
-	workflowsStarted []string
+	workflowsStarted  []string
 }
 
 func NewMockActionHandler() *MockActionHandler {
 	return &MockActionHandler{
-		beadsCreated:     make([]string, 0),
-		agentsWoken:      make([]string, 0),
-		rolesWoken:       make([]string, 0),
+		beadsCreated:      make([]string, 0),
+		agentsWoken:       make([]string, 0),
+		rolesWoken:        make([]string, 0),
 		triggersPublished: make([]*MotivationTrigger, 0),
-		workflowsStarted: make([]string, 0),
+		workflowsStarted:  make([]string, 0),
 	}
 }
 
@@ -258,11 +258,11 @@ func TestEngineCostExceededMotivation(t *testing.T) {
 
 	// Register CFO cost motivation
 	m := &Motivation{
-		Name:      "Cost Exceeded",
-		Type:      MotivationTypeThreshold,
-		Condition: ConditionCostExceeded,
-		AgentRole: "cfo",
-		WakeAgent: true,
+		Name:                "Cost Exceeded",
+		Type:                MotivationTypeThreshold,
+		Condition:           ConditionCostExceeded,
+		AgentRole:           "cfo",
+		WakeAgent:           true,
 		CreateBeadOnTrigger: true,
 		Parameters: map[string]interface{}{
 			"period": "daily",

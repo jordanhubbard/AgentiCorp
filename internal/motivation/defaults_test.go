@@ -67,13 +67,13 @@ func TestDefaultMotivationsRoles(t *testing.T) {
 
 func TestGetMotivationsByRole(t *testing.T) {
 	testCases := []struct {
-		role         string
-		minExpected  int
+		role        string
+		minExpected int
 	}{
-		{"ceo", 3},           // System idle, decision pending, quarterly
-		{"cfo", 3},           // Budget, monthly, idle
-		{"project-manager", 3}, // Deadline approach, deadline passed, velocity
-		{"qa-engineer", 3},   // Bead completed, release approaching, test failure
+		{"ceo", 3},              // System idle, decision pending, quarterly
+		{"cfo", 3},              // Budget, monthly, idle
+		{"project-manager", 3},  // Deadline approach, deadline passed, velocity
+		{"qa-engineer", 3},      // Bead completed, release approaching, test failure
 		{"housekeeping-bot", 2}, // System idle, daily
 	}
 

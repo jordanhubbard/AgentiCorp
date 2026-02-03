@@ -131,39 +131,6 @@ func (s *Server) HandleAutoFileBug(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// assignToQAEngineer finds and assigns the bead to the QA Engineer agent
-func (s *Server) assignToQAEngineer(beadID, projectID string) error {
-	if s.agenticorp == nil {
-		return fmt.Errorf("agenticorp not initialized")
-	}
-
-	// Get list of agents
-	agentManager := s.agenticorp.GetAgentManager()
-	if agentManager == nil {
-		return fmt.Errorf("agent manager not available")
-	}
-
-	agents := agentManager.ListAgents()
-
-	// Find QA Engineer for this project
-	for _, agent := range agents {
-		if agent.Role == "qa-engineer" && agent.ProjectID == projectID {
-			// Update bead with assigned agent
-			updates := map[string]interface{}{
-				"assigned_to": agent.ID,
-			}
-
-			if _, err := s.agenticorp.UpdateBead(beadID, updates); err != nil {
-				return fmt.Errorf("failed to assign bead: %w", err)
-			}
-
-			return nil
-		}
-	}
-
-	return fmt.Errorf("no QA Engineer found for project %s", projectID)
-}
-
 // formatContext converts context map to readable string
 func formatContext(ctx map[string]interface{}) string {
 	if len(ctx) == 0 {

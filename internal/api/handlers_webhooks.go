@@ -16,27 +16,27 @@ import (
 
 // GitHubWebhookPayload represents a generic GitHub webhook payload
 type GitHubWebhookPayload struct {
-	Action     string            `json:"action"`
-	Issue      *GitHubIssue      `json:"issue,omitempty"`
+	Action      string             `json:"action"`
+	Issue       *GitHubIssue       `json:"issue,omitempty"`
 	PullRequest *GitHubPullRequest `json:"pull_request,omitempty"`
-	Comment    *GitHubComment    `json:"comment,omitempty"`
-	Repository *GitHubRepository `json:"repository,omitempty"`
-	Sender     *GitHubUser       `json:"sender,omitempty"`
-	Release    *GitHubRelease    `json:"release,omitempty"`
+	Comment     *GitHubComment     `json:"comment,omitempty"`
+	Repository  *GitHubRepository  `json:"repository,omitempty"`
+	Sender      *GitHubUser        `json:"sender,omitempty"`
+	Release     *GitHubRelease     `json:"release,omitempty"`
 }
 
 // GitHubIssue represents a GitHub issue
 type GitHubIssue struct {
-	ID        int64       `json:"id"`
-	Number    int         `json:"number"`
-	Title     string      `json:"title"`
-	Body      string      `json:"body"`
-	State     string      `json:"state"`
-	URL       string      `json:"html_url"`
-	User      *GitHubUser `json:"user,omitempty"`
+	ID        int64         `json:"id"`
+	Number    int           `json:"number"`
+	Title     string        `json:"title"`
+	Body      string        `json:"body"`
+	State     string        `json:"state"`
+	URL       string        `json:"html_url"`
+	User      *GitHubUser   `json:"user,omitempty"`
 	Labels    []GitHubLabel `json:"labels,omitempty"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
+	CreatedAt string        `json:"created_at"`
+	UpdatedAt string        `json:"updated_at"`
 }
 
 // GitHubPullRequest represents a GitHub pull request
@@ -91,35 +91,35 @@ type GitHubLabel struct {
 
 // GitHubRef represents a git reference
 type GitHubRef struct {
-	Ref  string          `json:"ref"`
-	SHA  string          `json:"sha"`
+	Ref  string            `json:"ref"`
+	SHA  string            `json:"sha"`
 	Repo *GitHubRepository `json:"repo,omitempty"`
 }
 
 // GitHubRelease represents a GitHub release
 type GitHubRelease struct {
-	ID         int64       `json:"id"`
-	TagName    string      `json:"tag_name"`
-	Name       string      `json:"name"`
-	Body       string      `json:"body"`
-	Draft      bool        `json:"draft"`
-	Prerelease bool        `json:"prerelease"`
-	URL        string      `json:"html_url"`
-	Author     *GitHubUser `json:"author,omitempty"`
-	CreatedAt  string      `json:"created_at"`
-	PublishedAt string     `json:"published_at"`
+	ID          int64       `json:"id"`
+	TagName     string      `json:"tag_name"`
+	Name        string      `json:"name"`
+	Body        string      `json:"body"`
+	Draft       bool        `json:"draft"`
+	Prerelease  bool        `json:"prerelease"`
+	URL         string      `json:"html_url"`
+	Author      *GitHubUser `json:"author,omitempty"`
+	CreatedAt   string      `json:"created_at"`
+	PublishedAt string      `json:"published_at"`
 }
 
 // WebhookEvent represents a processed webhook event for the motivation system
 type WebhookEvent struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"` // github_issue_opened, github_pr_opened, etc.
-	Source      string                 `json:"source"`
-	Repository  string                 `json:"repository"`
-	Action      string                 `json:"action"`
-	Data        map[string]interface{} `json:"data"`
-	ReceivedAt  time.Time              `json:"received_at"`
-	Processed   bool                   `json:"processed"`
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"` // github_issue_opened, github_pr_opened, etc.
+	Source     string                 `json:"source"`
+	Repository string                 `json:"repository"`
+	Action     string                 `json:"action"`
+	Data       map[string]interface{} `json:"data"`
+	ReceivedAt time.Time              `json:"received_at"`
+	Processed  bool                   `json:"processed"`
 }
 
 // handleGitHubWebhook handles incoming GitHub webhook events
@@ -173,10 +173,10 @@ func (s *Server) handleGitHubWebhook(w http.ResponseWriter, r *http.Request) {
 	if s.agenticorp != nil {
 		if eb := s.agenticorp.GetEventBus(); eb != nil {
 			eventData := map[string]interface{}{
-				"webhook_id":    webhookEvent.ID,
-				"webhook_type":  webhookEvent.Type,
-				"repository":    webhookEvent.Repository,
-				"action":        webhookEvent.Action,
+				"webhook_id":   webhookEvent.ID,
+				"webhook_type": webhookEvent.Type,
+				"repository":   webhookEvent.Repository,
+				"action":       webhookEvent.Action,
 			}
 			for k, v := range webhookEvent.Data {
 				eventData[k] = v
@@ -358,7 +358,7 @@ func (s *Server) handleWebhookStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status := map[string]interface{}{
-		"github_webhook_enabled": true,
+		"github_webhook_enabled":    true,
 		"webhook_secret_configured": s.config != nil && s.config.Security.WebhookSecret != "",
 	}
 

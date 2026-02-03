@@ -39,16 +39,16 @@ const (
 
 // Workflow represents a workflow definition
 type Workflow struct {
-	ID           string          `json:"id"`
-	Name         string          `json:"name"`
-	Description  string          `json:"description"`
-	WorkflowType string          `json:"workflow_type"` // "bug", "feature", "ui", "custom"
-	IsDefault    bool            `json:"is_default"`    // Is this a default workflow?
-	ProjectID    string          `json:"project_id"`    // Empty for global defaults
-	Nodes        []WorkflowNode  `json:"nodes"`
-	Edges        []WorkflowEdge  `json:"edges"`
-	CreatedAt    time.Time       `json:"created_at"`
-	UpdatedAt    time.Time       `json:"updated_at"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Description  string         `json:"description"`
+	WorkflowType string         `json:"workflow_type"` // "bug", "feature", "ui", "custom"
+	IsDefault    bool           `json:"is_default"`    // Is this a default workflow?
+	ProjectID    string         `json:"project_id"`    // Empty for global defaults
+	Nodes        []WorkflowNode `json:"nodes"`
+	Edges        []WorkflowEdge `json:"edges"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
 // WorkflowNode represents a node in the workflow
@@ -68,13 +68,13 @@ type WorkflowNode struct {
 
 // WorkflowEdge represents a transition between nodes
 type WorkflowEdge struct {
-	ID            string        `json:"id"`
-	WorkflowID    string        `json:"workflow_id"`
-	FromNodeKey   string        `json:"from_node_key"`   // Source node key (empty = workflow start)
-	ToNodeKey     string        `json:"to_node_key"`     // Target node key (empty = workflow end)
-	Condition     EdgeCondition `json:"condition"`       // Condition for transition
-	Priority      int           `json:"priority"`        // Priority when multiple edges match (higher = first)
-	CreatedAt     time.Time     `json:"created_at"`
+	ID          string        `json:"id"`
+	WorkflowID  string        `json:"workflow_id"`
+	FromNodeKey string        `json:"from_node_key"` // Source node key (empty = workflow start)
+	ToNodeKey   string        `json:"to_node_key"`   // Target node key (empty = workflow end)
+	Condition   EdgeCondition `json:"condition"`     // Condition for transition
+	Priority    int           `json:"priority"`      // Priority when multiple edges match (higher = first)
+	CreatedAt   time.Time     `json:"created_at"`
 }
 
 // WorkflowExecution represents an active workflow execution for a bead
@@ -95,12 +95,12 @@ type WorkflowExecution struct {
 
 // WorkflowExecutionHistory represents an audit trail of workflow state changes
 type WorkflowExecutionHistory struct {
-	ID                string        `json:"id"`
-	ExecutionID       string        `json:"execution_id"`
-	NodeKey           string        `json:"node_key"`           // Node that was executed
-	AgentID           string        `json:"agent_id"`           // Agent that executed the node
-	Condition         EdgeCondition `json:"condition"`          // Condition that was satisfied
-	ResultData        string        `json:"result_data"`        // JSON-encoded result data
-	AttemptNumber     int           `json:"attempt_number"`     // Which attempt was this?
-	CreatedAt         time.Time     `json:"created_at"`
+	ID            string        `json:"id"`
+	ExecutionID   string        `json:"execution_id"`
+	NodeKey       string        `json:"node_key"`       // Node that was executed
+	AgentID       string        `json:"agent_id"`       // Agent that executed the node
+	Condition     EdgeCondition `json:"condition"`      // Condition that was satisfied
+	ResultData    string        `json:"result_data"`    // JSON-encoded result data
+	AttemptNumber int           `json:"attempt_number"` // Which attempt was this?
+	CreatedAt     time.Time     `json:"created_at"`
 }

@@ -89,10 +89,10 @@ func (e *Engine) StartWorkflow(beadID, workflowID, projectID string) (*WorkflowE
 	// Update bead context to track workflow
 	updates := map[string]interface{}{
 		"context": map[string]string{
-			"workflow_id":        workflowID,
-			"workflow_exec_id":   exec.ID,
-			"workflow_node":      "",
-			"workflow_status":    string(ExecutionStatusActive),
+			"workflow_id":      workflowID,
+			"workflow_exec_id": exec.ID,
+			"workflow_node":    "",
+			"workflow_status":  string(ExecutionStatusActive),
 		},
 	}
 	if err := e.beads.UpdateBead(beadID, updates); err != nil {
@@ -360,10 +360,10 @@ func (e *Engine) escalateWorkflow(exec *WorkflowExecution, reason string) error 
 	// Update bead context
 	updates := map[string]interface{}{
 		"context": map[string]string{
-			"workflow_status":     string(ExecutionStatusEscalated),
-			"escalation_reason":   reason,
-			"escalated_at":        now.Format(time.RFC3339),
-			"needs_ceo_review":    "true",
+			"workflow_status":   string(ExecutionStatusEscalated),
+			"escalation_reason": reason,
+			"escalated_at":      now.Format(time.RFC3339),
+			"needs_ceo_review":  "true",
 		},
 	}
 	if err := e.beads.UpdateBead(exec.BeadID, updates); err != nil {

@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/jordanhubbard/agenticorp/pkg/models"
 )
@@ -276,30 +275,4 @@ func (s *Server) handleProjectState(w http.ResponseWriter, r *http.Request, id s
 	}
 
 	s.respondJSON(w, http.StatusOK, state)
-}
-
-// updateHandleProject updates the existing handleProject to route to state management endpoints
-func updateHandleProject(s *Server, w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/projects/")
-	parts := strings.Split(path, "/")
-	id := parts[0]
-
-	// Handle sub-endpoints for project state management
-	if len(parts) > 1 {
-		action := parts[1]
-		s.handleProjectStateEndpoints(w, r, id, action)
-		return
-	}
-
-	// Default GET behavior
-	if r.Method == http.MethodGet {
-		project, err := s.agenticorp.GetProjectManager().GetProject(id)
-		if err != nil {
-			s.respondError(w, http.StatusNotFound, "Project not found")
-			return
-		}
-		s.respondJSON(w, http.StatusOK, project)
-	} else {
-		s.respondError(w, http.StatusMethodNotAllowed, "Method not allowed")
-	}
 }

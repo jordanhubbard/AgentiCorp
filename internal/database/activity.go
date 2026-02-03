@@ -437,18 +437,18 @@ func (d *Database) MarkAllNotificationsRead(userID string) error {
 
 // NotificationPreferences represents user notification preferences
 type NotificationPreferences struct {
-	ID                  string
-	UserID              string
-	EnableInApp         bool
-	EnableEmail         bool
-	EnableWebhook       bool
+	ID                   string
+	UserID               string
+	EnableInApp          bool
+	EnableEmail          bool
+	EnableWebhook        bool
 	SubscribedEventsJSON string
-	DigestMode          string
-	QuietHoursStart     string
-	QuietHoursEnd       string
-	ProjectFiltersJSON  string
-	MinPriority         string
-	UpdatedAt           time.Time
+	DigestMode           string
+	QuietHoursStart      string
+	QuietHoursEnd        string
+	ProjectFiltersJSON   string
+	MinPriority          string
+	UpdatedAt            time.Time
 }
 
 // GetNotificationPreferences retrieves notification preferences for a user

@@ -146,7 +146,7 @@ func (r *Registry) ListByRole(role string) []*Motivation {
 
 	// Include global motivations (no specific role) and role-specific ones
 	result := make([]*Motivation, 0)
-	
+
 	for _, m := range r.motivations {
 		if m.AgentRole == "" || m.AgentRole == role {
 			result = append(result, m)
@@ -292,7 +292,7 @@ func (r *Registry) GetTriggerHistory(limit int) []*MotivationTrigger {
 	if start < 0 {
 		start = 0
 	}
-	
+
 	result := make([]*MotivationTrigger, limit)
 	copy(result, r.triggers[start:])
 	return result

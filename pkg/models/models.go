@@ -94,12 +94,12 @@ const (
 
 // ProjectMilestone represents a milestone within a project (embedded for simplicity)
 type ProjectMilestone struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
-	Type        string    `json:"type"`   // "release", "sprint_end", "quarterly_review", "annual_review", "custom"
-	Status      string    `json:"status"` // "planned", "in_progress", "complete", "missed", "cancelled"
-	DueDate     time.Time `json:"due_date"`
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description,omitempty"`
+	Type        string     `json:"type"`   // "release", "sprint_end", "quarterly_review", "annual_review", "custom"
+	Status      string     `json:"status"` // "planned", "in_progress", "complete", "missed", "cancelled"
+	DueDate     time.Time  `json:"due_date"`
 	StartDate   *time.Time `json:"start_date,omitempty"`
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
 }
@@ -112,9 +112,9 @@ type Project struct {
 	Name        string            `json:"name"`
 	GitRepo     string            `json:"git_repo"`
 	Branch      string            `json:"branch"`
-	BeadsPath   string            `json:"beads_path"`           // Path to .beads directory
-	BeadPrefix  string            `json:"bead_prefix"`          // Prefix for bead IDs (e.g., "ac" for ac-001)
-	ParentID    string            `json:"parent_id,omitempty"`  // For sub-projects
+	BeadsPath   string            `json:"beads_path"`          // Path to .beads directory
+	BeadPrefix  string            `json:"bead_prefix"`         // Prefix for bead IDs (e.g., "ac" for ac-001)
+	ParentID    string            `json:"parent_id,omitempty"` // For sub-projects
 	Context     map[string]string `json:"context"`             // Additional context for agents
 	Status      ProjectStatus     `json:"status"`              // Current project status
 	IsPerpetual bool              `json:"is_perpetual"`        // If true, project never closes
@@ -126,8 +126,8 @@ type Project struct {
 	Agents      []string          `json:"agents"` // Agent IDs working on this project
 
 	// Deadline tracking (motivation system)
-	DueDate    *time.Time          `json:"due_date,omitempty"` // Overall project deadline
-	Milestones []ProjectMilestone  `json:"milestones,omitempty"` // Project milestones
+	DueDate    *time.Time         `json:"due_date,omitempty"`   // Overall project deadline
+	Milestones []ProjectMilestone `json:"milestones,omitempty"` // Project milestones
 
 	// Git management fields
 	GitAuthMethod    GitAuthMethod     `json:"git_auth_method"`              // Authentication method

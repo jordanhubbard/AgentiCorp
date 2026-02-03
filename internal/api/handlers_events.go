@@ -106,39 +106,6 @@ func (s *Server) handleGetEvents(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handlePublishEvent handles POST requests to publish events (for testing/admin)
-// POST /api/v1/events
-func (s *Server) handlePublishEvent(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		s.respondError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	eventBus := s.agenticorp.GetEventBus()
-	if eventBus == nil {
-		s.respondError(w, http.StatusServiceUnavailable, "Event bus not available")
-		return
-	}
-
-	// Parse event from request body
-	var event eventbus.Event
-	if err := s.parseJSON(r, &event); err != nil {
-		s.respondError(w, http.StatusBadRequest, "Invalid event format")
-		return
-	}
-
-	// Publish event
-	if err := eventBus.Publish(&event); err != nil {
-		s.respondError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to publish event: %v", err))
-		return
-	}
-
-	s.respondJSON(w, http.StatusAccepted, map[string]string{
-		"message": "Event published",
-		"id":      event.ID,
-	})
-}
-
 // handleGetEventStats returns statistics about events
 // GET /api/v1/events/stats
 func (s *Server) handleGetEventStats(w http.ResponseWriter, r *http.Request) {

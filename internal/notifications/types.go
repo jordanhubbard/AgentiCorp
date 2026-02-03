@@ -23,17 +23,17 @@ type Notification struct {
 
 // NotificationPreferences represents user notification preferences
 type NotificationPreferences struct {
-	ID               string   `json:"id"`
-	UserID           string   `json:"user_id"`
-	EnableInApp      bool     `json:"enable_in_app"`
-	EnableEmail      bool     `json:"enable_email"`
-	EnableWebhook    bool     `json:"enable_webhook"`
-	SubscribedEvents []string `json:"subscribed_events"`
-	DigestMode       string   `json:"digest_mode"`
-	QuietHoursStart  string   `json:"quiet_hours_start,omitempty"`
-	QuietHoursEnd    string   `json:"quiet_hours_end,omitempty"`
-	ProjectFilters   []string `json:"project_filters,omitempty"`
-	MinPriority      string   `json:"min_priority"`
+	ID               string    `json:"id"`
+	UserID           string    `json:"user_id"`
+	EnableInApp      bool      `json:"enable_in_app"`
+	EnableEmail      bool      `json:"enable_email"`
+	EnableWebhook    bool      `json:"enable_webhook"`
+	SubscribedEvents []string  `json:"subscribed_events"`
+	DigestMode       string    `json:"digest_mode"`
+	QuietHoursStart  string    `json:"quiet_hours_start,omitempty"`
+	QuietHoursEnd    string    `json:"quiet_hours_end,omitempty"`
+	ProjectFilters   []string  `json:"project_filters,omitempty"`
+	MinPriority      string    `json:"min_priority"`
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 

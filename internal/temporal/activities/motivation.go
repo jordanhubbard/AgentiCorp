@@ -93,11 +93,11 @@ type TriggerMotivationActivityInput struct {
 
 // TriggerMotivationActivityResult contains the result of a manual trigger
 type TriggerMotivationActivityResult struct {
-	Success      bool   `json:"success"`
-	TriggerID    string `json:"trigger_id,omitempty"`
-	BeadCreated  string `json:"bead_created,omitempty"`
-	AgentWoken   string `json:"agent_woken,omitempty"`
-	Error        string `json:"error,omitempty"`
+	Success     bool   `json:"success"`
+	TriggerID   string `json:"trigger_id,omitempty"`
+	BeadCreated string `json:"bead_created,omitempty"`
+	AgentWoken  string `json:"agent_woken,omitempty"`
+	Error       string `json:"error,omitempty"`
 }
 
 // TriggerMotivationActivity manually triggers a specific motivation
@@ -125,8 +125,8 @@ func (a *MotivationActivities) TriggerMotivationActivity(ctx context.Context, in
 
 // CheckDeadlinesActivityInput contains input for deadline checking
 type CheckDeadlinesActivityInput struct {
-	ProjectID     string `json:"project_id,omitempty"`      // Empty for all projects
-	DaysThreshold int    `json:"days_threshold,omitempty"`  // Default: 7
+	ProjectID     string `json:"project_id,omitempty"`     // Empty for all projects
+	DaysThreshold int    `json:"days_threshold,omitempty"` // Default: 7
 }
 
 // DeadlineInfo represents deadline information for a bead or milestone
@@ -159,7 +159,7 @@ func (a *MotivationActivities) CheckDeadlinesActivity(ctx context.Context, input
 
 	// Note: This activity would query the database for deadlines
 	// For now, return empty result - full implementation would use StateProvider
-	
+
 	// Publish deadline events if we have overdue items
 	if len(result.OverdueItems) > 0 && a.eventBus != nil {
 		_ = a.eventBus.Publish(&eventbus.Event{
@@ -179,7 +179,7 @@ func (a *MotivationActivities) CheckDeadlinesActivity(ctx context.Context, input
 			Source:    "motivation-engine",
 			ProjectID: input.ProjectID,
 			Data: map[string]interface{}{
-				"upcoming_count":  len(result.UpcomingDeadlines),
+				"upcoming_count": len(result.UpcomingDeadlines),
 				"days_threshold": input.DaysThreshold,
 			},
 		})
@@ -198,11 +198,11 @@ type CheckSystemIdleActivityInput struct {
 
 // CheckSystemIdleActivityResult contains idle check results
 type CheckSystemIdleActivityResult struct {
-	IsSystemIdle     bool     `json:"is_system_idle"`
-	IdleAgentCount   int      `json:"idle_agent_count"`
-	WorkingAgentCount int     `json:"working_agent_count"`
-	OpenBeadCount    int      `json:"open_bead_count"`
-	IdleDurationMins int      `json:"idle_duration_mins"`
+	IsSystemIdle      bool `json:"is_system_idle"`
+	IdleAgentCount    int  `json:"idle_agent_count"`
+	WorkingAgentCount int  `json:"working_agent_count"`
+	OpenBeadCount     int  `json:"open_bead_count"`
+	IdleDurationMins  int  `json:"idle_duration_mins"`
 }
 
 // CheckSystemIdleActivity checks if the system is idle
