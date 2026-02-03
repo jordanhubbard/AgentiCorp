@@ -194,7 +194,9 @@ func TestGetPositionsForAgent(t *testing.T) {
 
 func TestAddPosition(t *testing.T) {
 	m := NewManager()
-	m.CreateForProject("proj-123", "Test")
+	if _, err := m.CreateForProject("proj-123", "Test"); err != nil {
+		t.Fatalf("CreateForProject failed: %v", err)
+	}
 
 	newPos := models.Position{
 		ID:           "pos-custom",
@@ -218,7 +220,9 @@ func TestAddPosition(t *testing.T) {
 
 func TestRemovePosition(t *testing.T) {
 	m := NewManager()
-	m.CreateForProject("proj-123", "Test")
+	if _, err := m.CreateForProject("proj-123", "Test"); err != nil {
+		t.Fatalf("CreateForProject failed: %v", err)
+	}
 
 	err := m.RemovePosition("proj-123", "pos-hk")
 	if err != nil {
@@ -234,7 +238,9 @@ func TestRemovePosition(t *testing.T) {
 
 func TestDeleteForProject(t *testing.T) {
 	m := NewManager()
-	m.CreateForProject("proj-123", "Test")
+	if _, err := m.CreateForProject("proj-123", "Test"); err != nil {
+		t.Fatalf("CreateForProject failed: %v", err)
+	}
 
 	err := m.DeleteForProject("proj-123")
 	if err != nil {
@@ -286,10 +292,18 @@ func TestOrgChartAllRequiredFilled(t *testing.T) {
 
 func TestOrgChartGetAllAgentIDs(t *testing.T) {
 	m := NewManager()
-	m.CreateForProject("proj-123", "Test")
-	m.AssignAgentToRole("proj-123", "ceo", "agent-1")
-	m.AssignAgentToRole("proj-123", "product-manager", "agent-2")
-	m.AssignAgentToRole("proj-123", "qa-engineer", "agent-2") // Same agent in two roles
+	if _, err := m.CreateForProject("proj-123", "Test"); err != nil {
+		t.Fatalf("CreateForProject failed: %v", err)
+	}
+	if err := m.AssignAgentToRole("proj-123", "ceo", "agent-1"); err != nil {
+		t.Fatalf("AssignAgentToRole failed: %v", err)
+	}
+	if err := m.AssignAgentToRole("proj-123", "product-manager", "agent-2"); err != nil {
+		t.Fatalf("AssignAgentToRole failed: %v", err)
+	}
+	if err := m.AssignAgentToRole("proj-123", "qa-engineer", "agent-2"); err != nil { // Same agent in two roles
+		t.Fatalf("AssignAgentToRole failed: %v", err)
+	}
 
 	chart, _ := m.GetByProject("proj-123")
 	agents := chart.GetAllAgentIDs()

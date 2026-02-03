@@ -236,7 +236,9 @@ func (e *ShellExecutor) GetCommandLog(id string) (*models.CommandLog, error) {
 	}
 
 	if contextJSON.Valid {
-		json.Unmarshal([]byte(contextJSON.String), &cmdLog.Context)
+		if err := json.Unmarshal([]byte(contextJSON.String), &cmdLog.Context); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal context: %w", err)
+		}
 	}
 
 	return &cmdLog, nil

@@ -294,7 +294,7 @@ func (d *Database) WithTransaction(ctx context.Context, fn func(tx *sql.Tx) erro
 	}
 
 	if err := fn(tx); err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
