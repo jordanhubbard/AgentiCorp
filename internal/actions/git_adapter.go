@@ -2,7 +2,6 @@ package actions
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jordanhubbard/agenticorp/internal/git"
 )
@@ -120,68 +119,6 @@ func (a *GitServiceAdapter) GetDiff(ctx context.Context, staged bool) (map[strin
 		"diff":   diff,
 		"staged": staged,
 	}, nil
-}
-
-// generateCommitMessage generates a commit message from bead context
-func generateCommitMessage(beadID, agentID, title, description string) string {
-	// Default format: feat/fix/refactor based on title keywords
-	commitType := "feat"
-	titleLower := ""
-	if title != "" {
-		titleLower = title
-		if containsAny(titleLower, "fix", "bug", "error") {
-			commitType = "fix"
-		} else if containsAny(titleLower, "refactor", "cleanup", "reorganize") {
-			commitType = "refactor"
-		} else if containsAny(titleLower, "test") {
-			commitType = "test"
-		} else if containsAny(titleLower, "doc") {
-			commitType = "docs"
-		}
-	}
-
-	message := fmt.Sprintf("%s: %s\n\n", commitType, title)
-
-	if description != "" {
-		message += description + "\n\n"
-	}
-
-	message += fmt.Sprintf("Bead: %s\n", beadID)
-	message += fmt.Sprintf("Agent: %s\n", agentID)
-	message += "Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\n"
-
-	return message
-}
-
-// containsAny checks if string contains any of the substrings
-func containsAny(s string, substrs ...string) bool {
-	for _, substr := range substrs {
-		if len(s) >= len(substr) {
-			// Simple case-insensitive contains
-			for i := 0; i <= len(s)-len(substr); i++ {
-				match := true
-				for j := 0; j < len(substr); j++ {
-					c1 := s[i+j]
-					c2 := substr[j]
-					// Simple lowercase comparison
-					if c1 >= 'A' && c1 <= 'Z' {
-						c1 = c1 + 32
-					}
-					if c2 >= 'A' && c2 <= 'Z' {
-						c2 = c2 + 32
-					}
-					if c1 != c2 {
-						match = false
-						break
-					}
-				}
-				if match {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 // CreatePR creates a pull request

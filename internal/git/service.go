@@ -397,7 +397,7 @@ func (s *GitService) getCommitStats(ctx context.Context, commitSHA string) (*Com
 	for _, line := range lines {
 		if strings.Contains(line, "file changed") || strings.Contains(line, "files changed") {
 			// Parse summary line: "X files changed, Y insertions(+), Z deletions(-)"
-			fmt.Sscanf(line, "%d files changed, %d insertions(+), %d deletions(-)", &insertions, &deletions)
+			_, _ = fmt.Sscanf(line, "%d files changed, %d insertions(+), %d deletions(-)", &insertions, &deletions)
 		} else if strings.Contains(line, "|") {
 			// File line: "path/to/file.go | 10 +++++++++++"
 			parts := strings.Split(line, "|")
@@ -609,8 +609,8 @@ func (l *AuditLogger) LogOperationWithDuration(operation, beadID, ref string, su
 	}
 	defer f.Close()
 
-	f.Write(data)
-	f.Write([]byte("\n"))
+	_, _ = f.Write(data)
+	_, _ = f.Write([]byte("\n"))
 }
 
 // CreatePRRequest defines parameters for creating a pull request

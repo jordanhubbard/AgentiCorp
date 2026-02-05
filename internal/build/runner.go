@@ -510,6 +510,6 @@ func (r *BuildRunner) fileExists(path string) bool {
 // parseInt safely parses an integer from string
 func parseInt(s string) int {
 	var n int
-	fmt.Sscanf(s, "%d", &n)
+	_, _ = fmt.Sscanf(s, "%d", &n)
 	return n
 }

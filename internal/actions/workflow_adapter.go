@@ -2,7 +2,6 @@ package actions
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 )
 
@@ -119,37 +118,5 @@ func (a *WorkflowMCPAdapter) ResumeWorkflow(ctx context.Context, includeSystemPr
 		return nil, fmt.Errorf("resume_workflow failed: %w", err)
 	}
 
-	return result, nil
-}
-
-// formatResult formats the MCP tool result for action response
-func formatResult(result map[string]interface{}) (map[string]interface{}, error) {
-	// Extract instructions if present
-	if instructions, ok := result["instructions"].(string); ok {
-		return map[string]interface{}{
-			"instructions": instructions,
-			"full_result":  result,
-		}, nil
-	}
-
-	// Return raw result if no instructions field
-	return result, nil
-}
-
-// Helper to convert string map to interface map
-func toInterfaceMap(m map[string]string) map[string]interface{} {
-	result := make(map[string]interface{}, len(m))
-	for k, v := range m {
-		result[k] = v
-	}
-	return result
-}
-
-// Helper to parse JSON string to map
-func parseJSONMap(data string) (map[string]interface{}, error) {
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(data), &result); err != nil {
-		return nil, err
-	}
 	return result, nil
 }
