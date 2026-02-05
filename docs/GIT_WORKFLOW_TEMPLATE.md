@@ -1,5 +1,3 @@
-
-
 ## Git Workflow
 
 You have access to git operations for version control. Use these actions to commit, push, and create pull requests for your work.
