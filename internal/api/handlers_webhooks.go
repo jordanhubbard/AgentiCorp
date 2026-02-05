@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -169,6 +170,14 @@ func (s *Server) handleGitHubWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create code review bead if needed
+	if triggerReview, ok := webhookEvent.Data["trigger_code_review"].(bool); ok && triggerReview {
+		if err := s.createCodeReviewBead(webhookEvent); err != nil {
+			// Log error but don't fail the webhook
+			_ = err // TODO: Add logging
+		}
+	}
+
 	// Publish event to event bus
 	if s.agenticorp != nil {
 		if eb := s.agenticorp.GetEventBus(); eb != nil {
@@ -187,8 +196,10 @@ func (s *Server) handleGitHubWebhook(w http.ResponseWriter, r *http.Request) {
 			switch webhookEvent.Type {
 			case "github_issue_opened":
 				ebEventType = eventbus.EventType("external.github_issue")
-			case "github_pr_opened":
+			case "github_pr_opened", "github_pr_ready", "github_pr_reopened", "github_pr_review_requested":
 				ebEventType = eventbus.EventType("external.github_pr")
+			case "github_pr_synchronized":
+				ebEventType = eventbus.EventType("external.github_pr_update")
 			case "github_comment_added":
 				ebEventType = eventbus.EventType("external.github_comment")
 			case "release_published":
@@ -261,28 +272,56 @@ func (s *Server) processGitHubEvent(eventType string, payload *GitHubWebhookPayl
 			return nil
 		}
 		switch payload.Action {
-		case "opened":
-			event.Type = "github_pr_opened"
+		case "opened", "reopened", "ready_for_review":
+			// PR opened or ready for review - trigger code review
+			if payload.Action == "opened" {
+				event.Type = "github_pr_opened"
+			} else if payload.Action == "ready_for_review" {
+				event.Type = "github_pr_ready"
+			} else {
+				event.Type = "github_pr_reopened"
+			}
 			event.Data["pr_number"] = payload.PullRequest.Number
 			event.Data["pr_title"] = payload.PullRequest.Title
 			event.Data["pr_url"] = payload.PullRequest.URL
 			event.Data["draft"] = payload.PullRequest.Draft
+			event.Data["state"] = payload.PullRequest.State
 			if payload.PullRequest.User != nil {
 				event.Data["author"] = payload.PullRequest.User.Login
 			}
 			if payload.PullRequest.Head != nil {
 				event.Data["head_ref"] = payload.PullRequest.Head.Ref
+				event.Data["head_sha"] = payload.PullRequest.Head.SHA
 			}
 			if payload.PullRequest.Base != nil {
 				event.Data["base_ref"] = payload.PullRequest.Base.Ref
+				event.Data["base_sha"] = payload.PullRequest.Base.SHA
 			}
+			// Trigger code review creation
+			event.Data["trigger_code_review"] = true
+
+		case "synchronize":
+			// PR updated with new commits - may need re-review
+			event.Type = "github_pr_synchronized"
+			event.Data["pr_number"] = payload.PullRequest.Number
+			event.Data["pr_url"] = payload.PullRequest.URL
+			if payload.PullRequest.Head != nil {
+				event.Data["head_sha"] = payload.PullRequest.Head.SHA
+			}
+			// Check if review exists and mark for re-review
+			event.Data["trigger_rereview"] = true
+
+		case "review_requested":
+			// Explicit review request
+			event.Type = "github_pr_review_requested"
+			event.Data["pr_number"] = payload.PullRequest.Number
+			event.Data["pr_url"] = payload.PullRequest.URL
+			event.Data["trigger_code_review"] = true
+
 		case "closed":
 			event.Type = "github_pr_closed"
 			event.Data["pr_number"] = payload.PullRequest.Number
 			event.Data["merged"] = payload.PullRequest.Merged
-		case "ready_for_review":
-			event.Type = "github_pr_ready"
-			event.Data["pr_number"] = payload.PullRequest.Number
 		default:
 			return nil
 		}
@@ -408,4 +447,85 @@ func truncateString(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen-3] + "..."
+}
+
+// createCodeReviewBead creates a review bead for a PR event
+func (s *Server) createCodeReviewBead(event *WebhookEvent) error {
+	if s.agenticorp == nil {
+		return fmt.Errorf("agenticorp not initialized")
+	}
+
+	// Extract PR details
+	prNumber, ok := event.Data["pr_number"].(int)
+	if !ok {
+		return fmt.Errorf("invalid pr_number in event data")
+	}
+
+	prURL, _ := event.Data["pr_url"].(string)
+	prTitle, _ := event.Data["pr_title"].(string)
+	author, _ := event.Data["author"].(string)
+	headRef, _ := event.Data["head_ref"].(string)
+	baseRef, _ := event.Data["base_ref"].(string)
+	draft, _ := event.Data["draft"].(bool)
+
+	// Find or create project for this repository
+	projectID := s.getOrCreateProjectForRepo(event.Repository)
+	if projectID == "" {
+		return fmt.Errorf("failed to get project for repository: %s", event.Repository)
+	}
+
+	// Create bead title and description
+	title := fmt.Sprintf("Code review: PR #%d - %s", prNumber, prTitle)
+	description := fmt.Sprintf(`Automated code review for pull request #%d
+
+**Repository:** %s
+**Author:** %s
+**Branch:** %s → %s
+**URL:** %s
+**Status:** %s
+
+This bead tracks the code review workflow for the pull request.
+`, prNumber, event.Repository, author, headRef, baseRef, prURL, getDraftStatus(draft))
+
+	// Create the bead using AgentiCorp
+	bead, err := s.agenticorp.CreateBead(
+		title,
+		description,
+		2, // P2 priority
+		"pr-review",
+		projectID,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create review bead: %w", err)
+	}
+
+	// Set metadata on the bead
+	// TODO: Add method to set bead metadata
+	// For now, the bead is created and will be picked up by the code reviewer
+
+	_ = bead // Bead created successfully
+
+	return nil
+}
+
+// getOrCreateProjectForRepo gets or creates a project for a repository
+func (s *Server) getOrCreateProjectForRepo(repoFullName string) string {
+	// Parse owner/repo
+	parts := strings.Split(repoFullName, "/")
+	if len(parts) != 2 {
+		return ""
+	}
+
+	// For now, use the repo name as project ID
+	// In production, this would look up or create the project in the database
+	repoName := parts[1]
+	return repoName
+}
+
+// getDraftStatus returns a human-readable draft status
+func getDraftStatus(draft bool) string {
+	if draft {
+		return "Draft"
+	}
+	return "Ready for review"
 }
