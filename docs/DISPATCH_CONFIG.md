@@ -295,11 +295,70 @@ func DefaultConfig() *Config {
 }
 ```
 
+## Smart Loop Detection
+
+**Status:** Implemented in v1.2 (Epic 7, Task 2)
+
+The dispatcher now includes intelligent loop detection that differentiates between:
+- **Productive investigation**: Agent making progress through multiple iterations
+- **Stuck loops**: Agent repeating the same actions without making progress
+
+### How It Works
+
+1. **Action Tracking**: The system tracks actions taken by agents (file reads, edits, tests, commands)
+2. **Progress Metrics**: Monitors meaningful progress indicators:
+   - Files read and modified
+   - Tests executed
+   - Commands run
+   - Timestamps of last activity
+
+3. **Loop Detection Logic**:
+   - Detects when the same action pattern repeats 3+ times
+   - Checks if progress was made in the last 5 minutes
+   - Only flags as "stuck" if no progress AND repeated actions
+
+4. **Smart Escalation**:
+   - Beads at max_hops with progress: allowed to continue
+   - Beads at max_hops stuck in loop: escalated to CEO
+
+### Benefits
+
+- **Fewer false escalations**: Complex bugs requiring 20+ iterations can proceed
+- **Faster stuck detection**: True loops escalate at hop limit, not after
+- **Rich context**: Escalations include progress summary and loop analysis
+
+### Example Scenarios
+
+#### Productive Investigation (No Escalation)
+```
+Hop 1-10: Reading code, analyzing patterns
+Hop 11-15: Making changes, testing
+Hop 16-20: Validating edge cases
+Hop 21-25: Still making progress (allowed to continue past max_hops)
+```
+
+#### Stuck Loop (Escalation)
+```
+Hop 1-5: Reading same file repeatedly
+Hop 6-10: Same read action, no progress
+Hop 11-15: Still stuck on same action
+Hop 16-20: Escalated (repeated action, no progress for >5 minutes)
+```
+
+### Configuration
+
+The loop detector uses default settings:
+- **Repeat threshold**: 3 consecutive identical actions
+- **Progress window**: 5 minutes
+- **History retention**: Last 50 actions per bead
+
+These are currently hardcoded but can be made configurable in future versions.
+
 ## Version History
 
 - **v1.0**: Initial implementation with max_hops = 5
-- **v1.1** (Epic 7): Increased to max_hops = 20 for complex investigations
-- **v1.2** (Planned): Smart loop detection to distinguish stuck from productive
+- **v1.1** (Epic 7, Task 1): Increased to max_hops = 20 for complex investigations
+- **v1.2** (Epic 7, Task 2): Smart loop detection to distinguish stuck from productive
 
 ## References
 

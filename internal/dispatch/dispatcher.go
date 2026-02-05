@@ -68,6 +68,7 @@ type Dispatcher struct {
 	readinessMode   ReadinessMode
 	escalator       Escalator
 	maxDispatchHops int
+	loopDetector    *LoopDetector
 
 	mu     sync.RWMutex
 	status SystemStatus
@@ -87,6 +88,7 @@ func NewDispatcher(beadsMgr *beads.Manager, projMgr *project.Manager, agentMgr *
 		eventBus:       eb,
 		personaMatcher: NewPersonaMatcher(),
 		autoBugRouter:  NewAutoBugRouter(),
+		loopDetector:   NewLoopDetector(),
 		readinessMode:  ReadinessBlock,
 		status: SystemStatus{
 			State:     StatusParked,
@@ -321,40 +323,56 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 				continue
 			}
 
-			reason := fmt.Sprintf("dispatch_count=%d exceeded max_hops=%d", dispatchCount, maxHops)
-			log.Printf("[Dispatcher] WARNING: Bead %s has been dispatched %d times, escalating to CEO", b.ID, dispatchCount)
+			// Use smart loop detection to differentiate stuck loops from productive investigation
+			stuck, loopReason := d.loopDetector.IsStuckInLoop(b)
 
-			decisionID := ""
-			if d.escalator == nil {
-				log.Printf("[Dispatcher] Failed to escalate bead %s: no escalator configured", b.ID)
+			if !stuck {
+				// Making progress - allow to continue beyond hop limit
+				log.Printf("[Dispatcher] Bead %s has %d dispatches but is making progress, allowing to continue. Progress: %s",
+					b.ID, dispatchCount, d.loopDetector.GetProgressSummary(b))
+				skippedReasons["dispatch_limit_but_progressing"]++
+				// Don't continue - allow this bead to be dispatched
 			} else {
-				decision, err := d.escalator.EscalateBeadToCEO(b.ID, reason, b.AssignedTo)
-				if err != nil {
-					log.Printf("[Dispatcher] Failed to escalate bead %s: %v", b.ID, err)
+				// Truly stuck in a loop - escalate
+				reason := fmt.Sprintf("dispatch_count=%d exceeded max_hops=%d, stuck in loop: %s",
+					dispatchCount, maxHops, loopReason)
+				log.Printf("[Dispatcher] WARNING: Bead %s is stuck in loop after %d dispatches, escalating to CEO: %s",
+					b.ID, dispatchCount, loopReason)
+
+				decisionID := ""
+				if d.escalator == nil {
+					log.Printf("[Dispatcher] Failed to escalate bead %s: no escalator configured", b.ID)
 				} else {
-					decisionID = decision.ID
+					decision, err := d.escalator.EscalateBeadToCEO(b.ID, reason, b.AssignedTo)
+					if err != nil {
+						log.Printf("[Dispatcher] Failed to escalate bead %s: %v", b.ID, err)
+					} else {
+						decisionID = decision.ID
+					}
 				}
-			}
 
-			ctxUpdates := map[string]string{
-				"redispatch_requested":       "false",
-				"dispatch_escalated_at":      time.Now().UTC().Format(time.RFC3339),
-				"dispatch_escalation_reason": reason,
-			}
-			if decisionID != "" {
-				ctxUpdates["dispatch_escalation_decision_id"] = decisionID
-			}
-			updates := map[string]interface{}{
-				"status":      models.BeadStatusBlocked,
-				"assigned_to": "",
-				"context":     ctxUpdates,
-			}
-			if err := d.beads.UpdateBead(b.ID, updates); err != nil {
-				log.Printf("[Dispatcher] Failed to block bead %s after escalation: %v", b.ID, err)
-			}
+				ctxUpdates := map[string]string{
+					"redispatch_requested":       "false",
+					"dispatch_escalated_at":      time.Now().UTC().Format(time.RFC3339),
+					"dispatch_escalation_reason": reason,
+					"loop_detection_reason":      loopReason,
+					"progress_summary":           d.loopDetector.GetProgressSummary(b),
+				}
+				if decisionID != "" {
+					ctxUpdates["dispatch_escalation_decision_id"] = decisionID
+				}
+				updates := map[string]interface{}{
+					"status":      models.BeadStatusBlocked,
+					"assigned_to": "",
+					"context":     ctxUpdates,
+				}
+				if err := d.beads.UpdateBead(b.ID, updates); err != nil {
+					log.Printf("[Dispatcher] Failed to block bead %s after escalation: %v", b.ID, err)
+				}
 
-			skippedReasons["dispatch_limit_exceeded"]++
-			continue
+				skippedReasons["dispatch_limit_stuck_loop"]++
+				continue
+			}
 		}
 
 		if dispatchCount >= maxHops-1 {
