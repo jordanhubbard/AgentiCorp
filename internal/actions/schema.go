@@ -26,6 +26,9 @@ const (
 	ActionApplyPatch    = "apply_patch"
 	ActionGitStatus     = "git_status"
 	ActionGitDiff       = "git_diff"
+	ActionGitCommit     = "git_commit"
+	ActionGitPush       = "git_push"
+	ActionCreatePR      = "create_pr"
 	ActionApproveBead   = "approve_bead"
 	ActionRejectBead    = "reject_bead"
 )
@@ -61,6 +64,15 @@ type Action struct {
 	// Build execution fields
 	BuildTarget  string `json:"build_target,omitempty"`  // Build target (e.g., binary name)
 	BuildCommand string `json:"build_command,omitempty"` // Custom build command
+
+	// Git operation fields
+	CommitMessage string   `json:"commit_message,omitempty"` // Commit message (auto-generated if empty)
+	Branch        string   `json:"branch,omitempty"`         // Branch name
+	SetUpstream   bool     `json:"set_upstream,omitempty"`   // Set upstream tracking (-u flag)
+	PRTitle       string   `json:"pr_title,omitempty"`       // Pull request title
+	PRBody        string   `json:"pr_body,omitempty"`        // Pull request body
+	PRBase        string   `json:"pr_base,omitempty"`        // PR base branch (default: main)
+	PRReviewers   []string `json:"pr_reviewers,omitempty"`   // PR reviewers
 
 	Bead *BeadPayload `json:"bead,omitempty"`
 
@@ -260,6 +272,16 @@ func validateAction(action Action) error {
 			return errors.New("apply_patch requires patch")
 		}
 	case ActionGitStatus, ActionGitDiff:
+		// No required fields
+	case ActionGitCommit:
+		// commit_message is optional (auto-generated from bead context)
+		// All other fields optional
+	case ActionGitPush:
+		// branch is optional (uses current branch)
+		// set_upstream optional
+	case ActionCreatePR:
+		// pr_title and pr_body optional (auto-generated from bead)
+		// pr_base optional (defaults to main)
 	case ActionRunCommand:
 		if action.Command == "" {
 			return errors.New("run_command requires command")

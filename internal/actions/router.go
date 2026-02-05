@@ -48,6 +48,11 @@ type FileManager interface {
 type GitOperator interface {
 	Status(ctx context.Context, projectID string) (string, error)
 	Diff(ctx context.Context, projectID string) (string, error)
+	CreateBranch(ctx context.Context, beadID, description, baseBranch string) (map[string]interface{}, error)
+	Commit(ctx context.Context, beadID, agentID, message string, files []string, allowAll bool) (map[string]interface{}, error)
+	Push(ctx context.Context, beadID, branch string, setUpstream bool) (map[string]interface{}, error)
+	GetStatus(ctx context.Context) (map[string]interface{}, error)
+	GetDiff(ctx context.Context, staged bool) (map[string]interface{}, error)
 }
 
 type ActionLogger interface {
@@ -286,6 +291,54 @@ func (r *Router) executeAction(ctx context.Context, action Action, actx ActionCo
 			Status:     "executed",
 			Message:    "git diff",
 			Metadata:   map[string]interface{}{"output": out},
+		}
+	case ActionGitCommit:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+
+		// Auto-generate commit message if not provided
+		message := action.CommitMessage
+		if message == "" {
+			// Generate from bead context (would need bead info passed in actx)
+			message = fmt.Sprintf("feat: Update from bead %s\n\nBead: %s\nAgent: %s\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>",
+				actx.BeadID, actx.BeadID, actx.AgentID)
+		}
+
+		result, err := r.Git.Commit(ctx, actx.BeadID, actx.AgentID, message, action.Files, len(action.Files) == 0)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+
+		return Result{
+			ActionType: action.Type,
+			Status:     "executed",
+			Message:    "commit created",
+			Metadata:   result,
+		}
+	case ActionGitPush:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+
+		result, err := r.Git.Push(ctx, actx.BeadID, action.Branch, action.SetUpstream)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+
+		return Result{
+			ActionType: action.Type,
+			Status:     "executed",
+			Message:    "branch pushed",
+			Metadata:   result,
+		}
+	case ActionCreatePR:
+		// PR creation requires gh CLI - not implemented yet
+		// This would call GitHub API to create pull request
+		return Result{
+			ActionType: action.Type,
+			Status:     "error",
+			Message:    "create_pr not yet implemented (requires gh CLI integration)",
 		}
 	case ActionRunCommand:
 		if r.Commands == nil {
