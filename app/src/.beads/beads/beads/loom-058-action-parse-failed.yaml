@@ -1,0 +1,60 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-058
+type: bug
+title: Action parse failed
+description: |-
+    Failed to parse strict JSON actions.
+
+    Error:
+    invalid character 'W' looking for beginning of value
+
+    Raw response:
+    We need to respond with JSON only, using apply_patch action. The request: change header text in web/static/index.html from "Agent Orchestration System" to "Agent Orchestration Platform". Use apply_patch action. We need to include required fields for apply_patch action.
+
+    The action type is apply_patch. The required fields: question?, path, patch, maybe others optional. The JSON structure: top-level object with "actions": [ { ... } ], "notes": "string". Only include fields required for the selected action type. For apply_patch, required fields are: "type": "apply_patch", "path": string, "patch": string, maybe "question"? Not required but can include. The spec: "Only include fields required for the selected action type." For apply_patch, required fields are? In spec, they listed fields: "type", "question", "path", "patch", "query", "max_depth", "limit", "command", "working_dir", "bead", "bead_id", "reason", "returned_to". But they said only include fields required for the selected action type. For apply_patch, required fields probably are "type", "path", "patch". Possibly also "question"? Not required. The example shows many optional fields. So we can include minimal: type, path, patch. Also we might include "question"? Not required. The "bead" field maybe not needed. The "notes" field at top level is required? The top-level must include "notes". So we need to output JSON with "actions": [ ... ], "notes": "string". The notes can explain.
+
+    Thus produce:
+
+    {
+      "actions": [
+        {
+          "type": "apply_patch",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -1,7 +1,7 @@\n <header>\n-    Agent Orchestration System\n+    Agent Orchestration Platform\n </header>\n </header>"
+        }
+      ],
+      "notes": "Updated header text in web/static/index.html from 'Agent Orchestration System' to 'Agent Orchestration Platform'. QA should verify the change."
+    }
+
+    But need to ensure JSON is valid: patch string includes newline characters. Use \n for newlines. Also need to escape quotes? Not needed inside string. The patch format typical diff. Provide diff with proper context lines. Provide just the change.
+
+    Thus final answer.
+    </think>
+    {
+      "actions": [
+        {
+          "type": "apply_patch",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -1,7 +1,7 @@\n <header>\n-    Agent Orchestration System\n+    Agent Orchestration Platform\n </header>\n </header>"
+        }
+      ],
+      "notes": "Updated the header text in web/static/index.html from 'Agent Orchestration System' to 'Agent Orchestration Platform'. QA should verify the change."
+    }
+status: open
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-25T20:10:47.11581396Z
+updatedat: 2026-01-25T20:10:47.115814293Z
+closedat: null

@@ -1,0 +1,23 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-006
+type: task
+title: P0 - API failure POST /api/v1/repl 502
+description: "API request failed\n\nMethod: POST\nPath: /api/v1/repl\nStatus: 502\nQuery: \nRemote: 151.101.42.132:18260\nUser: user-admin\nTimestamp: 2026-01-22T19:01:18Z\n"
+status: closed
+priority: 0
+projectid: example-project
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-22T19:01:18.895134964Z
+updatedat: 2026-01-22T22:12:41.389062719Z
+closedat: 2026-01-22T22:12:41.389062427Z

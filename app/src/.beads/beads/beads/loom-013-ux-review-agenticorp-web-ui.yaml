@@ -1,0 +1,42 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-013
+type: task
+title: 'UX Review: AgentiCorp Web UI'
+description: |-
+    Comprehensive UX review of the AgentiCorp web interface.
+
+    Scope:
+    - Review web/static/index.html, css/, and js/ files
+    - Evaluate user experience, accessibility, visual design
+    - Check responsiveness and modern UX best practices
+    - Identify improvements for navigation, clarity, and usability
+    - Provide actionable recommendations
+
+    Deliverables:
+    - UX review findings document
+    - Prioritized list of improvements
+status: open
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769122319-Web Designer (Active)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769121285-Documentation Manager (Active)
+    dispatch_history: '["agent-1769121285-Documentation Manager (Active)"]'
+    last_run_at: "2026-01-22T22:52:35Z"
+    last_run_error: 'task execution failed: failed to get completion: failed to send request: Post "http://sparky.local:8000/v1/chat/completions": context deadline exceeded (Client.Timeout exceeded while awaiting headers)'
+    loop_detected: "false"
+    provider_id: sparky-vllm
+    redispatch_requested: "true"
+createdat: 2026-01-22T22:51:35.809146174Z
+updatedat: 2026-01-23T18:12:09.752459256Z
+closedat: null

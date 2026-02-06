@@ -1,0 +1,107 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-034
+type: task
+title: Add init containers for migrations and dependencies
+description: |-
+    Use init containers to handle startup tasks before main container.
+
+    Use cases:
+    - Database migrations
+    - Wait for dependencies (Temporal)
+    - Config validation
+    - Schema initialization
+
+    Implementation:
+    1. Add -migrate flag to agenticorp binary
+    2. Create migrate init container in deployment
+    3. Add wait-for-temporal init container (busybox + nc)
+    4. Add config validation init container
+    5. Ensure proper failure handling
+    6. Document init container purposes
+
+    Example init containers:
+    - migrate: Run database migrations
+    - wait-for-temporal: Wait for Temporal availability
+    - validate-config: Validate configuration files
+
+    Deliverables:
+    - Init container definitions in deployment
+    - Migration flag implementation
+    - Startup dependency documentation
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-Web Designer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Web Designer (Default)
+    agent_output: |
+        [mock] Work on bead bd-034: Add init containers for migrations and dependencies
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-034
+        Type: task
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        Use init containers to handle startup tasks before main container.
+
+        Use cases:
+        - Database migrations
+        - Wait for dependencies (Temporal)
+        - Config validation
+        - Schema initialization
+
+        Implementation:
+        1. Add -migrate flag to agenticorp binary
+        2. Create migrate init container in deployment
+        3. Add wait-for-temporal init container (busybox + nc)
+        4. Add config validation init container
+        5. Ensure proper failure handling
+        6. Document init container purposes
+
+        Example init containers:
+        - migrate: Run database migrations
+        - wait-for-temporal: Wait for Temporal availability
+        - validate-config: Validate configuration files
+
+        Deliverables:
+        - Init container definitions in deployment
+        - Migration flag implementation
+        - Startup dependency documentation
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-034-1769159642652100930
+    agent_tokens: "2531"
+    agent_worker_id: worker-agent-1769155372-Web Designer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Web Designer (Default)"]'
+    last_run_at: "2026-01-23T09:14:02Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:08:11.005022967Z
+updatedat: 2026-01-23T09:14:02.767644958Z
+closedat: null

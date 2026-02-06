@@ -1,0 +1,95 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-031
+type: task
+title: Create Pod Disruption Budget (PDB)
+description: |-
+    Ensure availability during voluntary disruptions (node drains, upgrades).
+
+    Why:
+    - Prevents all pods being evicted simultaneously
+    - Maintains service availability during maintenance
+    - Required for production K8s clusters
+
+    Implementation:
+    1. Create k8s/pdb.yaml
+    2. Set minAvailable: 1 (or maxUnavailable: 1)
+    3. Configure label selector matching deployment
+    4. Create separate PDBs for: agenticorp, temporal, database
+    5. Test with node drain simulation
+    6. Document disruption policies
+
+    Deliverables:
+    - PDB manifests for all critical services
+    - Disruption testing results
+    - Operational documentation
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-Project Manager (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Project Manager (Default)
+    agent_output: |
+        [mock] Work on bead bd-031: Create Pod Disruption Budget (PDB)
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-031
+        Type: task
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        Ensure availability during voluntary disruptions (node drains, upgrades).
+
+        Why:
+        - Prevents all pods being evicted simultaneously
+        - Maintains service availability during maintenance
+        - Required for production K8s clusters
+
+        Implementation:
+        1. Create k8s/pdb.yaml
+        2. Set minAvailable: 1 (or maxUnavailable: 1)
+        3. Configure label selector matching deployment
+        4. Create separate PDBs for: agenticorp, temporal, database
+        5. Test with node drain simulation
+        6. Document disruption policies
+
+        Deliverables:
+        - PDB manifests for all critical services
+        - Disruption testing results
+        - Operational documentation
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-031-1769159643037389000
+    agent_tokens: "2213"
+    agent_worker_id: worker-agent-1769155372-Project Manager (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Project Manager (Default)"]'
+    last_run_at: "2026-01-23T09:14:03Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:08:10.937271759Z
+updatedat: 2026-01-23T09:14:03.107048375Z
+closedat: null

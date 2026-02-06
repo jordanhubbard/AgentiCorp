@@ -1,0 +1,37 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-002
+type: task
+title: Add frontend unit tests
+description: Add Jest tests for JavaScript functions in app.js
+status: in_progress
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769446210-Documentation Manager (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769446210-Documentation Manager (Default)
+    agent_output: "We need to respond with strict JSON only, no extra text. Must follow output format described: JSON with actions array etc. Provide short plan, key questions/risks, concrete next actions, proposed patch snippets. Should output JSON only. The format requires actions with type etc. Probably we need to output a JSON object with \"actions\" array and \"notes\". Provide plan etc within JSON? The instruction says output format: 1) Short plan 2) Key questions/risks 3) Concrete next actions (commands/files to change) 4) Proposed patch snippets if applicable. But also says must respond with strict JSON only, no surrounding text. Probably we need to embed the plan etc into the \"notes\" field. The actions could be something like create_bead? But bead already exists. We are working on bead bd-002. We need to add Jest tests for JavaScript functions in app.js. So actions could be read_file to read app.js, then write_file to create test file, maybe edit_code to add tests. Provide patch snippet.\n\nWe need to output a single JSON object with \"actions\" array and \"notes\". Each action object must include required fields. Provide a short plan maybe as part of \"notes\". The \"notes\" field can contain our plan text.\n\nWe need to include \"type\" and appropriate fields. For reading file: type: \"read_file\", \"path\": \"path/to/app.js\". Then maybe \"write_file\" to create test file, \"edit_code\" to add tests? Could also \"write_file\" for test file.\n\nWe can include multiple actions. Provide \"question\", \"path\", \"content\", etc. For write_file we need \"path\" and \"content\". For read_file we need \"path\". For read_code maybe.\n\nWe need to include \"bead\" object? Possibly not required but can include. The schema includes bead fields optional. We can include bead info.\n\nWe must not include any extra text outside JSON.\n\nLet's craft:\n\n{\n  \"actions\": [\n    {\n      \"type\": \"read_file\",\n      \"path\": \"src/app.js\",\n      \"question\": \"Read current app.js to identify exported functions\"\n    },\n    {\n      \"type\": \"write_file\",\n      \"path\": \"tests/app.test.js\",\n      \"content\": \"const { sum, multiply } = require('../src/app');\\n\\ntest('sum function', () => {\\n  expect(sum(1, 2)).toBe(3);\\n});\\n\\ntest('multiply function', () => {\\n  expect(multiply(3, 4)).toBe(12);\\n});\\n\\nmodule.exports = { sum, multiply };\" \n    },\n    {\n      \"type\": \"run_command\",\n      \"command\": \"go test ./...\",\n      \"question\": \"Run tests to verify they pass\"\n    }\n  ],\n  \"notes\": \"Plan: 1) Identify exported functions in app.js. 2) Create Jest test file with tests for sum and multiply. 3) Run go test to ensure no conflicts. 4) Commit changes. Risks: functions may not be exported or may have different names; need to adjust test accordingly. Concrete next actions: read app.js, write test file, run tests.\"\n}\n\nBut need to follow schema: each action must have fields appropriate to its type. For read_file, required: path. Also can include \"question\". That's fine.\n\nFor write_file, required: path, content. Provide content.\n\nFor run_command, required: command.\n\nWe also might need \"bead_id\" maybe? Not required but can include. The schema includes optional bead fields. Could include \"bead_id\": \"bd-002\". Also \"reason\". But not required.\n\nWe need to ensure JSON is valid. No trailing commas.\n\nThe \"notes\" field is a string; we can include our short plan etc.\n\nThus final JSON.\n\nCheck that we haven't included any extra fields not allowed? The schema allows any fields but must be valid JSON. Provide only actions and notes.\n\nMake sure no extra keys outside actions and notes. The top-level object must have \"actions\" and \"notes\". That's it.\n\nThus produce JSON.\n</think>\n{\n  \"actions\": [\n    {\n      \"type\": \"read_file\",\n      \"path\": \"src/app.js\",\n      \"question\": \"Read current app.js to identify exported functions\"\n    },\n    {\n      \"type\": \"write_file\",\n      \"path\": \"tests/app.test.js\",\n      \"content\": \"const { sum, multiply } = require('../src/app');\\n\\ntest('sum function', () => {\\n  expect(sum(1, 2)).toBe(3);\\n});\\n\\ntest('multiply function', () => {\\n  expect(multiply(3, 4)).toBe(12);\\n});\\n\\nmodule.exports = { sum, multiply };\\n\"\n    },\n    {\n      \"type\": \"run_command\",\n      \"command\": \"go test ./...\",\n      \"question\": \"Run tests to verify they pass\"\n    }\n  ],\n  \"notes\": \"Short plan: 1) Read src/app.js to confirm exported functions. 2) Write tests/app.test.js with Jest tests for sum and multiply. 3) Execute go test ./... to ensure compatibility. 4) Commit the new test file. Key risks: functions may have different exports or names; adjust test accordingly. Concrete next actions: read src/app.js, write tests/app.test.js, run go test.\"\n}"
+    agent_task_id: task-bd-002-1769449050936740134
+    agent_tokens: "2399"
+    agent_worker_id: worker-agent-1769446210-Documentation Manager (Default)-1769448672
+    dispatch_history: '["agent-1769446210-Documentation Manager (Default)"]'
+    last_run_at: "2026-01-26T17:37:56Z"
+    loop_detected: "false"
+    provider_id: sparky
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-26T17:37:13.001691042Z
+updatedat: 2026-01-26T17:37:56.128112381Z
+closedat: null

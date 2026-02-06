@@ -1,0 +1,23 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-008
+type: task
+title: P0 - API failure POST /api/v1/repl 502
+description: "API request failed\n\nMethod: POST\nPath: /api/v1/repl\nStatus: 502\nQuery: \nRemote: 151.101.42.132:54132\nUser: user-admin\nTimestamp: 2026-01-22T19:03:40Z\n"
+status: closed
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-22T19:03:40.563678126Z
+updatedat: 2026-01-22T22:12:41.418098928Z
+closedat: 2026-01-22T22:12:41.418098261Z

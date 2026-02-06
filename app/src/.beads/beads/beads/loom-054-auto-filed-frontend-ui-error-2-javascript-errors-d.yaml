@@ -1,0 +1,70 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-054
+type: bug
+title: '[auto-filed] [frontend] UI Error: 2 JavaScript errors detected'
+description: |
+    ## Auto-Filed Bug Report
+
+    **Source:** frontend
+    **Error Type:** ui_error
+    **Severity:** high
+    **Occurred At:** 2026-01-24T04:14:46Z
+
+    ### Error Message
+    2 JavaScript errors detected
+
+    ### Stack Trace
+    API Error: Error: API request failed
+    API Error: Error: API request failed
+    ❌ ERRORS:
+       • 2 JavaScript errors detected
+
+    ### Context
+    ```json
+    {
+      "state": {
+        "agents": 10,
+        "beads": 54,
+        "projects": 1,
+        "providers": 2
+      },
+      "timestamp": "2026-01-24T04:14:46.675Z",
+      "url": "http://plubbit.local:8080/#providers",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+      "viewport": "1539x851",
+      "warnings": []
+    }
+    ```
+
+    ---
+    *This bug was automatically filed by the AgentiCorp error tracking system.*
+    *Assigned to QA Engineer for triage.*
+status: open
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769155372-QA Engineer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-QA Engineer (Default)
+    agent_output: "We need to respond as QA Engineer with the specified output format. Provide short plan, key questions/risks, concrete next actions (commands/files), proposed patch snippets if applicable. Since it's a bug, we need to assess and possibly create test beads, decide if need decision bead. It's labeled P1 bug, priority high. We should do triage, maybe create test plan or assign. Provide steps.\n\nWe should output in the format:\n\n1) Short plan\n2) Key questions/risks\n3) Concrete next actions (commands/files to change)\n4) Proposed patch snippets if applicable\n\nWe can also include decision bead if needed. But likely we just triage and maybe create a test bead for regression.\n\nWe need to be thorough. Provide plan: reproduce error, check logs, identify root cause, assign to dev, create test bead for verification.\n\nLet's craft.\n</think>\n**1) Short plan**  \n- Verify the reported JavaScript errors locally and in staging.  \n- Capture the exact failing UI flows and create a regression bead (`bd‑055`) to ensure the errors are covered by automated UI tests.  \n- Open a decision bead (`bd‑056`) to flag the ambiguous “API request failed” message and request clarification from the backend team.  \n- If the errors are reproducible, raise a P1 ticket for the frontend squad and schedule a fix‑verification test bead after the fix lands.\n\n---\n\n**2) Key questions / risks**  \n| Question | Why it matters |\n|----------|----------------|\n| Which specific UI components or pages trigger the 2 JavaScript errors? | Determines scope – is it a single component or many routes? |\n| What API endpoints are being called when the errors occur? | Helps isolate whether the problem is client‑side logic or a backend response handling issue. |\n| Are there any user‑flow paths that hide the error but could surface later? | Prevents regressions; we need to know if the bug is visible only in a narrow scenario. |\n| Is the error tied to a specific browser/device configuration? | The stack trace shows Chrome 144 on macOS; we must verify on other browsers. |\n| Are there any performance or stability side‑effects (e.g., uncaught exceptions causing UI hangs)? | A P1 bug could degrade overall app stability. |\n| Current test coverage for the affected UI flow – is there an existing test bead? | If coverage exists, we may only need to extend it; otherwise we must add new tests. |\n| Potential impact on release timeline? | P1 bugs often require a short fix window; we must estimate effort and communicate blockers. |\n\n---\n\n**3) Concrete next actions**  \n\n| Action | Command / File | Details |\n|--------|----------------|---------|\n| **A. Reproduce locally** | `git checkout bd-054`<br>`npm install && npm run dev` | Open `http://localhost:8080/#providers` in Chrome, open DevTools → Console. Confirm the two JS errors appear. |\n| **B. Capture full stack traces** | `console.error` capture script (create `scripts/capture-errors.js`) | Save stack traces to `logs/bd-054-errors.log` for later analysis. |\n| **C. Create regression test bead** | `CREATE_TEST_BEAD \"bd-055: Verify UI does not throw JS errors on /providers page\"` | Add to `test_beads/bd-055.yaml` with steps: <br>1. Navigate to `/#providers` <br>2. Wait for page load <br>3. Assert `window.onerror` count = 0 <br>4. Run `go test ./frontend/... -run TestProvidersNoJSErrors`. |\n| **D. Open decision bead for clarification** | `CREATE_DECISION_BEAD \"bd-056: Ambiguous API Error: 'API request failed' – need clarification on which endpoint and expected response codes.\"` | Tag: `product-team`, `backend-team`. This will block further test‑plan finalisation until clarification is received. |\n| **E. File P1 ticket** | `POST / tickets?priority=P1&component=frontend&description=\"2 JS errors on providers page – see bd-054\"` | Include link to this bead and attach `logs/bd-054-errors.log`. |\n| **F. Update test plan** | Edit `test_plans/release-1.0/frontend.yaml` to add `bd-055` as a **required** bead and mark `bd-054` as **blocked** until resolved. | Ensure the test plan reflects the new regression coverage. |\n| **G. Monitor build** | `go test ./...` after fix is merged | Verify that the new regression bead passes on all supported browsers (Chrome, Firefox, Safari). |\n\n---\n\n**4) Proposed patch snippets**  \n\n*If the root cause is an unhandled promise rejection in `providers.js`:*\n\n```javascript\n// src/components/Providers.jsx\n// Before (problematic)\nfetch('/api/v1/providers')\n  .then(response => response.json())\n  .then(data => setProviders(data));\n\n// After (guarded)\nfetch('/api/v1/providers')\n  .then(response => {\n    if (!response.ok) {\n      throw new Error(`API request failed: ${response.status}`);\n    }\n    return response.json();\n  })\n  .then(data => setProviders(data))\n  .catch(err => {\n    console.error('Provider fetch error:', err);\n    // optionally display user‑friendly message\n  });\n```\n\n*If the error originates from a missing CSS class causing a layout shift that triggers a React warning:*  \n\n```css\n/* src/styles/providers.css */\n.provider-card {\n  transition: opacity 0.3s ease;\n}\n```\n\nAdd the above rule to prevent React warnings that could be flagged as JavaScript errors in strict mode.\n\n---\n\n**Decision bead (bd‑056) skeleton**  \n\n```\n# Ambiguous API error message needs clarification\nCREATE_DECISION_BEAD \"bd-056: Clarify which API endpoint returns 'API request failed' and expected error handling strategy.\"\nTAG_DECISION product-team backend-team\nBLOCK_TEST_PLANNING_FOR feature_providers\n```"
+    agent_task_id: task-bd-054-1769228087112116212
+    agent_tokens: "2421"
+    agent_worker_id: worker-agent-1769155372-QA Engineer (Default)-1769221664
+    dispatch_history: '["agent-1769155372-QA Engineer (Default)"]'
+    last_run_at: "2026-01-24T04:15:15Z"
+    loop_detected: "false"
+    provider_id: sparky
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-24T04:14:47.052000129Z
+updatedat: 2026-01-24T04:15:15.99122892Z
+closedat: null

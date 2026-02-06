@@ -1,0 +1,197 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-045
+type: task
+title: P0 - Implement logging API endpoints for real-time log viewer
+description: |-
+    # Logging API Endpoints
+
+    Implement backend API endpoints to support the log viewer UI:
+
+    ## Required Endpoints
+
+    ### 1. GET /api/v1/logs/recent
+    - Query params: `limit` (default 100), `level`, `source`, `since`
+    - Returns: `{"logs": [{"timestamp", "level", "source", "message", "metadata"}]}`
+    - Must capture logs from:
+      - AgentiCorp application logs
+      - Temporal workflow logs
+      - Agent activity logs
+      - Provider heartbeat logs
+      - Database operations
+      - Dispatcher activity
+
+    ### 2. POST /api/v1/logs/stream (SSE)
+    - Server-Sent Events endpoint for real-time log streaming
+    - Event format: `event: log\ndata: {json}\n\n`
+
+    ### 3. GET /api/v1/logs/export
+    - Export logs as JSON file
+    - Query params: `start_time`, `end_time`, `format` (json/csv)
+
+    ## Implementation Details
+
+    - Use structured logging (level, source, timestamp, message, metadata)
+    - Store recent logs in circular buffer (max 10k entries)
+    - Add log persistence to SQLite for historical queries
+    - Integrate with existing log.Printf statements
+    - Add context-aware logging (agent_id, bead_id, project_id in metadata)
+
+    ## Database Schema
+
+    ```sql
+    CREATE TABLE logs (
+      id TEXT PRIMARY KEY,
+      timestamp DATETIME NOT NULL,
+      level TEXT NOT NULL,  -- debug, info, warn, error
+      source TEXT NOT NULL, -- temporal, agent, provider, dispatcher, database
+      message TEXT NOT NULL,
+      metadata_json TEXT,
+      agent_id TEXT,
+      bead_id TEXT,
+      project_id TEXT,
+      provider_id TEXT
+    );
+    CREATE INDEX idx_logs_timestamp ON logs(timestamp DESC);
+    CREATE INDEX idx_logs_level ON logs(level);
+    CREATE INDEX idx_logs_source ON logs(source);
+    ```
+
+    ## Files to Create/Modify
+
+    - `internal/api/handlers_logs.go` - HTTP handlers
+    - `internal/logging/manager.go` - Log collection and buffering
+    - `internal/logging/store.go` - SQLite persistence
+    - `internal/database/database.go` - Add logs table migration
+
+    ## Testing
+
+    - Verify logs appear in UI within 5 seconds
+    - Test filters (level, source, search)
+    - Verify SSE stream stays connected
+    - Test export with large log volumes
+
+    ## Blockers
+
+    This blocks the log viewer UI from being functional.
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-Web Designer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Web Designer (Default)
+    agent_output: |
+        [mock] Work on bead bd-045: P0 - Implement logging API endpoints for real-time log viewer
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-045
+        Type: task
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        # Logging API Endpoints
+
+        Implement backend API endpoints to support the log viewer UI:
+
+        ## Required Endpoints
+
+        ### 1. GET /api/v1/logs/recent
+        - Query params: `limit` (default 100), `level`, `source`, `since`
+        - Returns: `{"logs": [{"timestamp", "level", "source", "message", "metadata"}]}`
+        - Must capture logs from:
+          - AgentiCorp application logs
+          - Temporal workflow logs
+          - Agent activity logs
+          - Provider heartbeat logs
+          - Database operations
+          - Dispatcher activity
+
+        ### 2. POST /api/v1/logs/stream (SSE)
+        - Server-Sent Events endpoint for real-time log streaming
+        - Event format: `event: log\ndata: {json}\n\n`
+
+        ### 3. GET /api/v1/logs/export
+        - Export logs as JSON file
+        - Query params: `start_time`, `end_time`, `format` (json/csv)
+
+        ## Implementation Details
+
+        - Use structured logging (level, source, timestamp, message, metadata)
+        - Store recent logs in circular buffer (max 10k entries)
+        - Add log persistence to SQLite for historical queries
+        - Integrate with existing log.Printf statements
+        - Add context-aware logging (agent_id, bead_id, project_id in metadata)
+
+        ## Database Schema
+
+        ```sql
+        CREATE TABLE logs (
+          id TEXT PRIMARY KEY,
+          timestamp DATETIME NOT NULL,
+          level TEXT NOT NULL,  -- debug, info, warn, error
+          source TEXT NOT NULL, -- temporal, agent, provider, dispatcher, database
+          message TEXT NOT NULL,
+          metadata_json TEXT,
+          agent_id TEXT,
+          bead_id TEXT,
+          project_id TEXT,
+          provider_id TEXT
+        );
+        CREATE INDEX idx_logs_timestamp ON logs(timestamp DESC);
+        CREATE INDEX idx_logs_level ON logs(level);
+        CREATE INDEX idx_logs_source ON logs(source);
+        ```
+
+        ## Files to Create/Modify
+
+        - `internal/api/handlers_logs.go` - HTTP handlers
+        - `internal/logging/manager.go` - Log collection and buffering
+        - `internal/logging/store.go` - SQLite persistence
+        - `internal/database/database.go` - Add logs table migration
+
+        ## Testing
+
+        - Verify logs appear in UI within 5 seconds
+        - Test filters (level, source, search)
+        - Verify SSE stream stays connected
+        - Test export with large log volumes
+
+        ## Blockers
+
+        This blocks the log viewer UI from being functional.
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-045-1769159642226236930
+    agent_tokens: "5197"
+    agent_worker_id: worker-agent-1769155372-Web Designer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Web Designer (Default)"]'
+    last_run_at: "2026-01-23T09:14:02Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T04:43:03.879238463Z
+updatedat: 2026-01-23T09:14:02.294240805Z
+closedat: null

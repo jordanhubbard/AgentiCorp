@@ -1,0 +1,95 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-062
+type: bug
+title: Action parse failed
+description: |-
+    Failed to parse strict JSON actions.
+
+    Error:
+    invalid character 'T' looking for beginning of value
+
+    Raw response:
+    The user wants a response in strict JSON only, following the specified format. The prior assistant gave JSON with actions array and notes. Need to ensure it's valid JSON and only includes required fields.
+
+    The user now says: "Output format: 1) Short plan 2) Key questions/risks 3) Concrete next actions (commands/files to change) 4) Proposed patch snippets if applicable". That's describing the desired output format? Actually earlier they gave a spec: must respond with strict JSON only, shape: { "actions": [ { ... } ], "notes": "string" }. They gave an example of what fields can be in each action. They want the assistant to produce JSON accordingly.
+
+    Now the user gave a new instruction: "Output format: 1) Short plan ...". Actually they are describing what they want the assistant to output? They want the assistant to output JSON that includes those items? But the spec earlier says only JSON with actions and notes. The user now wants a short plan, key questions/risks, concrete next actions, proposed patch snippets. They want these as part of the response? But the spec says must respond with strict JSON only, no extra text. So we need to embed that information within the JSON fields, perhaps using notes field to include short plan, key questions, etc. Or we could include them in the actions? The spec only allows actions of certain types, and notes field is free string. So we can put the short plan, key questions, etc. in the notes field. But the user explicitly wants those four items as part of output. Probably they want the assistant to produce a response that includes those items, but still as JSON only. So we can craft a JSON where "notes" contains the short plan, key questions, concrete next actions, proposed patch snippets. However they also want "Concrete next actions (commands/files to change)" - that could be represented as actions array items. So we can include actions for editing the file and creating a bead, as before. Then "notes" can contain the short plan, key questions, etc. But they also want "Proposed patch snippets if applicable". That could be included in the patch field of an action, or in notes.
+
+    Thus produce JSON with actions array containing edit_code and maybe create_bead. And notes containing short plan, key questions/risks, concrete next actions, proposed patch snippet. But we must not include extra fields beyond allowed ones. The allowed fields in actions are type, question?, path, patch, query, max_depth, limit, command, working_dir, bead, bead_id, reason, returned_to. The earlier example included question, path, patch. The spec says "Only include fields required for the selected action type." So for edit_code, required fields are type, path, patch? Possibly also "question"? Not required. So we can include type, path, patch. For create_bead, required fields are type, bead (with required subfields), bead_id, reason, returned_to. Also maybe "question"? Not required. So we can include those.
+
+    Thus produce JSON:
+
+    {
+      "actions": [
+        {
+          "type": "edit_code",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -12,7 +12,7 @@\n-    <h1>Agent Orchestration System</h1>\n+    <h1>Agent Orchestration Platform</h1>\n </header>"
+        },
+        {
+          "type": "create_bead",
+          "bead": {
+            "title": "QA verification for bd-055",
+            "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
+            "priority": 0,
+            "type": "task",
+            "project_id": "agenticorp-self",
+            "tags": ["qa","verification"]
+          },
+          "bead_id": "bd-055-qa",
+          "reason": "Reassign bead to QA for verification after code change",
+          "returned_to": "qa-team"
+        }
+      ],
+      "notes": "Short Plan: Update the H1 header text in web/static/index.html to reflect 'Agent Orchestration Platform'.\nKey Questions/Risks: Ensure no other occurrences of the text, verify markdown/HTML syntax, confirm CI passes after change.\nConcrete Next Actions: 1) Apply the patch to update the header. 2) Create a QA verification bead (bd-055-qa) for the QA team to confirm the change. Proposed Patch Snippet: see edit_code action above."
+    }
+
+    Check JSON validity: need to escape newlines? In JSON string, newline can be literal \n. The patch string includes newline characters; it's okay as a string with \n. Ensure no trailing commas. Provide only JSON.
+
+    Thus final answer is JSON only.
+    </think>
+    {
+      "actions": [
+        {
+          "type": "edit_code",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -12,7 +12,7 @@\n-    <h1>Agent Orchestration System</h1>\n+    <h1>Agent Orchestration Platform</h1>\n </header>"
+        },
+        {
+          "type": "create_bead",
+          "bead": {
+            "title": "QA verification for bd-055",
+            "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
+            "priority": 0,
+            "type": "task",
+            "project_id": "agenticorp-self",
+            "tags": [
+              "qa",
+              "verification"
+            ]
+          },
+          "bead_id": "bd-055-qa",
+          "reason": "Reassign bead to QA for verification after code change",
+          "returned_to": "qa-team"
+        }
+      ],
+      "notes": "Short Plan: Update the H1 header text in web/static/index.html to reflect 'Agent Orchestration Platform'.\nKey Questions/Risks: Ensure no other occurrences of the text, verify HTML validity, confirm CI passes after change.\nConcrete Next Actions: 1) Apply the patch to update the header. 2) Create a QA verification bead (bd-055-qa) for the QA team to confirm the change. Proposed Patch Snippet: see edit_code action above."
+    }
+status: open
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-25T21:42:20.086367546Z
+updatedat: 2026-01-25T21:42:20.086367962Z
+closedat: null

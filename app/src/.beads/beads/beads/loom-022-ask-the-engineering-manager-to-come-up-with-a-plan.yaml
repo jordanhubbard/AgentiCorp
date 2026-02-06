@@ -1,0 +1,58 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-022
+type: task
+title: Ask the engineering manager to come up with a plan to persist the state of the application
+description: |-
+    Critical Issue: State not persisting across container restarts
+
+    Problem:
+    - Providers need to be re-registered after every docker compose restart
+    - Agents are recreated but lose their provider assignments
+    - Project configurations may not be persisting
+    - We are hitting LLM providers unnecessarily on every startup
+
+    Root Cause Analysis Needed:
+    1. Database persistence: Is PostgreSQL state being persisted or wiped on restart?
+    2. Volume mounts: Are database volumes properly configured in docker-compose.yml?
+    3. Initialization: Is the app recreating default state that overwrites DB?
+    4. Migration issues: Are schema migrations running correctly?
+
+    Expected Behavior:
+    - Providers registered once should remain after restart
+    - Agent configurations should persist
+    - Project settings should survive restarts
+    - Only manual actions should modify configuration
+
+    Request:
+    - Investigate why providers/agents/projects arent persisting
+    - Create a plan to ensure proper state persistence
+    - Document the fix and verification steps
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769123959-Engineering Manager (Active)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769123959-Engineering Manager (Active)
+    agent_output: "We need to produce output in specified format: short plan, key questions/risks, concrete next actions, proposed patch snippets. Also need to follow bead workflow: create beads for issues, decisions, etc. But the user request is to \"Work on bead bd-022: Ask the engineering manager to come up with a plan to persist the state of the application\". So we need to produce a response as the engineering manager? Actually we are the engineering manager? The user wants us to work on bead bd-022, i.e., we need to produce a plan, etc. So we should output the required sections.\n\nWe need to investigate state persistence. Provide short plan, key questions/risks, concrete next actions (commands/files to change), proposed patch snippets if applicable.\n\nWe should also maybe file beads for identified issues? The bead is a task, we need to produce output as per format. Probably we should output the plan etc.\n\nMake sure to use the bead workflow language? The instruction says \"When you encounter a decision point: ...\". But here we are asked to produce output for bead bd-022. So we should output the sections.\n\nWe'll produce:\n\n1) Short plan: summary of steps to diagnose and fix persistence.\n\n2) Key questions/risks: list.\n\n3) Concrete next actions: commands, files to edit.\n\n4) Proposed patch snippets: maybe docker-compose.yml volume changes, Dockerfile, entrypoint script.\n\nWe should also maybe create decision beads for major decisions? But the request is to \"Ask the engineering manager to come up with a plan\". So we might create a bead to request that? But the user wants us to work on bead bd-022, so we should produce the plan.\n\nThus output:\n\n```\n# Short Plan\n...\n\n# Key Questions / Risks\n...\n\n# Concrete Next Actions\n...\n\n# Proposed Patch Snippets\n...\n```\n\nMake sure to be concise but thorough.\n\nLet's craft.\n</think>\n**# Short Plan**  \n1. **Verify persistence configuration** – audit `docker‑compose.yml` for named volumes and volume mounts for the PostgreSQL data directory.  \n2. **Check PostgreSQL container** – confirm that the DB container is started with a persistent volume and that its data directory is not being overwritten by an init script.  \n3. **Inspect application startup logic** – locate the code that (re)creates providers/agents/project configs; ensure it only runs on first‑run or when a migration is needed.  \n4. **Validate migration execution** – confirm that schema migrations (`go run cmd/migrate/main.go` or similar) run only once and do not reset data.  \n5. **Add explicit persistence safeguards** – e.g., guard provider registration with a “already‑registered” check, and make sure the app does not wipe the DB on container start.  \n6. **Document verification steps** – provide a checklist to confirm that after a `docker compose up -d && docker compose restart` the providers, agents, and project settings remain intact.\n\n---\n\n**# Key Questions / Risks**  \n- **Volume configuration** – Are the PostgreSQL data volumes declared as named volumes (`postgres_data:`) and correctly referenced in `volumes:`?  \n- **Init script behavior** – Does the entrypoint script (or `docker-compose up` command) include a flag that re‑initialises the DB if it’s empty?  \n- **Schema migration idempotency** – Are migrations idempotent? Could they be re‑applied and drop/re‑create tables on each start?  \n- **State leakage** – Could provider registration code be writing to an in‑memory cache that is lost on container restart?  \n- **Risk of data loss** – If the DB volume is incorrectly mounted, any existing state will be erased, causing loss of provider registrations and agent configurations.  \n- **Operational impact** – Changing volume mounts may require a rolling restart; ensure minimal downtime and backup of current DB state before modifications.\n\n---\n\n**# Concrete Next Actions**  \n\n| Action | Command / File | Details |\n|--------|----------------|---------|\n| **1. Examine compose file** | `cat docker-compose.yml` | Look for a service named `postgres` (or similar) and its `volumes:` section. |\n| **2. Confirm volume definition** | Add (if missing) a named volume: <br>`volumes: <br>  postgres_data:` | Ensure it is referenced in the `postgres` service: <br>`volumes: - postgres_data:/var/lib/postgresql/data` |\n| **3. Check entrypoint / init script** | `docker-compose.yml` → `command:` or `entrypoint:` of the app service | Search for any `--init-db` or similar flags that might force a fresh DB init. |\n| **4. Review migration runner** | `cmd/migrate/main.go` (or equivalent) | Verify that the migration runner checks for applied migrations before running; add `--no-reset` if needed. |\n| **5. Add persistence guard in code** | Locate provider registration logic (e.g., `provider/registry.go`) | Wrap registration in `if !db.HasRegisteredProviders() { registerProviders() }`. |\n| **6. Backup current DB (optional)** | `docker exec <postgres_container> pg_dumpall -U postgres > backup.sql` | Take a quick dump before any volume changes. |\n| **7. Restart and test** | `docker compose up -d && docker compose restart` | Verify that after restart: <br>• `psql -h localhost -U postgres -c \"SELECT count(*) FROM providers;\"` still returns non‑zero rows. <br>• Agents can still resolve their assigned providers. |\n| **8. Document verification** | `docs/persistence-checklist.md` | Include steps: start, stop, start, check provider list, check agent config UI, etc. |\n\n---\n\n**# Proposed Patch Snippets**  \n\n*1. docker‑compose.yml – ensure persistent volume*  \n\n```yaml\nservices:\n  postgres:\n    image: postgres:15-alpine\n    restart: unless-stopped\n    environment:\n      POSTGRES_USER: agent\n      POSTGRES_PASSWORD: secret\n      POSTGRES_DB: agenticorp\n    volumes:\n      - postgres_data:/var/lib/postgresql/data   # <-- persistent volume\n    healthcheck:\n      test: [\"CMD\", \"pg_isready\", \"-U\", \"agent\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n\n  app:\n    build: .\n    depends_on:\n      - postgres\n    environment:\n      DB_HOST: postgres\n      DB_PORT: 5432\n      # other env vars...\n    volumes:\n      - ./app:/app\n    command: [\"go\", \"run\", \"cmd/app/main.go\"]\n```\n\n*2. Guarded provider registration (excerpt from `provider/registry.go`)*  \n\n```go\npackage provider\n\nimport (\n    \"database/sql\"\n    \"log\"\n)\n\nfunc RegisterAll(db *sql.DB) error {\n    // Check if any provider already exists\n    var count int\n    err := db.QueryRow(`SELECT COUNT(*) FROM providers`).Scan(&count)\n    if err != nil {\n        return err\n    }\n    if count > 0 {\n        log.Println(\"Providers already registered; skipping re‑registration\")\n        return nil\n    }\n\n    // Register default providers\n    providers := []Provider{\n        {Name: \"openai\", Endpoint: \"https://api.openai.com/v1\", Token: os.Getenv(\"OPENAI_TOKEN\")},\n        {Name: \"anthropic\", Endpoint: \"https://api.anthropic.com/v1\", Token: os.Getenv(\"ANTHROPIC_TOKEN\")},\n        // …\n    }\n    for _, p := range providers {\n        if err := createProvider(db, p); err != nil {\n            return err\n        }\n    }\n    return nil\n}\n```\n\n*3. Migration runner idempotency (excerpt from `cmd/migrate/main.go`)*  \n\n```go\nif err := migrate.NewMigrator(db).Run(); err != nil {\n    if errors.Is(err, migrate.ErrNoMigrations) {\n        log.Println(\"No pending migrations\")\n    } else {\n        log.Fatalf(\"migration failed: %v\", err)\n    }\n}\n```\n\n---\n\n**# Next Bead Request**  \n- **Create decision bead** `bd-023` to decide whether to adopt a dedicated state‑management service (e.g., Redis or a separate key‑value store) if PostgreSQL proves insufficient for long‑term agent state.  \n- **Escalate** to **P0** if the investigation reveals that the current DB volume configuration is missing altogether (critical data loss risk).  \n\n*Please proceed with the above actions and update the bead with findings.*"
+    agent_task_id: task-bd-022-1769123959510335972
+    agent_tokens: "2872"
+    agent_worker_id: worker-agent-1769123959-Engineering Manager (Active)-1769123959
+    dispatch_history: '["agent-1769123959-Engineering Manager (Active)"]'
+    last_run_at: "2026-01-22T23:19:33Z"
+    loop_detected: "false"
+    provider_id: puck-vllm
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-22T23:18:42.966944927Z
+updatedat: 2026-01-22T23:19:33.099654881Z
+closedat: null

@@ -1,0 +1,41 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-016
+type: task
+title: '[Web Designer] UX Review of AgentiCorp UI'
+description: |-
+    **FOR WEB DESIGNER AGENT ONLY**
+
+    Review the AgentiCorp web interface and provide UX recommendations.
+
+    Files: web/static/index.html, web/static/css/style.css, web/static/js/app.js
+
+    Provide findings in a UX review document.
+status: closed
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769121285-Project Manager (Active)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769121285-Project Manager (Active)
+    agent_output: "We need to respond as coordinate agent. The user asks \"Work on bead bd-016: [Web Designer] UX Review of AgentiCorp UI\". We need to handle as a task bead, P1, in progress, for Web Designer agent only. We need to produce output format: 1) Short plan 2) Key questions/risks 3) Concrete next actions (commands/files to change) 4) Proposed patch snippets if applicable.\n\nWe need to consider that we are the coordinator, not the web designer agent. But the bead is assigned to Web Designer agent. Our role is to coordinate. So we need to manage the bead: create plan, ask for status, possibly request updates, ensure it's completed, and possibly block release if needed. Since it's a P1 task, we need to ensure it gets done before release.\n\nWe should respond with a short plan, key questions, next actions, and propose patch snippets? As coordinator we may not generate code but can suggest. But the format says provide findings in a UX review document. But we as coordinator need to produce the deliverable? Actually the bead description says \"Provide findings in a UX review document.\" So we as the coordinator need to produce that? Or we need to assign to web designer agent? Probably we need to produce the output as if we are the web designer agent? But the instruction says \"You are the coordinator... You do NOT create new beads. Your role is to manage existing work, not define new work.\" However this bead is an existing work item. We can produce the output for it, as it's a task for the web designer. As coordinator, we can generate the plan and next steps.\n\nThus we output in the required format. Also need to respect the rule: NEVER APPROVE A RELEASE WITHOUT QA SIGN-OFF. This bead is not about release but UX review. It's P1, so important. We need to ensure it's completed.\n\nThus answer: Provide short plan, key questions/risks, concrete next actions, proposed patch snippets if applicable.\n\nWe'll output in the format.\n</think>\n**1) Short Plan**  \n- Clone the `main` branch and locate the UI files (`web/static/index.html`, `web/static/css/style.css`, `web/static/js/app.js`).  \n- Perform a quick heuristic walkthrough of the UI, focusing on clarity, consistency, accessibility, and task flow.  \n- Document findings in a concise UX‑review markdown file (`bd-016-ux-review.md`).  \n- Highlight any high‑impact issues that could affect user adoption or onboarding.  \n- Share the review with the Product Manager and Engineering Manager for feedback, then incorporate any agreed‑upon refinements.  \n- Mark the bead as **completed** once the review is finalized and signed off.\n\n**2) Key Questions / Risks**  \n- Are the UI elements (buttons, forms, navigation) consistently styled and easy to discover?  \n- Does the current layout support the primary user tasks (e.g., starting a self‑improvement session, viewing progress)?  \n- Are there any accessibility concerns (color contrast, keyboard navigation, ARIA labels)?  \n- Is there any visual clutter or unnecessary complexity that could overwhelm new users?  \n- Potential risk: UX issues could lead to user frustration, higher churn, and lower engagement with the self‑improvement features.  \n- Risk of missing critical usability bugs that only surface during real‑world usage.\n\n**3) Concrete Next Actions**  \n- **Commands:**  \n  ```bash\n  git checkout main\n  cd web/static\n  # Open the files for inspection\n  code index.html style.css app.js   # or your preferred editor\n  ```  \n- **Files to edit / create:**  \n  - `bd-016-ux-review.md` – the output document.  \n  - If changes are needed, modify the relevant UI files and commit with message `bd-016: UX fixes per review`.  \n- **Process:**  \n  - Run the local build to ensure no syntax errors: `go build ./...` (or the project's build command).  \n  - Open the UI in a browser (`go run ./...` or `http://localhost:3000`) and perform the walkthrough.  \n  - Capture screenshots of problem areas (optional) and embed them in the markdown.  \n  - Post the draft review to the `#ux-reviews` channel for stakeholder comments.  \n  - Once feedback is incorporated, set the bead status to `closed` and notify the Product Manager.\n\n**4) Proposed Patch Snippets** *(if any UI tweaks are identified)*  \n\n*Example – Improving button contrast:*  \n```css\n/* style.css – increase contrast for primary action button */\n.primary-btn {\n    background-color: #0066cc;   /* higher contrast */\n    color: #ffffff;\n}\n```\n\n*Example – Adding accessible label to a hidden input:*  \n```html\n<!-- index.html – ensure label is announced to screen readers -->\n<label for=\"start-session\" class=\"sr-only\">Start a new self‑improvement session</label>\n<input id=\"start-session\" type=\"button\" class=\"primary-btn\" value=\"Start Session\">\n```\n\n*Example – Simplify navigation hint:*  \n```js\n// app.js – clarify tooltip text\nconst tooltip = new Tooltip('#nav-help', {\n    title: 'Navigate to your progress dashboard'\n});\n```\n\n*If no changes are required, simply note:*  \n```\nNo UI changes required; review completed with no actionable fixes.\n```\n\n---  \n**Next Step for Coordinator:**  \n- Await the web designer’s submission of `bd-016-ux-review.md`.  \n- Once received, verify the review is complete, then transition the bead to `closed`.  \n- If any blockers arise (e.g., missing files, unresolved feedback), create a decision bead to discuss priority or additional resources.  \n\n*Remember: This P1 task must be fully closed before any release can be approved.*"
+    agent_task_id: task-bd-016-1769122490264298542
+    agent_tokens: "2614"
+    agent_worker_id: worker-agent-1769121285-Project Manager (Active)-1769121285
+    dispatch_history: '["agent-1769121285-Project Manager (Active)"]'
+    last_run_at: "2026-01-22T22:55:00Z"
+    loop_detected: "false"
+    provider_id: puck-vllm
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-22T22:54:36.264989133Z
+updatedat: 2026-01-22T22:55:28.840483879Z
+closedat: 2026-01-22T22:55:28.840483462Z

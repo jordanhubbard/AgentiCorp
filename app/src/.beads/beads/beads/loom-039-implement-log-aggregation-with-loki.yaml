@@ -1,0 +1,107 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-039
+type: task
+title: Implement log aggregation with Loki
+description: |-
+    Deploy Loki for centralized log collection and querying.
+
+    Benefits:
+    - Centralized log storage
+    - Efficient querying with LogQL
+    - Integration with Grafana
+    - Cost-effective (vs Elasticsearch)
+
+    Implementation:
+    1. Deploy Loki stack via Helm
+    2. Configure Promtail as DaemonSet
+    3. Set up log retention policies
+    4. Create Grafana Explore queries
+    5. Build log dashboards:
+       - Error logs by service
+       - Command execution logs
+       - Agent activity logs
+    6. Set up log-based alerts
+    7. Document common LogQL queries
+
+    Deliverables:
+    - Loki stack deployment
+    - Promtail configuration
+    - Log dashboards
+    - Query examples documentation
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-QA Engineer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-QA Engineer (Default)
+    agent_output: |
+        [mock] Work on bead bd-039: Implement log aggregation with Loki
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-039
+        Type: task
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        Deploy Loki for centralized log collection and querying.
+
+        Benefits:
+        - Centralized log storage
+        - Efficient querying with LogQL
+        - Integration with Grafana
+        - Cost-effective (vs Elasticsearch)
+
+        Implementation:
+        1. Deploy Loki stack via Helm
+        2. Configure Promtail as DaemonSet
+        3. Set up log retention policies
+        4. Create Grafana Explore queries
+        5. Build log dashboards:
+           - Error logs by service
+           - Command execution logs
+           - Agent activity logs
+        6. Set up log-based alerts
+        7. Document common LogQL queries
+
+        Deliverables:
+        - Loki stack deployment
+        - Promtail configuration
+        - Log dashboards
+        - Query examples documentation
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-039-1769159642360000930
+    agent_tokens: "2255"
+    agent_worker_id: worker-agent-1769155372-QA Engineer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-QA Engineer (Default)"]'
+    last_run_at: "2026-01-23T09:14:02Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:08:33.909881297Z
+updatedat: 2026-01-23T09:14:02.431848555Z
+closedat: null

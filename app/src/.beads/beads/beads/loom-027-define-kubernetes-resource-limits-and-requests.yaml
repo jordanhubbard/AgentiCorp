@@ -1,0 +1,117 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-027
+type: task
+title: Define Kubernetes resource limits and requests
+description: |-
+    Add resource requirements to K8s manifests to enable proper scheduling and HPA.
+
+    Why:
+    - Prevents resource starvation
+    - Enables Horizontal Pod Autoscaler
+    - Predictable pod scheduling
+    - Cluster efficiency
+
+    Tasks:
+    1. Profile application under various loads
+    2. Determine baseline resource usage
+    3. Create k8s/deployment.yaml with resource specs
+    4. Set requests based on baseline (e.g., 256Mi RAM, 100m CPU)
+    5. Set limits 2-3x requests for spike handling
+    6. Document resource requirements in README
+    7. Consider separate profiles for worker vs API pods
+
+    Example:
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+    Deliverables:
+    - K8s manifest with resource definitions
+    - Load testing results showing appropriate values
+    - Documentation of resource profiles
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-Project Manager (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Project Manager (Default)
+    agent_output: |
+        [mock] Work on bead bd-027: Define Kubernetes resource limits and requests
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-027
+        Type: task
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        Add resource requirements to K8s manifests to enable proper scheduling and HPA.
+
+        Why:
+        - Prevents resource starvation
+        - Enables Horizontal Pod Autoscaler
+        - Predictable pod scheduling
+        - Cluster efficiency
+
+        Tasks:
+        1. Profile application under various loads
+        2. Determine baseline resource usage
+        3. Create k8s/deployment.yaml with resource specs
+        4. Set requests based on baseline (e.g., 256Mi RAM, 100m CPU)
+        5. Set limits 2-3x requests for spike handling
+        6. Document resource requirements in README
+        7. Consider separate profiles for worker vs API pods
+
+        Example:
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+        Deliverables:
+        - K8s manifest with resource definitions
+        - Load testing results showing appropriate values
+        - Documentation of resource profiles
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-027-1769159643196114958
+    agent_tokens: "2657"
+    agent_worker_id: worker-agent-1769155372-Project Manager (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Project Manager (Default)"]'
+    last_run_at: "2026-01-23T09:14:03Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:07:43.415436385Z
+updatedat: 2026-01-23T09:14:03.283030291Z
+closedat: null

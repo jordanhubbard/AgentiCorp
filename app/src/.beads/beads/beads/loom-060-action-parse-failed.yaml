@@ -1,0 +1,93 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-060
+type: bug
+title: Action parse failed
+description: |-
+    Failed to parse strict JSON actions.
+
+    Error:
+    invalid character 'W' looking for beginning of value
+
+    Raw response:
+    We need to output strict JSON only. The user gave a complex instruction: "Work on bead bd-055: Engineer: update header text". They want a response with only JSON, matching the required output format: a single JSON object with "actions" array and "notes". Must include required fields per action type. The actions can be ask_followup|read_code|edit_code|read_file|read_tree|search_text|apply_patch|git_status|git_diff|run_command|create_bead|escalate_ceo. They must include fields required for selected action type. For edit_code action, required fields likely: type, question?, path, patch? Not all required but must include fields required for that action type. The earlier answer included "type": "edit_code", "question": "...", "path": "...", "patch": "...". That's okay. Then also a create_bead action with bead object etc. That matches create_bead action type. The JSON must be a single object, no extra text. Must not include any extra fields not needed? They said "Only include fields required for the selected action type." So for each action, include only fields required for that action type. For edit_code, required fields? Probably at least "type" and "path"? The spec says "Only include fields required for the selected action type." So we should include only those fields that are required for that action type. The example earlier included question, path, patch. Those might be optional but okay. But to be safe, include only required fields. If not sure, include minimal required: type and path? But patch is needed for edit_code? Probably required to specify change. I'd include type, path, patch. That's probably fine.
+
+    For create_bead, required fields: type, bead (with title, description, priority, type, project_id, tags), bead_id, reason, returned_to? The spec says "bead" object includes those fields. Also need "bead_id". Also "reason". Also "returned_to". Also maybe "question"? Not required. The earlier answer included question field which may not be required. Might be okay but could be extraneous. Safer to include only required fields: type, bead (with required subfields), bead_id, reason, returned_to. Also maybe "question" is not required. So we should drop "question". Also "bead" must contain title, description, priority, type, project_id, tags. Provide those.
+
+    Thus final JSON should have two actions: one edit_code with type, path, patch. And one create_bead with bead object etc.
+
+    Also need "notes" field at top level.
+
+    Thus final JSON:
+
+    {
+      "actions": [
+        {
+          "type": "edit_code",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -12,7 +12,7 @@\n <header>\n-    <h1>Agent Orchestration System</h1>\n+    <h1>Agent Orchestration Platform</h1>\n </header>"
+        },
+        {
+          "type": "create_bead",
+          "bead": {
+            "title": "QA verification for bd-055",
+            "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
+            "priority": 0,
+            "type": "task",
+            "project_id": "agenticorp-self",
+            "tags": ["qa","verification"]
+          },
+          "bead_id": "bd-055-qa",
+          "reason": "Reassign bead to QA for verification after code change",
+          "returned_to": "qa-team"
+        }
+      ],
+      "notes": "Update header text in web/static/index.html from 'Agent Orchestration System' to 'Agent Orchestration Platform' using apply_patch style edit. Then create a QA verification bead (bd-055-qa) assigned to QA team for verification."
+    }
+
+    Make sure no extra text. Provide strict JSON.
+    </think>
+    {
+      "actions": [
+        {
+          "type": "edit_code",
+          "path": "web/static/index.html",
+          "patch": "--- a/web/static/index.html\n+++ b/web/static/index.html\n@@ -12,7 +12,7 @@\n <header>\n-    <h1>Agent Orchestration System</h1>\n+    <h1>Agent Orchestration Platform</h1>\n </header>"
+        },
+        {
+          "type": "create_bead",
+          "bead": {
+            "title": "QA verification for bd-055",
+            "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
+            "priority": 0,
+            "type": "task",
+            "project_id": "agenticorp-self",
+            "tags": [
+              "qa",
+              "verification"
+            ]
+          },
+          "bead_id": "bd-055-qa",
+          "reason": "Reassign bead to QA for verification after code change",
+          "returned_to": "qa-team"
+        }
+      ],
+      "notes": "Edit web/static/index.html to change the header from \"Agent Orchestration System\" to \"Agent Orchestration Platform\". Then create a QA verification bead (bd-055-qa) assigned to the QA team for verification."
+    }
+status: open
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-25T20:59:26.898292346Z
+updatedat: 2026-01-25T20:59:26.898292471Z
+closedat: null

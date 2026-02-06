@@ -1,0 +1,130 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-043
+type: bug
+title: '[auto-filed] [frontend] UI Error: 2 JavaScript errors detected'
+description: |
+    ## Auto-Filed Bug Report
+
+    **Source:** frontend
+    **Error Type:** ui_error
+    **Severity:** high
+    **Occurred At:** 2026-01-23T04:35:05Z
+
+    ### Error Message
+    2 JavaScript errors detected
+
+    ### Stack Trace
+    API Error: Error: API request failed
+    API Error: Error: API request failed
+    ❌ ERRORS:
+       • 2 JavaScript errors detected
+
+    ### Context
+    ```json
+    {
+      "state": {
+        "agents": 10,
+        "beads": 42,
+        "projects": 2,
+        "providers": 3
+      },
+      "timestamp": "2026-01-23T04:35:05.770Z",
+      "url": "http://plubbit.local:8080/#providers",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+      "viewport": "1539x851",
+      "warnings": []
+    }
+    ```
+
+    ---
+    *This bug was automatically filed by the AgentiCorp error tracking system.*
+    *Assigned to QA Engineer for triage.*
+status: in_progress
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769155372-QA Engineer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-QA Engineer (Default)
+    agent_output: |
+        [mock] Work on bead bd-043: [auto-filed] [frontend] UI Error: 2 JavaScript errors detected
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+
+        Bead ID: bd-043
+        Type: bug
+        Priority: P1
+        Status: in_progress
+
+        Bead Description:
+        ## Auto-Filed Bug Report
+
+        **Source:** frontend
+        **Error Type:** ui_error
+        **Severity:** high
+        **Occurred At:** 2026-01-23T04:35:05Z
+
+        ### Error Message
+        2 JavaScript errors detected
+
+        ### Stack Trace
+        API Error: Error: API request failed
+        API Error: Error: API request failed
+        ❌ ERRORS:
+           • 2 JavaScript errors detected
+
+        ### Context
+        ```json
+        {
+          "state": {
+            "agents": 10,
+            "beads": 42,
+            "projects": 2,
+            "providers": 3
+          },
+          "timestamp": "2026-01-23T04:35:05.770Z",
+          "url": "http://plubbit.local:8080/#providers",
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+          "viewport": "1539x851",
+          "warnings": []
+        }
+        ```
+
+        ---
+        *This bug was automatically filed by the AgentiCorp error tracking system.*
+        *Assigned to QA Engineer for triage.*
+
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-043-1769159641351038680
+    agent_tokens: "2733"
+    agent_worker_id: worker-agent-1769155372-QA Engineer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-QA Engineer (Default)"]'
+    last_run_at: "2026-01-23T09:14:01Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T04:35:05.786425506Z
+updatedat: 2026-01-23T09:14:01.408620763Z
+closedat: null

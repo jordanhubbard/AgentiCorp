@@ -1,0 +1,107 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-036
+type: task
+title: Add pod topology spread constraints for multi-zone HA
+description: |-
+    Implement topology spread for high availability across zones/nodes.
+
+    Benefits:
+    - Spread pods across availability zones
+    - Improve fault tolerance
+    - Reduce blast radius of zone failures
+
+    Implementation:
+    1. Ensure cluster has multiple zones
+    2. Add topologySpreadConstraints to deployment:
+       - Spread across zones (maxSkew: 1)
+       - Spread across nodes (maxSkew: 2)
+    3. Ensure minimum 3 replicas for effective spreading
+    4. Test zone failure scenarios
+    5. Document topology requirements
+
+    Prerequisites:
+    - Multi-zone K8s cluster
+    - At least 3 replicas
+    - PDB configured
+
+    Deliverables:
+    - Topology spread configuration
+    - HA testing results
+    - Multi-zone deployment guide
+status: in_progress
+priority: 3
+projectid: agenticorp-self
+assignedto: agent-1769155372-Web Designer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Web Designer (Default)
+    agent_output: |
+        [mock] Work on bead bd-036: Add pod topology spread constraints for multi-zone HA
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - description: The AgentiCorp project itself - perpetual self-improvement
+        - test_command: go test ./...
+        - build_command: go build
+
+        Bead ID: bd-036
+        Type: task
+        Priority: P3
+        Status: in_progress
+
+        Bead Description:
+        Implement topology spread for high availability across zones/nodes.
+
+        Benefits:
+        - Spread pods across availability zones
+        - Improve fault tolerance
+        - Reduce blast radius of zone failures
+
+        Implementation:
+        1. Ensure cluster has multiple zones
+        2. Add topologySpreadConstraints to deployment:
+           - Spread across zones (maxSkew: 1)
+           - Spread across nodes (maxSkew: 2)
+        3. Ensure minimum 3 replicas for effective spreading
+        4. Test zone failure scenarios
+        5. Document topology requirements
+
+        Prerequisites:
+        - Multi-zone K8s cluster
+        - At least 3 replicas
+        - PDB configured
+
+        Deliverables:
+        - Topology spread configuration
+        - HA testing results
+        - Multi-zone deployment guide
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-036-1769159644299135709
+    agent_tokens: "2377"
+    agent_worker_id: worker-agent-1769155372-Web Designer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Web Designer (Default)"]'
+    last_run_at: "2026-01-23T09:14:04Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:08:23.128797333Z
+updatedat: 2026-01-23T09:14:04.346475417Z
+closedat: null

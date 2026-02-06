@@ -1,0 +1,38 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-011
+type: task
+title: P1 (sticky) User guide review by personas before release approval
+description: |-
+    Ensure user guide is reviewed by relevant personas before releases.
+
+    Required reviewers: documentation-manager, project-manager, qa-engineer
+    Evidence required in release checklist
+status: closed
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1769121285-Project Manager (Active)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769121285-Project Manager (Active)
+    agent_output: "We need to evaluate bead bd-011: P1 task to ensure user guide reviewed by personas before release approval. Need to produce short plan, key questions/risks, concrete next actions, proposed patch snippets if applicable. Should coordinate with reviewers. Must check status, assign reviewers? But we cannot create new beads; we can modify existing bead? We can add comments, assign reviewers? Probably update bead status, request reviews. Provide plan: identify reviewers, schedule review, ensure evidence captured. Risks: missing reviewers, late feedback. Actions: ping reviewers, add checklist item, maybe update release checklist doc. Provide patch snippet for release checklist file.\n\nWe need to output in specified format.\n\nLet's produce:\n\n1) Short plan: Identify reviewers, send review request, track feedback, update release checklist.\n\n2) Key questions/risks: Are reviewers available? Review turnaround time? Documentation completeness? Potential delays.\n\n3) Concrete next actions: Use git to clone repo? Use API to comment? Probably just textual actions: \"Send Slack message to documentation-manager etc.\" Maybe update a file \"release_checklist.md\" to include \"User guide reviewed by personas\".\n\nProvide patch snippet.\n\nLet's craft.\n</think>\n**1) Short plan**  \n- Confirm that the user‑guide draft is present in the repo (e.g., `docs/user_guide.md`).  \n- Notify the required reviewers — `documentation-manager`, `project-manager`, and `qa-engineer` — that a review is needed before the next release.  \n- Track their feedback in the bead’s comment thread and require an explicit “Review ✅” from each persona.  \n- Once all three have signed off, add a “User guide reviewed by personas” checkbox to the release checklist (e.g., `release_checklist.md`).  \n- Mark bead **bd‑011** as **closed** only after the checkbox is ticked and the sign‑off messages are received.\n\n---\n\n**2) Key questions / risks**  \n- **Availability:** Are all three personas currently able to review, or are any on leave/over‑committed?  \n- **Turn‑around time:** Will the review fit within the current sprint/release window, or could it become a bottleneck?  \n- **Scope completeness:** Does the guide cover all required sections for each persona (e.g., “Getting Started”, “Advanced Use‑Cases”, “Troubleshooting”)?  \n- **Evidence capture:** Will the review be recorded in a way that can be automatically verified by the release pipeline?  \n- **Dependency on other beads:** Does the guide review depend on any other unfinished beads (e.g., missing figures, outdated API docs)?\n\n---\n\n**3) Concrete next actions**  \n\n| Action | Command / File | Details |\n|--------|----------------|---------|\n| Verify the guide file exists | `ls docs/user_guide.md` | Ensure the latest version is present. |\n| Create / update release checklist entry | `cat >> release_checklist.md <<'EOF'\\n- [ ] User guide reviewed by personas (documentation-manager, project-manager, qa-engineer)\\nEOF` | Append the checklist item if it does not already exist. |\n| Notify reviewers | *(Slack/Email)* | “Please review the user guide (`docs/user_guide.md`) for the upcoming release. Add a ✅ reaction or comment once approved.” |\n| Capture sign‑off | *(Comment on bead bd‑011)* | Require each reviewer to post a comment like `qa-engineer: ✅ Review complete` when done. |\n| Close the bead | *(GitHub UI or API)* | When all three ✅ reactions are posted, transition bead status to `closed`. |\n| Verify checklist inclusion in CI | `grep \"User guide reviewed by personas\" release_checklist.md` | Ensure the CI step fails if the checkbox is missing. |\n\n---\n\n**4) Proposed patch snippet** (adds the review requirement to the release checklist)\n\n```diff\n--- a/release_checklist.md\n+++ b/release_checklist.md\n@@\n-    - [ ] All unit tests pass\n-    - [ ] Integration tests pass\n-    - [ ] Documentation builds successfully\n+    - [ ] All unit tests pass\n+    - [ ] Integration tests pass\n+    - [ ] Documentation builds successfully\n+    - [ ] User guide reviewed by personas (documentation-manager, project-manager, qa-engineer)\n```\n\n*Apply the patch with:*  \n```bash\ngit apply <<'PATCH'\ndiff --git a/release_checklist.md b/release_checklist.md\nindex 7a8b3c2..f4e5d6a 100644\n--- a/release_checklist.md\n+++ b/release_checklist.md\n@@\n-    - [ ] All unit tests pass\n-    - [ ] Integration tests pass\n-    - [ ] Documentation builds successfully\n+    - [ ] All unit tests pass\n+    - [ ] Integration tests pass\n+    - [ ] Documentation builds successfully\n+    - [ ] User guide reviewed by personas (documentation-manager, project-manager, qa-engineer)\nPATCH\ngit commit -m \"Add persona review requirement to release checklist [bd-011]\"\ngit push origin main\n``` \n\nAfter the patch lands, ping the three reviewers and await their ✅ sign‑off before proceeding with the release. If any reviewer raises concerns or cannot complete the review in time, create a **decision bead** to discuss scope reduction or schedule adjustment."
+    agent_task_id: task-bd-011-1769121310611404427
+    agent_tokens: "2470"
+    agent_worker_id: worker-agent-1769121285-Project Manager (Active)-1769121285
+    dispatch_history: '["agent-1769121285-Project Manager (Active)"]'
+    last_run_at: "2026-01-22T22:35:18Z"
+    loop_detected: "false"
+    provider_id: puck-vllm
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-22T22:33:54.345394877Z
+updatedat: 2026-01-22T22:36:18.958751833Z
+closedat: 2026-01-22T22:36:18.958751416Z

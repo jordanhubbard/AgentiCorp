@@ -1,0 +1,32 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-017
+type: task
+title: 'CEO: What are the top 3 UX improvements needed for our kanban board?'
+description: |-
+    Persona: web-designer
+
+    What are the top 3 UX improvements needed for our kanban board?
+status: closed
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    created_by: ceo
+    model: mock-model
+    provider_id: mock-local
+    response: '[mock] What are the top 3 UX improvements needed for our kanban board?'
+    source: ceo-repl
+    tokens_used: "133"
+createdat: 2026-01-22T23:14:06.692702174Z
+updatedat: 2026-01-22T23:14:07.013701258Z
+closedat: 2026-01-22T23:14:07.013700091Z

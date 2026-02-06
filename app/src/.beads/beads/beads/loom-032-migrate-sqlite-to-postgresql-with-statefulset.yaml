@@ -1,0 +1,103 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-032
+type: feature
+title: Migrate SQLite to PostgreSQL with StatefulSet
+description: |-
+    Move from SQLite to PostgreSQL for production reliability.
+
+    Why:
+    - SQLite not suitable for multi-replica deployments
+    - PostgreSQL enables HA configurations
+    - Better concurrent access
+    - Standard backup/restore tools
+
+    Implementation:
+    1. Update database layer to support PostgreSQL
+    2. Test migrations on PostgreSQL
+    3. Create k8s/statefulset.yaml for PostgreSQL
+    4. Configure volumeClaimTemplates for persistent storage
+    5. Set up automated backups
+    6. Create migration script from SQLite
+    7. Document backup/restore procedures
+    8. Consider managed database (RDS, Cloud SQL) option
+
+    Deliverables:
+    - PostgreSQL support in codebase
+    - StatefulSet manifest
+    - Migration documentation
+    - Backup/restore runbook
+status: in_progress
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1769155372-Web Designer (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1769155372-Web Designer (Default)
+    agent_output: |
+        [mock] Work on bead bd-032: Migrate SQLite to PostgreSQL with StatefulSet
+
+        Context:
+        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Branch: main
+
+        Project Context:
+        - test_command: go test ./...
+        - build_command: go build
+        - description: The AgentiCorp project itself - perpetual self-improvement
+
+        Bead ID: bd-032
+        Type: feature
+        Priority: P2
+        Status: in_progress
+
+        Bead Description:
+        Move from SQLite to PostgreSQL for production reliability.
+
+        Why:
+        - SQLite not suitable for multi-replica deployments
+        - PostgreSQL enables HA configurations
+        - Better concurrent access
+        - Standard backup/restore tools
+
+        Implementation:
+        1. Update database layer to support PostgreSQL
+        2. Test migrations on PostgreSQL
+        3. Create k8s/statefulset.yaml for PostgreSQL
+        4. Configure volumeClaimTemplates for persistent storage
+        5. Set up automated backups
+        6. Create migration script from SQLite
+        7. Document backup/restore procedures
+        8. Consider managed database (RDS, Cloud SQL) option
+
+        Deliverables:
+        - PostgreSQL support in codebase
+        - StatefulSet manifest
+        - Migration documentation
+        - Backup/restore runbook
+
+        Output format:
+        1) Short plan
+        2) Key questions/risks
+        3) Concrete next actions (commands/files to change)
+        4) Proposed patch snippets if applicable
+    agent_task_id: task-bd-032-1769159642856726416
+    agent_tokens: "2441"
+    agent_worker_id: worker-agent-1769155372-Web Designer (Default)-1769159640
+    dispatch_history: '["agent-1769155372-Web Designer (Default)"]'
+    last_run_at: "2026-01-23T09:14:02Z"
+    loop_detected: "false"
+    provider_id: puck
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "false"
+createdat: 2026-01-23T00:08:10.957748467Z
+updatedat: 2026-01-23T09:14:02.918176333Z
+closedat: null

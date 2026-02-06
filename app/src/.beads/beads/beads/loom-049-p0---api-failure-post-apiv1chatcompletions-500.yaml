@@ -1,0 +1,23 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-049
+type: task
+title: P0 - API failure POST /api/v1/chat/completions 500
+description: "API request failed\n\nMethod: POST\nPath: /api/v1/chat/completions\nStatus: 500\nQuery: \nRemote: 172.217.12.113:57134\nUser: \nTimestamp: 2026-01-23T09:07:47Z\n"
+status: closed
+priority: 0
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-23T09:07:47.331209465Z
+updatedat: 2026-01-23T09:42:51.808727055Z
+closedat: 2026-01-23T09:42:51.80872668Z

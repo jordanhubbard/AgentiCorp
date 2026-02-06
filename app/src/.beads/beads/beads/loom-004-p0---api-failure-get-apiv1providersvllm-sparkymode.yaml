@@ -1,0 +1,23 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: loom-004
+type: task
+title: P0 - API failure GET /api/v1/providers/vllm-sparky/models 502
+description: "API request failed\n\nMethod: GET\nPath: /api/v1/providers/vllm-sparky/models\nStatus: 502\nQuery: \nRemote: 151.101.42.132:32522\nUser: user-admin\nTimestamp: 2026-01-22T18:59:42Z\n"
+status: closed
+priority: 0
+projectid: example-project
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context: {}
+createdat: 2026-01-22T18:59:42.158541002Z
+updatedat: 2026-01-22T22:12:41.359495094Z
+closedat: 2026-01-22T22:12:41.359494761Z
