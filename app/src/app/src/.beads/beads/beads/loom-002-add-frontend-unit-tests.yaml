@@ -9,7 +9,7 @@ title: Add frontend unit tests
 description: Add Jest tests for JavaScript functions in app.js
 status: in_progress
 priority: 1
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769446210-Documentation Manager (Default)
 blockedby: []
 blocks: []

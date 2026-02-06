@@ -38,7 +38,7 @@ description: |-
     - Configurable log levels
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Code Reviewer (Default)
 blockedby: []
 blocks: []
@@ -52,11 +52,11 @@ context:
         [mock] Work on bead bd-026: Implement structured logging with JSON output
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
         - build_command: go build
 

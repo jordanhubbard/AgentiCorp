@@ -6,10 +6,10 @@ entitymetadata:
 id: loom-055
 type: task
 title: 'Engineer: update header text'
-description: "Read web/static/index.html first, then update the header H1 line exactly. Current line: <h1><span aria-hidden=\"true\">\U0001F916</span> AgentiCorp - Agent Orchestration System</h1>. Change to: <h1><span aria-hidden=\"true\">\U0001F916</span> AgentiCorp - Agent Orchestration Platform</h1>. Use read_file + apply_patch."
+description: "Read web/static/index.html first, then update the header H1 line exactly. Current line: <h1><span aria-hidden=\"true\">\U0001F916</span> Loom - Agent Orchestration System</h1>. Change to: <h1><span aria-hidden=\"true\">\U0001F916</span> Loom - Agent Orchestration Platform</h1>. Use read_file + apply_patch."
 status: closed
 priority: 1
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-QA Engineer (Default)
 blockedby: []
 blocks: []
@@ -44,7 +44,7 @@ context:
                 "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
                 "priority": 0,
                 "type": "task",
-                "project_id": "agenticorp-self",
+                "project_id": "loom-self",
                 "tags": ["qa","verification"]
               },
               "bead_id": "bd-055-qa",
@@ -73,7 +73,7 @@ context:
                 "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
                 "priority": 0,
                 "type": "task",
-                "project_id": "agenticorp-self",
+                "project_id": "loom-self",
                 "tags": [
                   "qa",
                   "verification"

@@ -19,7 +19,7 @@ description: |-
     2. Deploy metrics-server in cluster
     3. Create k8s/hpa.yaml with HPA config
     4. Configure scaling based on CPU (70% target)
-    5. Add custom metric: agenticorp_beads_queue_length
+    5. Add custom metric: loom_beads_queue_length
     6. Set minReplicas: 2, maxReplicas: 10
     7. Test scaling behavior under load
     8. Monitor scaling events
@@ -30,7 +30,7 @@ description: |-
     - Documentation of scaling behavior
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769138560-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -79,14 +79,14 @@ context:
         Short plan
         - Verify that all pods in the current deployment have CPU requests defined
         - Confirm the metrics-server add‑on is installed in the cluster
-        - Write a k8s/hpa.yaml manifest that references CPU target (70%) and the custom metric agenticorp_beads_queue_length
+        - Write a k8s/hpa.yaml manifest that references CPU target (70%) and the custom metric loom_beads_queue_length
         - Apply the manifest and check the HPA status
         - Run load‑testing scripts to provoke scale‑up and scale‑down events
         - Document the scaling behavior and update any relevant documentation
 
         Key questions/risks
         - Are CPU requests present on every deployment? If not, that must be fixed first.
-        - Is the custom metric agenticorp_beads_queue_length exposed by the Prometheus adapter or another metrics source?
+        - Is the custom metric loom_beads_queue_length exposed by the Prometheus adapter or another metrics source?
         - Will the chosen minReplicas (2) and maxReplicas (10) cause unexpected churn during brief traffic spikes?
         - Does the cluster have sufficient quota to accommodate the additional replicas?
         - Load‑testing may affect production‑like environments; ensure tests are isolated.
@@ -106,13 +106,13 @@ context:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
         metadata:
-          name: agenticorp-self-hpa
+          name: loom-self-hpa
           namespace: default
         spec:
           scaleTargetRef:
             apiVersion: apps/v1
             kind: Deployment
-            name: agenticorp-self
+            name: loom-self
           minReplicas: 2
           maxReplicas: 10
           metrics:
@@ -125,7 +125,7 @@ context:
           - type: Pods
             pods:
               metric:
-                name: agenticorp_beads_queue_length
+                name: loom_beads_queue_length
               target:
                 type: AverageValue
                 averageValue: 50m

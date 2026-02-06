@@ -7,17 +7,17 @@ id: loom-038
 type: task
 title: Deploy Prometheus monitoring stack
 description: |-
-    Set up complete monitoring stack for K8s and AgentiCorp.
+    Set up complete monitoring stack for K8s and Loom.
 
     Components:
     - Prometheus Operator
     - Grafana for dashboards
     - AlertManager for alerting
-    - ServiceMonitor for AgentiCorp
+    - ServiceMonitor for Loom
 
     Implementation:
     1. Deploy kube-prometheus-stack via Helm
-    2. Create ServiceMonitor for AgentiCorp metrics
+    2. Create ServiceMonitor for Loom metrics
     3. Configure Prometheus scraping
     4. Build Grafana dashboards:
        - Bead processing metrics
@@ -38,7 +38,7 @@ description: |-
     - Monitoring runbook
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Code Reviewer (Default)
 blockedby: []
 blocks: []
@@ -52,12 +52,12 @@ context:
         [mock] Work on bead bd-038: Deploy Prometheus monitoring stack
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-038
@@ -66,17 +66,17 @@ context:
         Status: in_progress
 
         Bead Description:
-        Set up complete monitoring stack for K8s and AgentiCorp.
+        Set up complete monitoring stack for K8s and Loom.
 
         Components:
         - Prometheus Operator
         - Grafana for dashboards
         - AlertManager for alerting
-        - ServiceMonitor for AgentiCorp
+        - ServiceMonitor for Loom
 
         Implementation:
         1. Deploy kube-prometheus-stack via Helm
-        2. Create ServiceMonitor for AgentiCorp metrics
+        2. Create ServiceMonitor for Loom metrics
         3. Configure Prometheus scraping
         4. Build Grafana dashboards:
            - Bead processing metrics

@@ -6,10 +6,10 @@ entitymetadata:
 id: loom-046
 type: task
 title: P0 - Implement logging API endpoints for real-time log viewer
-description: 'Implement backend API endpoints to support the log viewer UI. Required endpoints: GET /api/v1/logs/recent with query params (limit, level, source, since), POST /api/v1/logs/stream for SSE real-time streaming, GET /api/v1/logs/export for exporting logs. Must capture logs from AgentiCorp, Temporal, agents, providers, database, and dispatcher. Use structured logging with circular buffer (max 10k entries) and SQLite persistence. Create handlers_logs.go, logging manager, and database schema with logs table.'
+description: 'Implement backend API endpoints to support the log viewer UI. Required endpoints: GET /api/v1/logs/recent with query params (limit, level, source, since), POST /api/v1/logs/stream for SSE real-time streaming, GET /api/v1/logs/export for exporting logs. Must capture logs from Loom, Temporal, agents, providers, database, and dispatcher. Use structured logging with circular buffer (max 10k entries) and SQLite persistence. Create handlers_logs.go, logging manager, and database schema with logs table.'
 status: closed
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

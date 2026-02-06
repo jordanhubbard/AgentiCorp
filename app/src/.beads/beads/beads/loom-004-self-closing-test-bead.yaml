@@ -9,7 +9,7 @@ title: Self-closing test bead
 description: 'This is a test. Please respond with a close_bead action to close this bead (bd-004) with reason: test successful.'
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []

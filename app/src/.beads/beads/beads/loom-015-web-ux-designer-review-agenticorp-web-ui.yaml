@@ -5,11 +5,11 @@ entitymetadata:
     migratedfrom: ""
 id: loom-015
 type: task
-title: 'Web UX Designer: Review AgentiCorp Web UI'
-description: "ASSIGNED TO: Web Designer agent\n\nPerform comprehensive UX review of AgentiCorp web interface:\n\nFiles to review:\n- web/static/index.html\n- web/static/css/style.css\n- web/static/js/app.js\n- web/static/persona-editor.html\n\nEvaluate:\n- User experience and usability\n- Visual design and aesthetics  \n- Accessibility (ARIA, keyboard nav)\n- Responsiveness\n- Information architecture\n- Navigation clarity\n\nDeliverables:\n- Document findings in docs/UX_REVIEW.md\n- List prioritized improvement recommendations"
+title: 'Web UX Designer: Review Loom Web UI'
+description: "ASSIGNED TO: Web Designer agent\n\nPerform comprehensive UX review of Loom web interface:\n\nFiles to review:\n- web/static/index.html\n- web/static/css/style.css\n- web/static/js/app.js\n- web/static/persona-editor.html\n\nEvaluate:\n- User experience and usability\n- Visual design and aesthetics  \n- Accessibility (ARIA, keyboard nav)\n- Responsiveness\n- Information architecture\n- Navigation clarity\n\nDeliverables:\n- Document findings in docs/UX_REVIEW.md\n- List prioritized improvement recommendations"
 status: in_progress
 priority: 1
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769121285-Documentation Manager (Active)
 blockedby: []
 blocks: []

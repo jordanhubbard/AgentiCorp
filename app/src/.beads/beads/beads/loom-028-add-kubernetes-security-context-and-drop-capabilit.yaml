@@ -29,7 +29,7 @@ description: |-
     - Security documentation
 status: in_progress
 priority: 1
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Code Reviewer (Default)
 blockedby: []
 blocks: []
@@ -43,12 +43,12 @@ context:
         [mock] Work on bead bd-028: Add Kubernetes security context and drop capabilities
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-028

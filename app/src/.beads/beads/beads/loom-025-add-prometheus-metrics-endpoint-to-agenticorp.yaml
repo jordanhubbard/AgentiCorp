@@ -5,15 +5,15 @@ entitymetadata:
     migratedfrom: ""
 id: loom-025
 type: feature
-title: Add Prometheus metrics endpoint to AgentiCorp
+title: Add Prometheus metrics endpoint to Loom
 description: |-
     Implement /metrics endpoint with standard Prometheus metrics.
 
     Metrics to track:
-    - agenticorp_beads_processed_total (counter by status, priority)
-    - agenticorp_agent_execution_duration_seconds (histogram)
-    - agenticorp_provider_requests_total (counter by provider, status)
-    - agenticorp_shell_commands_total (counter by exit_code)
+    - loom_beads_processed_total (counter by status, priority)
+    - loom_agent_execution_duration_seconds (histogram)
+    - loom_provider_requests_total (counter by provider, status)
+    - loom_shell_commands_total (counter by exit_code)
     - Standard Go metrics (memory, goroutines, GC)
 
     Implementation:
@@ -29,7 +29,7 @@ description: |-
     - Documentation for available metrics
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Code Reviewer (Default)
 blockedby: []
 blocks: []
@@ -40,14 +40,14 @@ tags: []
 context:
     agent_id: agent-1769155372-Code Reviewer (Default)
     agent_output: |
-        [mock] Work on bead bd-025: Add Prometheus metrics endpoint to AgentiCorp
+        [mock] Work on bead bd-025: Add Prometheus metrics endpoint to Loom
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
         - build_command: go build
 
@@ -60,10 +60,10 @@ context:
         Implement /metrics endpoint with standard Prometheus metrics.
 
         Metrics to track:
-        - agenticorp_beads_processed_total (counter by status, priority)
-        - agenticorp_agent_execution_duration_seconds (histogram)
-        - agenticorp_provider_requests_total (counter by provider, status)
-        - agenticorp_shell_commands_total (counter by exit_code)
+        - loom_beads_processed_total (counter by status, priority)
+        - loom_agent_execution_duration_seconds (histogram)
+        - loom_provider_requests_total (counter by provider, status)
+        - loom_shell_commands_total (counter by exit_code)
         - Standard Go metrics (memory, goroutines, GC)
 
         Implementation:

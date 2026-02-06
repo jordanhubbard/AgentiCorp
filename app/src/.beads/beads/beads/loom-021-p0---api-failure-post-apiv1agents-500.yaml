@@ -9,7 +9,7 @@ title: P0 - API failure POST /api/v1/agents 500
 description: "API request failed\n\nMethod: POST\nPath: /api/v1/agents\nStatus: 500\nQuery: \nRemote: 151.101.42.132:44644\nUser: user-admin\nTimestamp: 2026-01-22T23:17:03Z\n"
 status: closed
 priority: 0
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

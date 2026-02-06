@@ -8,26 +8,26 @@ type: task
 title: 'P0: Project-specific bead ID prefixes'
 description: |-
     ## Problem
-    AgentiCorp runtime hardcodes `bd-` prefix for all beads regardless of project. This causes:
+    Loom runtime hardcodes `bd-` prefix for all beads regardless of project. This causes:
     1. ID collisions when multiple projects are active
     2. Confusion about which project owns a bead
     3. Sync issues with bd CLI when projects have different prefixes
 
     ## Solution
     1. Read project prefix from `.beads/config.yaml` (issue-prefix field)
-    2. If not set, derive from project ID (e.g., agenticorp-self → acs-)
+    2. If not set, derive from project ID (e.g., loom-self → acs-)
     3. Use project prefix when creating beads via API
-    4. Update agenticorp-self config with `issue-prefix: ac`
+    4. Update loom-self config with `issue-prefix: ac`
     5. Migrate existing beads to consistent prefix
 
     ## Acceptance Criteria
     - [ ] BeadsManager reads prefix from project config
     - [ ] New beads use project-specific prefix
-    - [ ] agenticorp-self uses `ac-` prefix
+    - [ ] loom-self uses `ac-` prefix
     - [ ] No ID collisions across projects
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769446210-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -48,7 +48,7 @@ context:
               "type": "read_file",
               "path": ".beads/config.yaml",
               "question": "Read current config to check for issue-prefix field",
-              "notes": "Plan: 1) Read .beads/config.yaml to see if issue-prefix is set. 2) If not, derive prefix from project ID (agenticorp-self -> acs- or ac-?). 3) Update config with issue-prefix: ac. 4) Ensure BeadsManager uses this prefix. 5) Test bead creation."
+              "notes": "Plan: 1) Read .beads/config.yaml to see if issue-prefix is set. 2) If not, derive prefix from project ID (loom-self -> acs- or ac-?). 3) Update config with issue-prefix: ac. 4) Ensure BeadsManager uses this prefix. 5) Test bead creation."
             }
           ],
           "notes": "Short plan: read config, decide prefix, update config, adjust code to use prefix, migrate beads if needed. Risks: missing config field, migration errors. Next actions: read config, then edit config, then update code, then test."
@@ -68,7 +68,7 @@ context:
               "limit": 100
             }
           ],
-          "notes": "Short plan: 1) Read .beads/config.yaml to see if issue-prefix is defined. 2) If missing, derive prefix from project ID (e.g., agenticorp-self -> acs- or ac-). 3) Write updated config with issue-prefix: ac. 4) Modify BeadsManager code to read this prefix and use it for bead IDs. 5) Create migration script to rename existing beads to new prefix. Risks: config may be missing or malformed; migration could affect existing beads. Next steps: read config, then edit it, then update manager code, then test."
+          "notes": "Short plan: 1) Read .beads/config.yaml to see if issue-prefix is defined. 2) If missing, derive prefix from project ID (e.g., loom-self -> acs- or ac-). 3) Write updated config with issue-prefix: ac. 4) Modify BeadsManager code to read this prefix and use it for bead IDs. 5) Create migration script to rename existing beads to new prefix. Risks: config may be missing or malformed; migration could affect existing beads. Next steps: read config, then edit it, then update manager code, then test."
         }
 
         Make sure JSON is valid, no trailing commas. Provide only that.
@@ -83,7 +83,7 @@ context:
               "limit": 100
             }
           ],
-          "notes": "Short plan: 1) Read .beads/config.yaml to determine if issue-prefix is set. 2) If not set, derive a project-specific prefix (e.g., agenticorp-self → ac- or acs-). 3) Write the updated config with issue-prefix: ac. 4) Update BeadsManager code to read this prefix and prepend it to generated bead IDs. 5) Create and run a migration script to rename existing beads to the new prefix. Risks: config may be missing or malformed; migration could cause ID collisions if not handled carefully. Next concrete actions: read the config file, then edit it, then modify the relevant code, then test the prefix behavior."
+          "notes": "Short plan: 1) Read .beads/config.yaml to determine if issue-prefix is set. 2) If not set, derive a project-specific prefix (e.g., loom-self → ac- or acs-). 3) Write the updated config with issue-prefix: ac. 4) Update BeadsManager code to read this prefix and prepend it to generated bead IDs. 5) Create and run a migration script to rename existing beads to the new prefix. Risks: config may be missing or malformed; migration could cause ID collisions if not handled carefully. Next concrete actions: read the config file, then edit it, then modify the relevant code, then test the prefix behavior."
         }
     agent_task_id: task-bd-004-1769449671927602087
     agent_tokens: "2800"

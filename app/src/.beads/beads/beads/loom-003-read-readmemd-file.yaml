@@ -9,7 +9,7 @@ title: Read README.md file
 description: Read the README.md file at the root of the project and report its first 5 lines.
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []

@@ -9,7 +9,7 @@ title: P0 - API failure POST /api/v1/repl 502
 description: "API request failed\n\nMethod: POST\nPath: /api/v1/repl\nStatus: 502\nQuery: \nRemote: 151.101.42.132:62853\nUser: user-admin\nTimestamp: 2026-01-22T12:54:49Z\n"
 status: closed
 priority: 0
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

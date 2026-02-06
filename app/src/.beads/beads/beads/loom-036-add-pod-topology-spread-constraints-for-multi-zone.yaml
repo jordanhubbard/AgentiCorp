@@ -34,7 +34,7 @@ description: |-
     - Multi-zone deployment guide
 status: in_progress
 priority: 3
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -48,11 +48,11 @@ context:
         [mock] Work on bead bd-036: Add pod topology spread constraints for multi-zone HA
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
         - build_command: go build
 

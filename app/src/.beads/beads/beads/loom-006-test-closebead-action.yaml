@@ -9,7 +9,7 @@ title: Test close_bead action
 description: 'Please close this bead using the close_bead action with bead_id set to this beads ID and reason: workflow test completed successfully.'
 status: closed
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []

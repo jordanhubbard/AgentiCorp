@@ -41,7 +41,7 @@ description: |-
            "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
            "priority": 0,
            "type": "task",
-           "project_id": "agenticorp-self",
+           "project_id": "loom-self",
            "tags": ["qa","verification"]
          },
          "bead_id": "bd-055-qa",
@@ -80,7 +80,7 @@ description: |-
             "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
             "priority": 0,
             "type": "task",
-            "project_id": "agenticorp-self",
+            "project_id": "loom-self",
             "tags": [
               "qa",
               "verification"
@@ -94,7 +94,7 @@ description: |-
       "notes": "Plan: Edit web/static/index.html to change header from \"Agent Orchestration System\" to \"Agent Orchestration Platform\". Then create a QA verification bead (bd-055-qa) to assign to QA for verification. Risks: ensure the file path is correct and that the build still succeeds after the change."
     }
 
-    Check that we have "priority": 0 for bead; priority is numeric? It's okay. "type": "task" included. "project_id": "agenticorp-self". Tags array of strings.
+    Check that we have "priority": 0 for bead; priority is numeric? It's okay. "type": "task" included. "project_id": "loom-self". Tags array of strings.
 
     All good.
     </think>
@@ -114,7 +114,7 @@ description: |-
             "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
             "priority": 0,
             "type": "task",
-            "project_id": "agenticorp-self",
+            "project_id": "loom-self",
             "tags": [
               "qa",
               "verification"
@@ -129,7 +129,7 @@ description: |-
     }
 status: open
 priority: 0
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

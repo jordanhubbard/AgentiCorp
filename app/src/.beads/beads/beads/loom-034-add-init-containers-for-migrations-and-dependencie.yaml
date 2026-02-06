@@ -16,7 +16,7 @@ description: |-
     - Schema initialization
 
     Implementation:
-    1. Add -migrate flag to agenticorp binary
+    1. Add -migrate flag to loom binary
     2. Create migrate init container in deployment
     3. Add wait-for-temporal init container (busybox + nc)
     4. Add config validation init container
@@ -34,7 +34,7 @@ description: |-
     - Startup dependency documentation
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -48,12 +48,12 @@ context:
         [mock] Work on bead bd-034: Add init containers for migrations and dependencies
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-034
@@ -71,7 +71,7 @@ context:
         - Schema initialization
 
         Implementation:
-        1. Add -migrate flag to agenticorp binary
+        1. Add -migrate flag to loom binary
         2. Create migrate init container in deployment
         3. Add wait-for-temporal init container (busybox + nc)
         4. Add config validation init container

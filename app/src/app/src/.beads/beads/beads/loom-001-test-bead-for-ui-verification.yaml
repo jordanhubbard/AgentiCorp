@@ -9,7 +9,7 @@ title: Test bead for UI verification
 description: This bead tests that the UI correctly displays beads.
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769446210-Web Designer (Default)
 blockedby: []
 blocks: []

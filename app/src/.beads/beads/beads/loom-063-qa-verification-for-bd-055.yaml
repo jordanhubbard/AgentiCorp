@@ -9,7 +9,7 @@ title: QA verification for bd-055
 description: Verify header text shows Agent Orchestration Platform in UI.
 status: closed
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-QA Engineer (Default)
 blockedby: []
 blocks: []

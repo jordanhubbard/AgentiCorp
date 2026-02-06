@@ -34,7 +34,7 @@ description: |-
     - Query examples documentation
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-QA Engineer (Default)
 blockedby: []
 blocks: []
@@ -48,12 +48,12 @@ context:
         [mock] Work on bead bd-039: Implement log aggregation with Loki
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-039

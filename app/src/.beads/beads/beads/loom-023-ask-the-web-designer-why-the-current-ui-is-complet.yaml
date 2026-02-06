@@ -10,7 +10,7 @@ description: |-
     CONFIRMED: Backend has data but UI shows nothing
 
     Backend Status (Verified):
-    - Database exists and is persisted: /app/data/agenticorp.db (114KB)
+    - Database exists and is persisted: /app/data/loom.db (114KB)
     - API is responding on port 8080
     - Projects: 2 registered
     - Beads: 5 open beads loaded (bd-013, bd-019, bd-021, bd-014, bd-009)
@@ -46,7 +46,7 @@ description: |-
     - Provide code patch to fix the rendering issue
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-QA Engineer (Default)
 blockedby: []
 blocks: []
@@ -60,12 +60,12 @@ context:
         [mock] Work on bead bd-023: Ask the web designer why the current UI is completely blank
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-023
@@ -77,7 +77,7 @@ context:
         CONFIRMED: Backend has data but UI shows nothing
 
         Backend Status (Verified):
-        - Database exists and is persisted: /app/data/agenticorp.db (114KB)
+        - Database exists and is persisted: /app/data/loom.db (114KB)
         - API is responding on port 8080
         - Projects: 2 registered
         - Beads: 5 open beads loaded (bd-013, bd-019, bd-021, bd-014, bd-009)

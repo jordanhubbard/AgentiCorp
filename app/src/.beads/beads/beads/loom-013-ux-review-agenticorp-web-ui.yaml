@@ -5,9 +5,9 @@ entitymetadata:
     migratedfrom: ""
 id: loom-013
 type: task
-title: 'UX Review: AgentiCorp Web UI'
+title: 'UX Review: Loom Web UI'
 description: |-
-    Comprehensive UX review of the AgentiCorp web interface.
+    Comprehensive UX review of the Loom web interface.
 
     Scope:
     - Review web/static/index.html, css/, and js/ files
@@ -21,7 +21,7 @@ description: |-
     - Prioritized list of improvements
 status: open
 priority: 1
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769122319-Web Designer (Active)
 blockedby: []
 blocks: []

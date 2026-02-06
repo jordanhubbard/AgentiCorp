@@ -9,7 +9,7 @@ title: P0 - API failure POST /api/v1/chat/completions 500
 description: "API request failed\n\nMethod: POST\nPath: /api/v1/chat/completions\nStatus: 500\nQuery: \nRemote: 172.217.12.113:57134\nUser: \nTimestamp: 2026-01-23T09:07:47Z\n"
 status: closed
 priority: 0
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

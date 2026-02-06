@@ -32,7 +32,7 @@ description: |-
     - Backup/restore runbook
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -46,13 +46,13 @@ context:
         [mock] Work on bead bd-032: Migrate SQLite to PostgreSQL with StatefulSet
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - test_command: go test ./...
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
 
         Bead ID: bd-032
         Type: feature

@@ -37,7 +37,7 @@ description: |-
             "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
             "priority": 0,
             "type": "task",
-            "project_id": "agenticorp-self",
+            "project_id": "loom-self",
             "tags": ["qa","verification"]
           },
           "bead_id": "bd-055-qa",
@@ -66,7 +66,7 @@ description: |-
             "description": "Verify that the header text has been updated to 'Agent Orchestration Platform' in web/static/index.html",
             "priority": 0,
             "type": "task",
-            "project_id": "agenticorp-self",
+            "project_id": "loom-self",
             "tags": [
               "qa",
               "verification"
@@ -81,7 +81,7 @@ description: |-
     }
 status: open
 priority: 0
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: ""
 blockedby: []
 blocks: []

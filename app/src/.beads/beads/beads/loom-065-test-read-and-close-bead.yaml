@@ -9,7 +9,7 @@ title: 'Test: Read and close bead'
 description: Read the README.md file, then close this bead with close_bead action using this beads ID.
 status: closed
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769446210-Project Manager (Default)
 blockedby: []
 blocks: []

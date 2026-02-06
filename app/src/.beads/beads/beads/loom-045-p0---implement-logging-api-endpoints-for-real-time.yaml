@@ -17,7 +17,7 @@ description: |-
     - Query params: `limit` (default 100), `level`, `source`, `since`
     - Returns: `{"logs": [{"timestamp", "level", "source", "message", "metadata"}]}`
     - Must capture logs from:
-      - AgentiCorp application logs
+      - Loom application logs
       - Temporal workflow logs
       - Agent activity logs
       - Provider heartbeat logs
@@ -79,7 +79,7 @@ description: |-
     This blocks the log viewer UI from being functional.
 status: in_progress
 priority: 2
-projectid: agenticorp-self
+projectid: loom-self
 assignedto: agent-1769155372-Web Designer (Default)
 blockedby: []
 blocks: []
@@ -93,12 +93,12 @@ context:
         [mock] Work on bead bd-045: P0 - Implement logging API endpoints for real-time log viewer
 
         Context:
-        Project: AgentiCorp Self-Improvement (agenticorp-self)
+        Project: Loom Self-Improvement (loom-self)
         Branch: main
 
         Project Context:
         - build_command: go build
-        - description: The AgentiCorp project itself - perpetual self-improvement
+        - description: The Loom project itself - perpetual self-improvement
         - test_command: go test ./...
 
         Bead ID: bd-045
@@ -117,7 +117,7 @@ context:
         - Query params: `limit` (default 100), `level`, `source`, `since`
         - Returns: `{"logs": [{"timestamp", "level", "source", "message", "metadata"}]}`
         - Must capture logs from:
-          - AgentiCorp application logs
+          - Loom application logs
           - Temporal workflow logs
           - Agent activity logs
           - Provider heartbeat logs
