@@ -9,9 +9,9 @@
 📦 MAIN APPLICATION
 
 Build:
-  ✅ go build -o bin/agenticorp .
+  ✅ go build -o bin/loom .
   Binary: 7.7MB (Mach-O 64-bit arm64)
-  Location: bin/agenticorp
+  Location: bin/loom
   Status: EXECUTABLE
 
 Runtime:
@@ -109,15 +109,15 @@ VS Code Extension:
 JetBrains Plugin:
   ✅ build.gradle.kts
   ✅ plugin.xml
-  ✅ AgentiCorpClient.kt
+  ✅ LoomClient.kt
   ✅ README.md
   
   Status: Ready for ./gradlew buildPlugin
 
 Vim/Neovim Plugin:
-  ✅ plugin/agenticorp.vim
-  ✅ autoload/agenticorp/client.vim
-  ✅ autoload/agenticorp/chat.vim
+  ✅ plugin/loom.vim
+  ✅ autoload/loom/client.vim
+  ✅ autoload/loom/chat.vim
   ✅ README.md
   
   Status: Ready for installation
@@ -222,6 +222,6 @@ Future:
 
 🎉 VERDICT: PRODUCTION READY
 
-All systems operational. AgentiCorp is ready for deployment!
+All systems operational. Loom is ready for deployment!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,4 +1,4 @@
-module github.com/jordanhubbard/agenticorp
+module github.com/jordanhubbard/loom
 
 go 1.25
 

@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
-	"github.com/jordanhubbard/agenticorp/internal/auth"
-	"github.com/jordanhubbard/agenticorp/internal/database"
-	"github.com/jordanhubbard/agenticorp/internal/keymanager"
-	"github.com/jordanhubbard/agenticorp/pkg/config"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/loom"
+	"github.com/jordanhubbard/loom/internal/auth"
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/keymanager"
+	"github.com/jordanhubbard/loom/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func setupConversationTestServer(t *testing.T) (*Server, *database.Database, func()) {

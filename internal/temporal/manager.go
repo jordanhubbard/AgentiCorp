@@ -6,16 +6,16 @@ import (
 	"log"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/observability"
+	"github.com/jordanhubbard/loom/internal/observability"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/jordanhubbard/agenticorp/internal/temporal/activities"
-	temporalclient "github.com/jordanhubbard/agenticorp/internal/temporal/client"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/workflows"
-	"github.com/jordanhubbard/agenticorp/pkg/config"
+	"github.com/jordanhubbard/loom/internal/temporal/activities"
+	temporalclient "github.com/jordanhubbard/loom/internal/temporal/client"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/temporal/workflows"
+	"github.com/jordanhubbard/loom/pkg/config"
 )
 
 // Manager manages Temporal integration for the agenticorp

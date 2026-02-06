@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // MessageType represents the type of agent message

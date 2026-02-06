@@ -17,14 +17,14 @@ Successfully integrated the workflow engine with the dispatcher for workflow-awa
 ### 1. Workflow Engine Integration ✅
 
 **Files Modified:**
-- `internal/agenticorp/agenticorp.go` - Added GetWorkflowEngine() method and workflow engine connection
+- `internal/loom/loom.go` - Added GetWorkflowEngine() method and workflow engine connection
 - `internal/workflow/engine.go` - Added GetDatabase() method to expose database interface
 - `internal/dispatch/dispatcher.go` - Full workflow integration
 
 **Key Changes:**
 ```go
 // Expose workflow engine to dispatcher
-func (a *AgentiCorp) GetWorkflowEngine() *workflow.Engine {
+func (a *Loom) GetWorkflowEngine() *workflow.Engine {
     return a.workflowEngine
 }
 
@@ -328,13 +328,13 @@ func (d *Dispatcher) getWorkflowRoleRequirement(execution *workflow.WorkflowExec
 1. Create test bead:
 ```bash
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"title":"[Test] Bug","description":"Test workflow","type":"task","priority":1,"project_id":"agenticorp-self"}' \
+  -d '{"title":"[Test] Bug","description":"Test workflow","type":"task","priority":1,"project_id":"loom-self"}' \
   http://localhost:8080/api/v1/beads
 ```
 
 2. Watch logs for workflow activity:
 ```bash
-docker logs --follow agenticorp 2>&1 | grep "\[Workflow\]"
+docker logs --follow loom 2>&1 | grep "\[Workflow\]"
 ```
 
 3. Expected log sequence:
@@ -348,7 +348,7 @@ docker logs --follow agenticorp 2>&1 | grep "\[Workflow\]"
 ### Startup Verification
 
 ```bash
-docker logs agenticorp 2>&1 | grep "Workflow"
+docker logs loom 2>&1 | grep "Workflow"
 ```
 
 Expected output:
@@ -365,7 +365,7 @@ Workflow engine connected to dispatcher
 
 ## Files Modified
 
-1. `internal/agenticorp/agenticorp.go` - Added GetWorkflowEngine() and dispatcher connection
+1. `internal/loom/loom.go` - Added GetWorkflowEngine() and dispatcher connection
 2. `internal/workflow/engine.go` - Added GetDatabase() method
 3. `internal/dispatch/dispatcher.go` - Full workflow integration (~150 lines added)
 

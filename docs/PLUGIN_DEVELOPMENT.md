@@ -1,6 +1,6 @@
 # Plugin Development Guide
 
-Welcome to the AgentiCorp Plugin Development Guide! This guide will help you create custom provider plugins to extend AgentiCorp with support for any AI provider.
+Welcome to the Loom Plugin Development Guide! This guide will help you create custom provider plugins to extend Loom with support for any AI provider.
 
 ## Table of Contents
 
@@ -20,20 +20,20 @@ Welcome to the AgentiCorp Plugin Development Guide! This guide will help you cre
 
 ## Overview
 
-AgentiCorp uses a plugin system to support custom AI providers. Plugins allow you to:
+Loom uses a plugin system to support custom AI providers. Plugins allow you to:
 
-- **Add any AI provider** without modifying AgentiCorp's source code
-- **Keep plugins isolated** - plugin crashes don't affect AgentiCorp
+- **Add any AI provider** without modifying Loom's source code
+- **Keep plugins isolated** - plugin crashes don't affect Loom
 - **Hot-reload** plugins without restarting the system
 - **Share plugins** with the community
 
 ### Plugin Types
 
-AgentiCorp supports three plugin types:
+Loom supports three plugin types:
 
 1. **HTTP Plugins** - RESTful HTTP services (recommended)
 2. **gRPC Plugins** - High-performance RPC (future)
-3. **Built-in Plugins** - Compiled into AgentiCorp (advanced)
+3. **Built-in Plugins** - Compiled into Loom (advanced)
 
 This guide focuses on **HTTP plugins** as they provide the best balance of:
 - **Isolation**: Run as separate processes
@@ -46,7 +46,7 @@ This guide focuses on **HTTP plugins** as they provide the best balance of:
 
 ```
 ┌─────────────┐         HTTP          ┌──────────────┐
-│  AgentiCorp │ ◄──────────────────► │  Your Plugin │
+│  Loom │ ◄──────────────────► │  Your Plugin │
 └─────────────┘                       └──────────────┘
       │                                       │
       │                                       │
@@ -55,11 +55,11 @@ This guide focuses on **HTTP plugins** as they provide the best balance of:
 ```
 
 **Flow:**
-1. AgentiCorp loads your plugin manifest
+1. Loom loads your plugin manifest
 2. Plugin loader starts HTTP communication
-3. AgentiCorp calls plugin endpoints (initialize, health, completions)
+3. Loom calls plugin endpoints (initialize, health, completions)
 4. Plugin forwards requests to the AI provider
-5. Plugin returns responses to AgentiCorp
+5. Plugin returns responses to Loom
 
 ---
 
@@ -67,7 +67,7 @@ This guide focuses on **HTTP plugins** as they provide the best balance of:
 
 ### Prerequisites
 
-- Go 1.24+ (for testing with AgentiCorp)
+- Go 1.24+ (for testing with Loom)
 - Any language/framework for your plugin (Python, Node.js, Go, etc.)
 - An AI provider to integrate (OpenAI, Anthropic, local LLM, etc.)
 
@@ -148,13 +148,13 @@ curl http://localhost:8090/metadata
 curl http://localhost:8090/health
 ```
 
-### 5. Deploy to AgentiCorp
+### 5. Deploy to Loom
 
 ```bash
-# Copy manifest to AgentiCorp plugins directory
-cp plugin.yaml /path/to/agenticorp/plugins/my-provider/plugin.yaml
+# Copy manifest to Loom plugins directory
+cp plugin.yaml /path/to/loom/plugins/my-provider/plugin.yaml
 
-# Restart AgentiCorp or trigger hot-reload
+# Restart Loom or trigger hot-reload
 # Plugin will be automatically discovered and loaded
 ```
 
@@ -430,7 +430,7 @@ app.listen(8090, () => console.log('Plugin running on port 8090'));
 
 ## Plugin Manifest
 
-The `plugin.yaml` file tells AgentiCorp how to load and use your plugin.
+The `plugin.yaml` file tells Loom how to load and use your plugin.
 
 ### Complete Example
 
@@ -483,7 +483,7 @@ metadata:
         min: 1
         max: 300
 
-# Auto-start this plugin when AgentiCorp starts
+# Auto-start this plugin when Loom starts
 auto_start: true
 
 # Health check interval in seconds
@@ -537,14 +537,14 @@ curl http://localhost:8090/models | jq
 
 ### Integration Testing
 
-Create a test manifest and load it in AgentiCorp:
+Create a test manifest and load it in Loom:
 
 ```bash
 # Copy to plugins directory
-mkdir -p /path/to/agenticorp/plugins/test
-cp plugin.yaml /path/to/agenticorp/plugins/test/
+mkdir -p /path/to/loom/plugins/test
+cp plugin.yaml /path/to/loom/plugins/test/
 
-# Restart AgentiCorp or trigger reload
+# Restart Loom or trigger reload
 # Check logs for "Plugin loaded: test"
 ```
 
@@ -593,11 +593,11 @@ def test_completion():
 python plugin.py &
 
 # 2. Copy manifest
-mkdir -p ~/.agenticorp/plugins/my-plugin
-cp plugin.yaml ~/.agenticorp/plugins/my-plugin/
+mkdir -p ~/.loom/plugins/my-plugin
+cp plugin.yaml ~/.loom/plugins/my-plugin/
 
-# 3. Restart AgentiCorp
-docker compose restart agenticorp
+# 3. Restart Loom
+docker compose restart loom
 ```
 
 ### Production Deployment
@@ -623,12 +623,12 @@ docker run -d -p 8090:8090 my-plugin
 
 ```ini
 [Unit]
-Description=My AgentiCorp Plugin
+Description=My Loom Plugin
 After=network.target
 
 [Service]
 Type=simple
-User=agenticorp
+User=loom
 WorkingDirectory=/opt/my-plugin
 ExecStart=/usr/bin/python3 plugin.py
 Restart=always
@@ -756,12 +756,12 @@ response['usage']['cost_usd'] = cost_usd
 
 ### Plugin Not Loading
 
-**Problem:** Plugin doesn't appear in AgentiCorp
+**Problem:** Plugin doesn't appear in Loom
 
 **Solutions:**
 1. Check manifest syntax: `yamllint plugin.yaml`
 2. Verify endpoint is accessible: `curl http://localhost:8090/metadata`
-3. Check AgentiCorp logs: `docker logs agenticorp | grep plugin`
+3. Check Loom logs: `docker logs loom | grep plugin`
 4. Ensure `auto_start: true` in manifest
 5. Verify plugins directory path
 
@@ -822,14 +822,14 @@ Each example includes:
 1. **Start with an example** - Copy one of the examples and modify it
 2. **Test thoroughly** - Use the testing section to verify your plugin
 3. **Share with community** - Submit to plugin registry (see bd-088)
-4. **Get feedback** - Join AgentiCorp community discussions
+4. **Get feedback** - Join Loom community discussions
 
 ## Resources
 
 - [Plugin API Reference](PLUGIN_API.md)
 - [Example Plugins](../examples/plugins/)
 - [Plugin Registry](PLUGIN_REGISTRY.md)
-- [GitHub Discussions](https://github.com/jordanhubbard/AgentiCorp/discussions)
+- [GitHub Discussions](https://github.com/jordanhubbard/Loom/discussions)
 - [Plugin API Version History](PLUGIN_VERSIONS.md)
 
 ---
@@ -839,5 +839,5 @@ Each example includes:
 If you have questions or run into issues, please:
 - Check the [Troubleshooting](#troubleshooting) section
 - Review the [Examples](#examples)
-- Ask in [GitHub Discussions](https://github.com/jordanhubbard/AgentiCorp/discussions)
+- Ask in [GitHub Discussions](https://github.com/jordanhubbard/Loom/discussions)
 - File an issue if you find a bug

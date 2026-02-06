@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/plugin"
+	"github.com/jordanhubbard/loom/pkg/plugin"
 )
 
 // RegistryEntry represents a plugin in the registry.

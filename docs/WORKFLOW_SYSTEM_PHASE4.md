@@ -478,7 +478,7 @@ curl -s http://localhost:8080/api/v1/workflows/wf-bug-default | jq '.nodes[] | {
 # Create a test bead
 BEAD_ID=$(curl -s -X POST http://localhost:8080/api/v1/beads \
   -H "Content-Type: application/json" \
-  -d '{"title":"[Test] Bug","description":"Test workflow tracking","type":"task","priority":1,"project_id":"agenticorp-self"}' \
+  -d '{"title":"[Test] Bug","description":"Test workflow tracking","type":"task","priority":1,"project_id":"loom-self"}' \
   | jq -r '.id')
 
 # Check workflow status

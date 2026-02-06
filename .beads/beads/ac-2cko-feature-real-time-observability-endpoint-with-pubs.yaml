@@ -1,0 +1,96 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-2cko
+type: feature
+title: '[Feature] Real-time observability endpoint with pub/sub event streaming'
+description: |-
+    Create a real-time observability API endpoint that streams AgentiCorp operations to subscribers using a publish/subscribe model.
+
+    **Requirements:**
+
+    1. **Event Bus Integration:**
+       - Hook into existing internal event bus (internal/eventbus)
+       - Subscribe to all state transition events
+       - Only process events when there are active subscribers (lazy evaluation)
+
+    2. **API Endpoint:**
+       - HTTP endpoint: GET /api/v1/events/stream
+       - Server-Sent Events (SSE) or WebSocket protocol
+       - Support multiple concurrent subscribers
+       - Auto-cleanup disconnected subscribers
+
+    3. **Event Types to Stream:**
+       - Agent status changes (idle → working → idle)
+       - Bead assignments and completions
+       - Task start/complete with duration
+       - Dispatch cycles and decisions
+       - Workflow transitions
+       - Provider status changes
+       - Error events
+
+    4. **Event Format:**
+       ```json
+       {
+         "timestamp": "2026-02-05T19:25:00Z",
+         "event_type": "agent.task_start",
+         "agent_id": "agent-123-CEO",
+         "bead_id": "ac-4yo9",
+         "project_id": "agenticorp-self",
+         "details": {}
+       }
+       ```
+
+    5. **Subscriber Management:**
+       - Track active subscribers
+       - Heartbeat/keepalive mechanism
+       - Graceful disconnect handling
+       - Optional event filtering by type/project
+
+    6. **Performance:**
+       - Non-blocking event publishing
+       - Buffer for slow subscribers
+       - Drop events if buffer full (don't block operations)
+       - Metrics on subscriber count and event throughput
+
+    **Implementation Notes:**
+    - Leverage existing structured logging events (structured.go:41 messages)
+    - Consider using existing SSE infrastructure if available
+    - Add /api/v1/events/subscribers endpoint to list active subscribers
+    - Document event types in docs/OBSERVABILITY_API.md
+
+    **Acceptance Criteria:**
+    - [ ] SSE/WebSocket endpoint functional at /api/v1/events/stream
+    - [ ] All major state transitions streamed to subscribers
+    - [ ] Multiple subscribers can connect simultaneously
+    - [ ] No performance impact when no subscribers connected
+    - [ ] Clean disconnect handling
+    - [ ] API documentation complete
+    - [ ] Example client script or curl commands
+
+    **Priority:** P1 - Critical for monitoring autonomous operations
+
+    This will enable real-time visibility into AgentiCorp's self-improvement work.
+status: open
+priority: 1
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - observability
+    - self-improvement
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T05:01:51Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-02-05T19:26:02.479181-08:00
+updatedat: 2026-02-05T21:01:51.778588-08:00
+closedat: null

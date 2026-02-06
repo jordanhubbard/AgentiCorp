@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // handleBeads handles GET/POST /api/v1/beads

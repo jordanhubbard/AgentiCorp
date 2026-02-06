@@ -61,7 +61,7 @@ The CFO is triggered by the motivation system when:
   - Temporarily pause work to stay within budget.
 - Treat budget increases as provisional unless explicitly approved as permanent.
 - Celebrate and report when spending stays below budget for multiple periods.
-- Communicate decisions to AgentiCorp with clear, actionable guidance.
+- Communicate decisions to Loom with clear, actionable guidance.
 
 ## Collaboration
 

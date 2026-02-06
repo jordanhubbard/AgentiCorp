@@ -1,4 +1,4 @@
-# AgentiCorp Vim/Neovim Plugin
+# Loom Vim/Neovim Plugin
 
 AI-powered coding assistant for Vim and Neovim.
 
@@ -15,21 +15,21 @@ AI-powered coding assistant for Vim and Neovim.
 ### Using vim-plug
 
 ```vim
-Plug 'jordanhubbard/AgentiCorp', {'rtp': 'extensions/vim'}
+Plug 'jordanhubbard/Loom', {'rtp': 'extensions/vim'}
 ```
 
 ### Using Vundle
 
 ```vim
-Plugin 'jordanhubbard/AgentiCorp', {'rtp': 'extensions/vim'}
+Plugin 'jordanhubbard/Loom', {'rtp': 'extensions/vim'}
 ```
 
 ### Using Pathogen
 
 ```bash
 cd ~/.vim/bundle
-git clone https://github.com/jordanhubbard/AgentiCorp.git
-ln -s AgentiCorp/extensions/vim agenticorp
+git clone https://github.com/jordanhubbard/Loom.git
+ln -s Loom/extensions/vim loom
 ```
 
 ### Manual
@@ -45,15 +45,15 @@ cp -r extensions/vim/* ~/.config/nvim/
 Add to `.vimrc` or `init.vim`:
 
 ```vim
-" AgentiCorp Configuration
-let g:agenticorp_api_endpoint = 'http://localhost:8080'
-let g:agenticorp_api_key = ''  " Optional
-let g:agenticorp_model = 'default'
-let g:agenticorp_enable_suggestions = 1
-let g:agenticorp_max_context_lines = 50
+" Loom Configuration
+let g:loom_api_endpoint = 'http://localhost:8080'
+let g:loom_api_key = ''  " Optional
+let g:loom_model = 'default'
+let g:loom_enable_suggestions = 1
+let g:loom_max_context_lines = 50
 
 " Disable default keymaps (optional)
-let g:agenticorp_no_default_keymaps = 1
+let g:loom_no_default_keymaps = 1
 ```
 
 ## Usage
@@ -61,17 +61,17 @@ let g:agenticorp_no_default_keymaps = 1
 ### Commands
 
 ```vim
-:AgentiCorpChat               " Open chat window
-:AgentiCorpChat Hello         " Open chat with message
+:LoomChat               " Open chat window
+:LoomChat Hello         " Open chat with message
 
 " Visual mode commands (select code first)
-:'<,'>AgentiCorpExplain       " Explain selected code
-:'<,'>AgentiCorpGenerateTests " Generate tests
-:'<,'>AgentiCorpRefactor      " Refactor suggestions
-:'<,'>AgentiCorpFixBug        " Debug help
+:'<,'>LoomExplain       " Explain selected code
+:'<,'>LoomGenerateTests " Generate tests
+:'<,'>LoomRefactor      " Refactor suggestions
+:'<,'>LoomFixBug        " Debug help
 
 " Toggle inline suggestions
-:AgentiCorpToggleSuggestions
+:LoomToggleSuggestions
 ```
 
 ### Default Keymaps
@@ -87,7 +87,7 @@ let g:agenticorp_no_default_keymaps = 1
 
 ### Chat Interface
 
-1. Run `:AgentiCorpChat`
+1. Run `:LoomChat`
 2. Type message
 3. Press `<CR>` in insert mode to send
 4. View response in same buffer
@@ -95,7 +95,7 @@ let g:agenticorp_no_default_keymaps = 1
 ### Code Actions
 
 1. Select code (visual mode)
-2. Run command (e.g., `:'<,'>AgentiCorpExplain`)
+2. Run command (e.g., `:'<,'>LoomExplain`)
 3. View result in chat buffer
 
 ### Inline Suggestions (Neovim only)
@@ -109,14 +109,14 @@ let g:agenticorp_no_default_keymaps = 1
 
 - Vim 8.0+ or Neovim 0.5+
 - `curl` command line tool
-- AgentiCorp server running
+- Loom server running
 
 ## Troubleshooting
 
 ### Connection Error
 
 ```vim
-:echo agenticorp#client#health_check()
+:echo loom#client#health_check()
 ```
 
 Should return `1` if server is reachable.
@@ -124,15 +124,15 @@ Should return `1` if server is reachable.
 ### Check Configuration
 
 ```vim
-:echo g:agenticorp_api_endpoint
-:echo g:agenticorp_enable_suggestions
+:echo g:loom_api_endpoint
+:echo g:loom_enable_suggestions
 ```
 
 ### Debug Mode
 
 ```vim
 :set verbose=9
-:AgentiCorpChat Test
+:LoomChat Test
 ```
 
 ## Advanced Configuration
@@ -140,30 +140,30 @@ Should return `1` if server is reachable.
 ### Custom Keymaps
 
 ```vim
-let g:agenticorp_no_default_keymaps = 1
+let g:loom_no_default_keymaps = 1
 
-nmap <C-a> :AgentiCorpChat<CR>
-vmap <C-e> :AgentiCorpExplain<CR>
-vmap <C-t> :AgentiCorpGenerateTests<CR>
+nmap <C-a> :LoomChat<CR>
+vmap <C-e> :LoomExplain<CR>
+vmap <C-t> :LoomGenerateTests<CR>
 ```
 
 ### Model Selection
 
 ```vim
-let g:agenticorp_model = 'gpt-4'
+let g:loom_model = 'gpt-4'
 ```
 
 ### API Key from Environment
 
 ```vim
-let g:agenticorp_api_key = $AGENTICORP_API_KEY
+let g:loom_api_key = $AGENTICORP_API_KEY
 ```
 
 ## Architecture
 
 ```
-plugin/agenticorp.vim       - Plugin initialization
-autoload/agenticorp/
+plugin/loom.vim       - Plugin initialization
+autoload/loom/
   client.vim                - API client
   chat.vim                  - Chat interface
   actions.vim               - Code actions
@@ -203,4 +203,4 @@ MIT
 
 ---
 
-**Powered by AgentiCorp** 🚀
+**Powered by Loom** 🚀

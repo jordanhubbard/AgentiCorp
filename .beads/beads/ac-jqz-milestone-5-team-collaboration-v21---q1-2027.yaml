@@ -1,0 +1,67 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-jqz
+type: epic
+title: 'Milestone 5: Team Collaboration (v2.1) - Q1 2027'
+description: |
+    Enable effective team collaboration on agent-driven projects.
+
+    Theme: Shared workspaces and cost optimization.
+
+    Target Date: End of Q1 2027
+
+    Goals:
+    1. Team Collaboration Features (ac-5r5) - Shared workspaces and real-time updates
+    2. Cost Optimization Recommendations (ac-ifm) - Automated savings suggestions
+
+    Success Metrics:
+    - Teams: 100+ teams onboarded
+    - Collaboration: <1s sync latency
+    - Recommendations: 10% additional savings
+    - Adoption: 50% team feature usage
+
+    Dependencies:
+    - Depends on Milestone 1 (ac-xr6) - Multi-user authentication
+    - Depends on Milestone 2 (ac-2hc) - Analytics infrastructure
+
+    Release Criteria:
+    - Multi-user workspace tested with 10+ users
+    - Real-time collaboration verified
+    - QA sign-off on team features
+    - Cost recommendation accuracy validated
+    - Team onboarding documentation complete
+
+    Risk Factors:
+    - High: Real-time collaboration infrastructure complexity
+    - Medium: Team permission model design
+    - Low: Cost recommendations algorithm
+
+    Related document: MILESTONES.md
+status: open
+priority: 3
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - collaboration
+    - epic
+    - milestone
+    - p3
+    - team
+    - v2.1
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T13:01:43Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:51.398975-08:00
+updatedat: 2026-02-06T05:01:43.149756-08:00
+closedat: null

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // AutoFileBugRequest represents an automatically filed bug report

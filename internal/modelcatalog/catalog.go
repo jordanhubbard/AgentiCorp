@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/jordanhubbard/agenticorp/pkg/config"
-	"github.com/jordanhubbard/agenticorp/pkg/server"
+	"github.com/jordanhubbard/loom/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/server"
 )
 
 func main() {

@@ -161,7 +161,7 @@ curl -X POST http://localhost:8080/api/v1/routing/select \
   -d '{"policy": "minimize_cost", "requirements": {...}}'
 
 # Via Go code
-provider, err := agenticorp.SelectProvider(ctx, requirements, "minimize_latency")
+provider, err := loom.SelectProvider(ctx, requirements, "minimize_latency")
 ```
 
 **List Available Policies:**
@@ -273,7 +273,7 @@ ALTER TABLE providers ADD COLUMN tags_json TEXT;
 ### Modified (7 files)
 - `internal/models/provider.go` - Added cost & capability fields
 - `internal/database/database.go` - Added migration runner
-- `internal/agenticorp/agenticorp.go` - Integrated router
+- `internal/loom/loom.go` - Integrated router
 - `internal/api/server.go` - Registered routing endpoints
 - `.beads/beads/bd-053.yaml` → `bd-075.yaml` - Closed all beads
 
@@ -302,7 +302,7 @@ $ go test ./internal/routing/...
 === RUN   TestIsHealthy
 --- PASS: TestIsHealthy (0.00s)
 PASS
-ok      github.com/jordanhubbard/agenticorp/internal/routing    0.695s
+ok      github.com/jordanhubbard/loom/internal/routing    0.695s
 ```
 
 ### Test Coverage
@@ -359,7 +359,7 @@ ok      github.com/jordanhubbard/agenticorp/internal/routing    0.695s
 requirements := &routing.ProviderRequirements{
     MaxCostPerMToken: 5.0,  // Max $5 per million tokens
 }
-provider, err := agenticorp.SelectProvider(ctx, requirements, "minimize_cost")
+provider, err := loom.SelectProvider(ctx, requirements, "minimize_cost")
 ```
 
 ### Example 2: Minimize Latency
@@ -368,7 +368,7 @@ provider, err := agenticorp.SelectProvider(ctx, requirements, "minimize_cost")
 requirements := &routing.ProviderRequirements{
     MaxLatencyMs: 500,  // Max 500ms response
 }
-provider, err := agenticorp.SelectProvider(ctx, requirements, "minimize_latency")
+provider, err := loom.SelectProvider(ctx, requirements, "minimize_latency")
 ```
 
 ### Example 3: Capability Requirements
@@ -378,7 +378,7 @@ requirements := &routing.ProviderRequirements{
     RequiresFunction: true,
     MinContextWindow: 100000,
 }
-provider, err := agenticorp.SelectProvider(ctx, requirements, "maximize_quality")
+provider, err := loom.SelectProvider(ctx, requirements, "maximize_quality")
 ```
 
 ### Example 4: Automatic Failover
@@ -464,7 +464,7 @@ Potential improvements for future releases:
 
 ## Conclusion
 
-The Advanced Provider Routing epic is **100% complete**! AgentiCorp now intelligently selects providers based on cost, latency, quality, and capabilities, with automatic failover for high availability.
+The Advanced Provider Routing epic is **100% complete**! Loom now intelligently selects providers based on cost, latency, quality, and capabilities, with automatic failover for high availability.
 
 **Key Achievements:**
 - ✅ 4 routing policies (cost, latency, quality, balanced)

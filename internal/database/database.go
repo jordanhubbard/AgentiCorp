@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 	_ "github.com/mattn/go-sqlite3"
 )
 

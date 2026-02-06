@@ -542,5 +542,5 @@ Agent builds on previous work, remembers findings, and makes progress.
 
 **Document Version:** 1.0
 **Last Updated:** 2026-02-04
-**Author:** AgentiCorp Enhancement Initiative
+**Author:** Loom Enhancement Initiative
 **Status:** Design Complete, Ready for Implementation

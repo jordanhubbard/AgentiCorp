@@ -1,6 +1,6 @@
-# AgentiCorp Developer & User Guide
+# Loom Developer & User Guide
 
-Welcome to AgentiCorp - the Agent Orchestration System. This guide helps you get started with developing agents, creating work items (beads), and using the system.
+Welcome to Loom - the Agent Orchestration System. This guide helps you get started with developing agents, creating work items (beads), and using the system.
 
 ## Documentation
 
@@ -114,13 +114,13 @@ Or via API: `POST /api/v1/agents`
 
 ## Working with Beads - Two Contexts
 
-AgentiCorp uses the **Beads** CLI tool for issue tracking in two contexts:
+Loom uses the **Beads** CLI tool for issue tracking in two contexts:
 
-### 1. AgentiCorp's Own Beads (Meta-Work)
+### 1. Loom's Own Beads (Meta-Work)
 
-Located in **this repository** at `.beads/issues.jsonl`, these track work ON AgentiCorp itself:
+Located in **this repository** at `.beads/issues.jsonl`, these track work ON Loom itself:
 
-- Features/bugs in AgentiCorp
+- Features/bugs in Loom
 - Documentation updates  
 - Infrastructure work
 - CI/CD improvements
@@ -132,7 +132,7 @@ Located in **this repository** at `.beads/issues.jsonl`, these track work ON Age
 
 ### 2. Project Beads (Application Work)
 
-When you register a project with AgentiCorp, it:
+When you register a project with Loom, it:
 
 1. **Clones the project's git repository** into a work area
 2. **Loads beads** from that project's `.beads/issues.jsonl` file
@@ -148,11 +148,11 @@ branch: main
 beads_path: .beads
 ```
 
-**Each project's beads live in its own repo**, not in AgentiCorp's repo.
+**Each project's beads live in its own repo**, not in Loom's repo.
 
 ### Git Repository Management
 
-AgentiCorp runs in containers and proxies all git operations for managed projects:
+Loom runs in containers and proxies all git operations for managed projects:
 
 - **Clone**: Fetches project repos into isolated work areas (`/app/src/<project-id>`)
 - **Pull**: Keeps projects up-to-date with remote changes
@@ -162,10 +162,10 @@ AgentiCorp runs in containers and proxies all git operations for managed project
 
 ### Summary
 
-- **AgentiCorp beads**: Live in `.beads/issues.jsonl` in THIS repo (AgentiCorp itself)
+- **Loom beads**: Live in `.beads/issues.jsonl` in THIS repo (Loom itself)
 - **Project beads**: Live in `.beads/issues.jsonl` in EACH project's own repo
 - **Beads CLI**: All bead operations use the `bd` command
-- **Git proxying**: AgentiCorp manages git operations for all registered projects
+- **Git proxying**: Loom manages git operations for all registered projects
 - **Isolation**: Each project gets its own work area and git workspace
 
 ## Creating Agent Work Items (Beads)
@@ -201,7 +201,7 @@ bd list open
 - P2 (2): Normal priority (default)
 - P3 (3): Low priority, nice-to-have
 
-**Prefer using the AgentiCorp API or Web UI to create/update beads for agents.**
+**Prefer using the Loom API or Web UI to create/update beads for agents.**
 
 ### Dependencies
 

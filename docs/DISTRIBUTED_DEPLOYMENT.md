@@ -1,10 +1,10 @@
 # Distributed Deployment Guide
 
-This guide explains how to deploy multiple AgentiCorp instances for high availability and load distribution.
+This guide explains how to deploy multiple Loom instances for high availability and load distribution.
 
 ## Overview
 
-AgentiCorp supports distributed deployment with:
+Loom supports distributed deployment with:
 - **Shared State**: PostgreSQL database for synchronized state
 - **Distributed Locking**: Coordination between instances
 - **Instance Registry**: Track active instances
@@ -49,20 +49,20 @@ sudo apt-get install postgresql postgresql-contrib
 
 # Create database and user
 sudo -u postgres psql
-CREATE DATABASE agenticorp;
-CREATE USER agenticorp_user WITH ENCRYPTED PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE agenticorp TO agenticorp_user;
+CREATE DATABASE loom;
+CREATE USER loom_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE loom TO loom_user;
 \q
 ```
 
-### 2. Configure AgentiCorp
+### 2. Configure Loom
 
 Update `config.yaml`:
 
 ```yaml
 database:
   type: postgres
-  dsn: "postgresql://agenticorp_user:your_secure_password@postgres-host:5432/agenticorp?sslmode=require"
+  dsn: "postgresql://loom_user:your_secure_password@postgres-host:5432/loom?sslmode=require"
 
 server:
   http_port: 8080
@@ -73,13 +73,13 @@ server:
 
 ```bash
 # Instance 1
-PORT=8080 ./agenticorp &
+PORT=8080 ./loom &
 
 # Instance 2  
-PORT=8081 ./agenticorp &
+PORT=8081 ./loom &
 
 # Instance 3
-PORT=8082 ./agenticorp &
+PORT=8082 ./loom &
 ```
 
 ### 4. Configure Load Balancer
@@ -87,7 +87,7 @@ PORT=8082 ./agenticorp &
 **Nginx Example:**
 
 ```nginx
-upstream agenticorp_backend {
+upstream loom_backend {
     least_conn;  # Use least connections algorithm
     
     server 127.0.0.1:8080 max_fails=3 fail_timeout=30s;
@@ -97,10 +97,10 @@ upstream agenticorp_backend {
 
 server {
     listen 80;
-    server_name agenticorp.example.com;
+    server_name loom.example.com;
     
     location / {
-        proxy_pass http://agenticorp_backend;
+        proxy_pass http://loom_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -110,7 +110,7 @@ server {
     }
     
     location /health {
-        proxy_pass http://agenticorp_backend;
+        proxy_pass http://loom_backend;
         access_log off;
     }
 }
@@ -118,7 +118,7 @@ server {
 
 ## Distributed Locking
 
-AgentiCorp uses distributed locks to prevent conflicts in shared operations.
+Loom uses distributed locks to prevent conflicts in shared operations.
 
 ### Lock Usage Example
 
@@ -153,7 +153,7 @@ All instances register themselves for coordination and monitoring.
 curl http://localhost:8080/api/v1/instances
 
 # Via database
-psql agenticorp -c "SELECT * FROM instances WHERE last_heartbeat > NOW() - INTERVAL '60 seconds';"
+psql loom -c "SELECT * FROM instances WHERE last_heartbeat > NOW() - INTERVAL '60 seconds';"
 ```
 
 ### Instance Metadata
@@ -252,21 +252,21 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: agenticorp
-      POSTGRES_USER: agenticorp_user
+      POSTGRES_DB: loom
+      POSTGRES_USER: loom_user
       POSTGRES_PASSWORD: secure_password
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
   
-  agenticorp:
-    image: agenticorp:latest
+  loom:
+    image: loom:latest
     depends_on:
       - postgres
     environment:
       DATABASE_TYPE: postgres
-      DATABASE_DSN: postgresql://agenticorp_user:secure_password@postgres:5432/agenticorp
+      DATABASE_DSN: postgresql://loom_user:secure_password@postgres:5432/loom
     deploy:
       replicas: 3
     ports:
@@ -282,20 +282,20 @@ volumes:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: agenticorp
+      app: loom
   template:
     metadata:
       labels:
-        app: agenticorp
+        app: loom
     spec:
       containers:
-      - name: agenticorp
-        image: agenticorp:latest
+      - name: loom
+        image: loom:latest
         ports:
         - containerPort: 8080
         env:
@@ -304,7 +304,7 @@ spec:
         - name: DATABASE_DSN
           valueFrom:
             secretKeyRef:
-              name: agenticorp-db
+              name: loom-db
               key: dsn
         livenessProbe:
           httpGet:
@@ -322,14 +322,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8080
   selector:
-    app: agenticorp
+    app: loom
 ```
 
 ## Performance Tuning
@@ -355,7 +355,7 @@ ALTER SYSTEM SET checkpoint_completion_target = 0.9;
 ```yaml
 database:
   type: postgres
-  dsn: "postgresql://user:pass@host:5432/agenticorp?pool_max_conns=25&pool_min_conns=5"
+  dsn: "postgresql://user:pass@host:5432/loom?pool_max_conns=25&pool_min_conns=5"
 
 agents:
   max_concurrent: 20  # Adjust based on instance size
@@ -374,7 +374,7 @@ agents:
 
 ```bash
 # Check PostgreSQL is accessible
-psql "postgresql://user:pass@host:5432/agenticorp"
+psql "postgresql://user:pass@host:5432/loom"
 
 # Check network connectivity
 nc -zv postgres-host 5432
@@ -429,7 +429,7 @@ HAVING COUNT(*) > 1;
 5. **Connection Pooling**: Use pgBouncer for large deployments
 6. **Separate Database**: Don't run PostgreSQL on same host
 7. **SSL/TLS**: Always use encrypted connections
-8. **Firewall**: Restrict PostgreSQL access to AgentiCorp instances
+8. **Firewall**: Restrict PostgreSQL access to Loom instances
 9. **Log Aggregation**: Use centralized logging (ELK, Splunk)
 10. **Disaster Recovery**: Have rollback and recovery procedures
 
@@ -439,7 +439,7 @@ HAVING COUNT(*) > 1;
 
 ```yaml
 database:
-  dsn: "postgresql://user:pass@host:5432/agenticorp?sslmode=require"
+  dsn: "postgresql://user:pass@host:5432/loom?sslmode=require"
   # Use environment variable for sensitive data
   # dsn: ${DATABASE_DSN}
 ```
@@ -472,11 +472,11 @@ To migrate from single-instance SQLite to distributed PostgreSQL:
 ## Support
 
 For distributed deployment issues:
-- Check logs: `docker logs agenticorp`
-- Database status: `psql agenticorp -c "SELECT 1"`
+- Check logs: `docker logs loom`
+- Database status: `psql loom -c "SELECT 1"`
 - Instance registry: `GET /api/v1/instances`
 - GitHub Issues: Report problems
 
 ---
 
-**Distributed deployment enables enterprise-scale AgentiCorp!** 🚀
+**Distributed deployment enables enterprise-scale Loom!** 🚀

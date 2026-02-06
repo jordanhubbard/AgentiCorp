@@ -1,0 +1,49 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-mya
+type: feature
+title: Shared workspaces for teams
+description: |
+    Implement shared workspace functionality where teams can collaborate on
+    projects and beads.
+
+    Tasks:
+    - Design workspace data model
+    - Implement workspace creation
+    - Add team member management
+    - Implement permission system
+    - Add workspace switching UI
+
+    Acceptance:
+    - Teams can create workspaces
+    - Members can be invited
+    - Permissions enforced
+    - Workspace switching works
+    - 10+ team members supported
+status: open
+priority: 3
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - collaboration
+    - feature
+    - p3
+    - team
+    - workspaces
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T13:01:43Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:51.849268-08:00
+updatedat: 2026-02-06T05:01:43.149273-08:00
+closedat: null

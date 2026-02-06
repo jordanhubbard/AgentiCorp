@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 // ProviderRequest is a request wrapper for provider registration with API key

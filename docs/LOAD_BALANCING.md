@@ -1,10 +1,10 @@
 # Load Balancing Guide
 
-This guide explains how to configure load balancers for AgentiCorp distributed deployments.
+This guide explains how to configure load balancers for Loom distributed deployments.
 
 ## Overview
 
-AgentiCorp supports various load balancing configurations for:
+Loom supports various load balancing configurations for:
 - **High availability** - Redundancy and failover
 - **Performance** - Distribute load across instances
 - **Scalability** - Handle increasing traffic
@@ -62,7 +62,7 @@ Routes requests from same IP to same instance.
 ### Basic Load Balancing
 
 ```nginx
-upstream agenticorp {
+upstream loom {
     least_conn;  # Use least connections algorithm
     
     server backend1:8080 max_fails=3 fail_timeout=30s weight=1;
@@ -72,10 +72,10 @@ upstream agenticorp {
 
 server {
     listen 80;
-    server_name agenticorp.example.com;
+    server_name loom.example.com;
     
     location / {
-        proxy_pass http://agenticorp;
+        proxy_pass http://loom;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -93,7 +93,7 @@ server {
     
     # Health check endpoint
     location /health {
-        proxy_pass http://agenticorp;
+        proxy_pass http://loom;
         access_log off;
     }
 }
@@ -102,7 +102,7 @@ server {
 ### Session Affinity (Sticky Sessions)
 
 ```nginx
-upstream agenticorp {
+upstream loom {
     least_conn;
     
     server backend1:8080;
@@ -114,7 +114,7 @@ upstream agenticorp {
 }
 
 # Or use cookies for better control:
-upstream agenticorp {
+upstream loom {
     least_conn;
     
     server backend1:8080;
@@ -126,7 +126,7 @@ server {
     listen 80;
     
     location / {
-        proxy_pass http://agenticorp;
+        proxy_pass http://loom;
         
         # Cookie-based sticky sessions
         proxy_set_header Cookie $http_cookie;
@@ -141,13 +141,13 @@ server {
 ### Health Checks
 
 ```nginx
-upstream agenticorp {
+upstream loom {
     server backend1:8080;
     server backend2:8080;
     server backend3:8080;
     
     # Nginx Plus health checks
-    zone agenticorp 64k;
+    zone loom 64k;
     check interval=5s
           fail_timeout=10s
           rise=2
@@ -177,11 +177,11 @@ defaults
     timeout client  50s
     timeout server  50s
     
-frontend agenticorp_front
+frontend loom_front
     bind *:80
-    default_backend agenticorp_back
+    default_backend loom_back
     
-backend agenticorp_back
+backend loom_back
     balance leastconn
     option httpchk GET /health/ready
     http-check expect status 200
@@ -194,7 +194,7 @@ backend agenticorp_back
 ### Session Affinity
 
 ```haproxy
-backend agenticorp_back
+backend loom_back
     balance leastconn
     
     # Cookie-based sticky sessions
@@ -208,13 +208,13 @@ backend agenticorp_back
 ### Advanced Health Checks
 
 ```haproxy
-backend agenticorp_back
+backend loom_back
     option httpchk GET /health/ready
     http-check expect status 200
     http-check expect string \"ready\":true
     
     # Detailed health checks
-    http-check send meth GET uri /health/ready ver HTTP/1.1 hdr Host agenticorp.local
+    http-check send meth GET uri /health/ready ver HTTP/1.1 hdr Host loom.local
     http-check expect rstatus ^2[0-9][0-9]
     
     server instance1 backend1:8080 check inter 5s fastinter 2s downinter 10s
@@ -295,7 +295,7 @@ Routes based on client IP address.
 
 **Nginx:**
 ```nginx
-upstream agenticorp {
+upstream loom {
     ip_hash;
     server backend1:8080;
     server backend2:8080;
@@ -305,7 +305,7 @@ upstream agenticorp {
 
 **HAProxy:**
 ```haproxy
-backend agenticorp_back
+backend loom_back
     balance source  # IP-based
     hash-type consistent
 ```
@@ -320,8 +320,8 @@ Uses cookies to track instance assignment.
 **Nginx:**
 ```nginx
 # Requires nginx-sticky-module-ng
-upstream agenticorp {
-    sticky cookie agenticorp_route expires=1h;
+upstream loom {
+    sticky cookie loom_route expires=1h;
     server backend1:8080;
     server backend2:8080;
     server backend3:8080;
@@ -330,7 +330,7 @@ upstream agenticorp {
 
 **HAProxy:**
 ```haproxy
-backend agenticorp_back
+backend loom_back
     cookie SERVERID insert indirect nocache
     server inst1 backend1:8080 cookie inst1
     server inst2 backend2:8080 cookie inst2
@@ -353,7 +353,7 @@ map $http_x_instance_id $backend_server {
     default     "";
 }
 
-upstream agenticorp {
+upstream loom {
     server backend1:8080;
     server backend2:8080;
     server backend3:8080;
@@ -364,7 +364,7 @@ server {
         set $target $backend_server;
         
         if ($target = "") {
-            set $target "agenticorp";
+            set $target "loom";
         }
         
         proxy_pass http://$target;
@@ -379,7 +379,7 @@ Ensure graceful shutdown by draining connections:
 ### Nginx
 
 ```nginx
-upstream agenticorp {
+upstream loom {
     server backend1:8080;
     server backend2:8080 down;  # Mark as down for draining
     server backend3:8080;
@@ -396,7 +396,7 @@ During shutdown:
 
 ```haproxy
 # Graceful drain via admin socket
-echo "set server agenticorp_back/instance2 state drain" | socat stdio /var/run/haproxy.sock
+echo "set server loom_back/instance2 state drain" | socat stdio /var/run/haproxy.sock
 ```
 
 ## Performance Tuning
@@ -404,7 +404,7 @@ echo "set server agenticorp_back/instance2 state drain" | socat stdio /var/run/h
 ### Connection Pooling
 
 ```nginx
-upstream agenticorp {
+upstream loom {
     server backend1:8080;
     
     keepalive 32;  # Connection pool size
@@ -413,7 +413,7 @@ upstream agenticorp {
 }
 
 location / {
-    proxy_pass http://agenticorp;
+    proxy_pass http://loom;
     proxy_http_version 1.1;
     proxy_set_header Connection "";
 }
@@ -424,14 +424,14 @@ location / {
 ```nginx
 # Disable buffering for streaming
 location /api/v1/stream {
-    proxy_pass http://agenticorp;
+    proxy_pass http://loom;
     proxy_buffering off;
     proxy_cache off;
 }
 
 # Enable buffering for normal requests
 location / {
-    proxy_pass http://agenticorp;
+    proxy_pass http://loom;
     proxy_buffering on;
     proxy_buffer_size 4k;
     proxy_buffers 8 4k;
@@ -533,4 +533,4 @@ See `examples/load-balancing/` for complete configurations:
 
 ---
 
-**AgentiCorp is ready for enterprise-scale load balancing!** 🚀
+**Loom is ready for enterprise-scale load balancing!** 🚀

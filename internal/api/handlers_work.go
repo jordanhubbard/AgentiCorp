@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/worker"
+	"github.com/jordanhubbard/loom/internal/worker"
 )
 
 // handleWork handles POST /api/v1/work for non-bead work (simple prompts).

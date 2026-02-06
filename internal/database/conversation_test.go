@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func TestConversationContext_CRUD(t *testing.T) {

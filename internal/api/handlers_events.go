@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // handleEventStream handles SSE endpoint for real-time event updates

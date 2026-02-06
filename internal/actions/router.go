@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jordanhubbard/agenticorp/internal/executor"
-	"github.com/jordanhubbard/agenticorp/internal/files"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/executor"
+	"github.com/jordanhubbard/loom/internal/files"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 type BeadCreator interface {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jordanhubbard/agenticorp/internal/executor"
+	"github.com/jordanhubbard/loom/internal/executor"
 )
 
 // HandleExecuteCommand executes a shell command

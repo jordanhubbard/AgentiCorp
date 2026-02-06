@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/motivation"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/motivation"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // GitHubWebhookPayload represents a generic GitHub webhook payload

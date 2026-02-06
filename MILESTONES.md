@@ -1,4 +1,4 @@
-# AgentiCorp Project Milestones
+# Loom Project Milestones
 
 *Organized by the Project Manager Persona*
 
@@ -8,7 +8,7 @@ This document translates the Product Manager's [FUTURE_GOALS](personas/examples/
 
 ## Milestone 1: Production Ready (v1.0) - Q1 2026
 **Target Date**: End of Q1 2026 (3 months)  
-**Theme**: Make AgentiCorp production-ready with essential features for real-world deployment
+**Theme**: Make Loom production-ready with essential features for real-world deployment
 
 ### Goals
 1. **Streaming Support (BEAD-001)** - P1
@@ -121,15 +121,15 @@ This document translates the Product Manager's [FUTURE_GOALS](personas/examples/
 
 ## Milestone 4: Developer Experience (v2.0) - Q4 2026
 **Target Date**: End of Q4 2026 (3 months)  
-**Theme**: Bring AgentiCorp directly into developer workflows
+**Theme**: Bring Loom directly into developer workflows
 
 ### Goals
 1. **IDE Integration Plugins (BEAD-008)** - P3
    - VS Code extension with AI chat panel
-   - Inline code suggestions from AgentiCorp
+   - Inline code suggestions from Loom
    - JetBrains plugin
    - Vim/Neovim integration
-   - **Success**: Developers can use AgentiCorp without leaving their editor
+   - **Success**: Developers can use Loom without leaving their editor
 
 2. **Advanced Persona Editor UI (BEAD-009)** - P3
    - Web-based persona editor

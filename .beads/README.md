@@ -55,10 +55,10 @@ Issues in Beads are:
 - Branch-aware issue tracking
 - Intelligent JSONL merge resolution
 
-## AgentiCorp Integration
+## Loom Integration
 
-AgentiCorp uses Beads for:
-- **Meta-work tracking**: Features, bugs, and improvements to AgentiCorp itself
+Loom uses Beads for:
+- **Meta-work tracking**: Features, bugs, and improvements to Loom itself
 - **Managed projects**: Each registered project has its own Beads database
 - **AI agent coordination**: Agents discover and work on beads automatically
 

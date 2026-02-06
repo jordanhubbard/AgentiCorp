@@ -1,8 +1,8 @@
-# Persona-Based Routing in AgentiCorp
+# Persona-Based Routing in Loom
 
 ## Overview
 
-AgentiCorp now supports intelligent persona-based routing, automatically matching work to the most appropriate agent based on hints in bead titles and descriptions.
+Loom now supports intelligent persona-based routing, automatically matching work to the most appropriate agent based on hints in bead titles and descriptions.
 
 ## Features
 
@@ -103,7 +103,7 @@ curl -X POST http://localhost:8080/api/v1/beads \
     "description": "Review and improve accessibility...",
     "type": "task",
     "priority": 1,
-    "project_id": "agenticorp-self"
+    "project_id": "loom-self"
   }'
 
 # Via bd CLI
@@ -169,16 +169,16 @@ if personaHint != "" {
 
 ### CEO REPL Enhancement
 
-Location: `internal/agenticorp/agenticorp.go`
+Location: `internal/loom/loom.go`
 
 ```go
-func (a *AgentiCorp) RunReplQuery(ctx context.Context, message string) (*ReplResult, error) {
+func (a *Loom) RunReplQuery(ctx context.Context, message string) (*ReplResult, error) {
     // Extract persona hint and clean message
     personaHint, cleanMessage := extractPersonaFromMessage(message)
     
     // Create P0 bead for CEO query
     bead, err := a.beadsManager.CreateBead(beadTitle, cleanMessage, 
-        models.BeadPriorityP0, "task", "agenticorp-self")
+        models.BeadPriorityP0, "task", "loom-self")
     
     // ... execute query ...
     

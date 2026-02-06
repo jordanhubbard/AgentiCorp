@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/linter"
+	"github.com/jordanhubbard/loom/internal/linter"
 )
 
 // LinterRunnerAdapter adapts internal/linter.LinterRunner to the actions.LinterRunner interface

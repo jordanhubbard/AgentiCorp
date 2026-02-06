@@ -1,10 +1,10 @@
 # Temporal DSL (Domain Specific Language)
 
-The Temporal DSL is an English-like markdown-based syntax that allows agents and providers to request work from Temporal without requiring external provider services. This enables orchestration and complex workflows purely within the AgentiCorp system.
+The Temporal DSL is an English-like markdown-based syntax that allows agents and providers to request work from Temporal without requiring external provider services. This enables orchestration and complex workflows purely within the Loom system.
 
 ## Overview
 
-The DSL is embedded in agent personas and instructions using markdown `<temporal>...</temporal>` blocks. When an agent processes instructions or responds with output containing Temporal DSL, AgentiCorp automatically:
+The DSL is embedded in agent personas and instructions using markdown `<temporal>...</temporal>` blocks. When an agent processes instructions or responds with output containing Temporal DSL, Loom automatically:
 
 1. **Extracts** the DSL blocks from the text
 2. **Parses** them into structured instructions
@@ -296,7 +296,7 @@ END
 
 **CEO Role:**
 ```markdown
-You are the Chief Executive Officer of AgentiCorp.
+You are the Chief Executive Officer of Loom.
 
 When reviewing strategic initiatives:
 <temporal>
@@ -423,7 +423,7 @@ When DSL is extracted, the cleaned text:
 
 This ensures providers never see the Temporal DSL notation.
 
-## Usage in AgentiCorp
+## Usage in Loom
 
 ### From Agent Code
 

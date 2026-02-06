@@ -1,0 +1,55 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-kqh
+type: task
+title: P1 (sticky) User guide review by personas before release approval
+description: |
+    This is a sticky, always-on bead for the AgentiCorp project.
+
+    Goal
+    - Ensure the AgentiCorp user guide is reviewed and augmented by relevant personas
+      before any release can be approved by release engineers.
+
+    Rules
+    1) Release gating
+       - A release cannot be approved unless the user guide has been reviewed and
+         updated as needed.
+    2) Required reviewers
+       - At minimum: documentation-manager, project-manager, and qa-engineer.
+       - Additional personas should be included when their domain is impacted
+         (e.g., devops-engineer for deployment changes).
+    3) Evidence
+       - Each release must include a short note in the release checklist or bead
+         context confirming the review occurred and describing any updates made.
+
+    Definition of Done (for any release bead)
+    - The user guide has been reviewed by the required personas.
+    - The guide is updated to reflect any changes in workflows or features.
+    - Release approval includes the review evidence.
+status: open
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1768861966-project-manager
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - docs
+    - p1
+    - process
+    - release
+    - sticky
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T05:47:04Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:33.171523-08:00
+updatedat: 2026-02-05T21:47:04.37259-08:00
+closedat: null

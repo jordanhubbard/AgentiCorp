@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/agent"
-	"github.com/jordanhubbard/agenticorp/internal/provider"
-	"github.com/jordanhubbard/agenticorp/internal/worker"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/agent"
+	"github.com/jordanhubbard/loom/internal/provider"
+	"github.com/jordanhubbard/loom/internal/worker"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func main() {

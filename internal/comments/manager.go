@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/database"
-	"github.com/jordanhubbard/agenticorp/internal/notifications"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/notifications"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // Manager handles comment operations

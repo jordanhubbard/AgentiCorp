@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // Analyzer performs pattern analysis on request logs

@@ -2,7 +2,7 @@
 
 ## Overview
 
-AgentiCorp supports optional authentication via JWT tokens. Authentication can be enabled or disabled via the `security.enable_auth` configuration flag in `config.yaml`.
+Loom supports optional authentication via JWT tokens. Authentication can be enabled or disabled via the `security.enable_auth` configuration flag in `config.yaml`.
 
 ## Configuration
 
@@ -101,17 +101,17 @@ The following endpoints are always accessible without authentication, regardless
 vi config.yaml
 
 # Restart the container to pick up changes
-docker compose restart agenticorp
+docker compose restart loom
 ```
 
 ### Method 2: Rebuild (If main.go changed)
 
 ```bash
 # Rebuild container
-docker compose build agenticorp
+docker compose build loom
 
 # Recreate container with new image
-docker compose up -d agenticorp
+docker compose up -d loom
 ```
 
 ## Security Best Practices
@@ -141,10 +141,10 @@ docker compose up -d agenticorp
 **Symptom**: API still returns `401 Unauthorized` after setting `enable_auth: false`
 
 **Solutions**:
-1. Verify config file location: `docker exec agenticorp cat /app/src/config.yaml | grep enable_auth`
-2. Check `CONFIG_PATH` env var: `docker exec agenticorp printenv CONFIG_PATH`
-3. Restart container: `docker compose restart agenticorp`
-4. Check logs: `docker logs agenticorp | grep "Loaded configuration"`
+1. Verify config file location: `docker exec loom cat /app/src/config.yaml | grep enable_auth`
+2. Check `CONFIG_PATH` env var: `docker exec loom printenv CONFIG_PATH`
+3. Restart container: `docker compose restart loom`
+4. Check logs: `docker logs loom | grep "Loaded configuration"`
 
 ### UI Still Shows Login Screen
 
@@ -167,7 +167,7 @@ docker compose up -d agenticorp
 **Solutions**:
 1. Verify `CONFIG_PATH=/app/src/config.yaml` in `docker-compose.yml`
 2. Verify volume mount: `- .:/app/src:rw` in `docker-compose.yml`
-3. Rebuild container if `main.go` changed: `docker compose build agenticorp`
+3. Rebuild container if `main.go` changed: `docker compose build loom`
 
 ## Related Files
 

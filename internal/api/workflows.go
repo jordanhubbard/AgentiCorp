@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jordanhubbard/agenticorp/internal/workflow"
+	"github.com/jordanhubbard/loom/internal/workflow"
 )
 
 // handleWorkflows handles GET /api/v1/workflows - list all workflows

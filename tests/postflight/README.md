@@ -1,4 +1,4 @@
-# AgentiCorp Post-Flight API Tests
+# Loom Post-Flight API Tests
 
 Automated API validation tests that run after container startup to ensure all endpoints are responding correctly.
 
@@ -38,7 +38,7 @@ BASE_URL=http://myserver:8080 TIMEOUT=10 VERBOSE=1 ./tests/postflight/api_test.s
 ## Configuration
 
 Environment variables:
-- `BASE_URL` - Base URL of AgentiCorp service (default: `http://localhost:8080`)
+- `BASE_URL` - Base URL of Loom service (default: `http://localhost:8080`)
 - `TIMEOUT` - Request timeout in seconds (default: `5`)
 - `VERBOSE` - Verbose output (default: `0`, set to `1` for details)
 - `AUTH_USER` - Username for authenticated endpoints (default: `admin`)
@@ -107,7 +107,7 @@ The test suite validates these endpoints:
 
 ```yaml
 services:
-  agenticorp:
+  loom:
     healthcheck:
       test: ["CMD", "/app/tests/postflight/api_test.sh"]
       interval: 30s
@@ -118,8 +118,8 @@ services:
 ## Troubleshooting
 
 ### Service not available
-- Ensure AgentiCorp is running: `docker compose ps`
-- Check logs: `docker compose logs agenticorp`
+- Ensure Loom is running: `docker compose ps`
+- Check logs: `docker compose logs loom`
 - Verify port binding: `curl http://localhost:8080/api/v1/health`
 
 ### jq not found
@@ -166,4 +166,4 @@ To add new endpoint tests:
 
 ## License
 
-Part of the AgentiCorp project.
+Part of the Loom project.

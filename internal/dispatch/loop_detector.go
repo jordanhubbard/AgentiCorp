@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // ActionRecord represents a single action taken by an agent

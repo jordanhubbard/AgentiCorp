@@ -1,6 +1,6 @@
 # Workflow Actions Reference
 
-Workflow actions integrate the responsible-vibe-mcp development workflow system into AgentiCorp, enabling structured development processes (EPCC, TDD, waterfall, etc.) that guide agents through exploration, planning, coding, and verification phases.
+Workflow actions integrate the responsible-vibe-mcp development workflow system into Loom, enabling structured development processes (EPCC, TDD, waterfall, etc.) that guide agents through exploration, planning, coding, and verification phases.
 
 ## Overview
 

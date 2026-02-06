@@ -1,6 +1,6 @@
 ## API Authentication & Authorization
 
-AgentiCorp secures API access with **JWT bearer tokens** and **API keys**. All protected endpoints require one of these:
+Loom secures API access with **JWT bearer tokens** and **API keys**. All protected endpoints require one of these:
 
 - **Bearer token:** `Authorization: Bearer <token>` (recommended)
 - **API key:** `X-API-Key: <key>`

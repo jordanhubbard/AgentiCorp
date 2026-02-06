@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/internal/decision"
-	"github.com/jordanhubbard/agenticorp/pkg/types"
+	"github.com/jordanhubbard/loom/internal/decision"
+	"github.com/jordanhubbard/loom/pkg/types"
 )
 
 func TestNewTaskDispatcher(t *testing.T) {

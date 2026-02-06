@@ -1,6 +1,6 @@
 # Escalation Guide
 
-This document describes how AgentiCorp escalates stuck beads to CEOs (human decision makers) with comprehensive context to enable quick resolution.
+This document describes how Loom escalates stuck beads to CEOs (human decision makers) with comprehensive context to enable quick resolution.
 
 ## Overview
 

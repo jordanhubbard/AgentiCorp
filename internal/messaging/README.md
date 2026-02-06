@@ -1,6 +1,6 @@
 # Agent Messaging System
 
-The agent messaging system provides infrastructure for inter-agent communication in AgentiCorp. It enables agents to send direct messages, broadcast notifications, make requests, and reach consensus decisions.
+The agent messaging system provides infrastructure for inter-agent communication in Loom. It enables agents to send direct messages, broadcast notifications, make requests, and reach consensus decisions.
 
 ## Architecture
 
@@ -38,8 +38,8 @@ The system supports 7 message types defined in the communication protocol:
 
 ```go
 import (
-    "github.com/jordanhubbard/agenticorp/internal/messaging"
-    "github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+    "github.com/jordanhubbard/loom/internal/messaging"
+    "github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // Create event bus
@@ -317,9 +317,9 @@ import (
     "log"
     "time"
 
-    "github.com/jordanhubbard/agenticorp/internal/messaging"
-    "github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
-    "github.com/jordanhubbard/agenticorp/pkg/config"
+    "github.com/jordanhubbard/loom/internal/messaging"
+    "github.com/jordanhubbard/loom/internal/temporal/eventbus"
+    "github.com/jordanhubbard/loom/pkg/config"
 )
 
 func main() {

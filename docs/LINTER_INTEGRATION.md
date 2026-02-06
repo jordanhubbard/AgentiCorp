@@ -1,6 +1,6 @@
 # Linter Integration
 
-This document describes the linter integration system for AgentiCorp agents. Agents can run linters to check code quality, automatically fix violations, and iterate until code meets standards.
+This document describes the linter integration system for Loom agents. Agents can run linters to check code quality, automatically fix violations, and iterate until code meets standards.
 
 ## Overview
 

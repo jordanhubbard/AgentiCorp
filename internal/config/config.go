@@ -28,7 +28,7 @@ func Default() (*Config, error) {
 		dataHome = filepath.Join(home, ".local", "share")
 	}
 
-	dataDir := filepath.Join(dataHome, "agenticorp")
+	dataDir := filepath.Join(dataHome, "loom")
 
 	// Ensure data directory exists
 	if err := os.MkdirAll(dataDir, 0700); err != nil {

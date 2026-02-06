@@ -1,6 +1,6 @@
 # GitHub Webhooks Integration
 
-AgentiCorp integrates with GitHub webhooks to automatically respond to repository events and trigger agent workflows.
+Loom integrates with GitHub webhooks to automatically respond to repository events and trigger agent workflows.
 
 ## Webhook Endpoint
 
@@ -12,7 +12,7 @@ AgentiCorp integrates with GitHub webhooks to automatically respond to repositor
 
 ### 1. Set Webhook Secret
 
-Configure the webhook secret in your AgentiCorp configuration:
+Configure the webhook secret in your Loom configuration:
 
 ```yaml
 # config.yaml
@@ -25,14 +25,14 @@ security:
 In your GitHub repository settings:
 
 1. Go to **Settings** → **Webhooks** → **Add webhook**
-2. Set **Payload URL**: `https://your-agenticorp-instance.com/api/v1/webhooks/github`
+2. Set **Payload URL**: `https://your-loom-instance.com/api/v1/webhooks/github`
 3. Set **Content type**: `application/json`
 4. Set **Secret**: Same value as `security.webhook_secret` in config
 5. Select events to subscribe to (see below)
 
 ### 3. Subscribe to Events
 
-Select the following events for full AgentiCorp integration:
+Select the following events for full Loom integration:
 
 **Code Review Workflow:**
 - ✅ Pull requests
@@ -93,7 +93,7 @@ Triggers automated code review workflow.
 }
 ```
 
-**AgentiCorp Response:**
+**Loom Response:**
 - Creates `pr-review` type bead
 - Publishes `external.github_pr` event to event bus
 - Triggers code review workflow
@@ -131,7 +131,7 @@ Tracks issues for project management and motivation system.
 }
 ```
 
-**AgentiCorp Response:**
+**Loom Response:**
 - Stores as motivation system event
 - Publishes `external.github_issue` event
 - Available for agent task creation
@@ -160,7 +160,7 @@ Tracks comments on issues and PRs.
 }
 ```
 
-**AgentiCorp Response:**
+**Loom Response:**
 - Stores comment for context
 - Publishes `external.github_comment` event
 - May trigger agent responses
@@ -189,7 +189,7 @@ Tracks releases for deployment workflows.
 }
 ```
 
-**AgentiCorp Response:**
+**Loom Response:**
 - Publishes `external.release` event
 - Available for deployment automation
 
@@ -289,7 +289,7 @@ curl -X POST http://localhost:8080/api/v1/webhooks/github \
 
 ### Integration Tests
 
-AgentiCorp includes integration tests for webhook handling:
+Loom includes integration tests for webhook handling:
 
 ```bash
 # Run webhook tests
@@ -309,7 +309,7 @@ If webhook delivery fails, you can redeliver from GitHub:
 
 ### Webhook Logs
 
-AgentiCorp logs all webhook events:
+Loom logs all webhook events:
 
 ```
 [INFO] Received GitHub webhook: type=pull_request action=opened repo=owner/repo
@@ -343,20 +343,20 @@ curl http://localhost:8080/api/v1/events?type=external.github_pr
    - Ensure webhook is active
 
 2. **Check firewall/networking**
-   - AgentiCorp endpoint must be publicly accessible
+   - Loom endpoint must be publicly accessible
    - GitHub IPs must be allowed through firewall
 
 3. **Check logs**
    ```bash
-   # Check AgentiCorp logs for webhook errors
-   docker logs agenticorp | grep webhook
+   # Check Loom logs for webhook errors
+   docker logs loom | grep webhook
    ```
 
 ### Signature Verification Failing
 
 1. **Verify secret matches**
    - GitHub webhook secret
-   - AgentiCorp `security.webhook_secret` config
+   - Loom `security.webhook_secret` config
 
 2. **Check signature header**
    - Must be `X-Hub-Signature-256` (not `X-Hub-Signature`)
@@ -426,4 +426,4 @@ webhooks:
 - [GitHub Webhooks Documentation](https://docs.github.com/en/webhooks)
 - [GitHub Webhook Events](https://docs.github.com/en/webhooks/webhook-events-and-payloads)
 - [Securing Webhooks](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries)
-- [AgentiCorp Code Review Workflow](./CODE_REVIEW_WORKFLOW.md)
+- [Loom Code Review Workflow](./CODE_REVIEW_WORKFLOW.md)

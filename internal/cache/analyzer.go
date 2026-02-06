@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // Analyzer analyzes request patterns to identify caching opportunities

@@ -6,7 +6,7 @@
 
 ## Summary
 
-Successfully migrated AgentiCorp from a custom YAML-based bead system to the standard [Beads CLI tool](https://github.com/steveyegge/beads) format. This eliminates the approval prompt issue and aligns AgentiCorp with best practices.
+Successfully migrated Loom from a custom YAML-based bead system to the standard [Beads CLI tool](https://github.com/steveyegge/beads) format. This eliminates the approval prompt issue and aligns Loom with best practices.
 
 ## Migration Statistics
 
@@ -101,7 +101,7 @@ wc -l .beads/issues.jsonl
 ## Technical Details
 
 ### Database Configuration
-- **Prefix**: `bd-` (changed from `AgentiCorp-`)
+- **Prefix**: `bd-` (changed from `Loom-`)
 - **Format**: SQLite database + JSONL export
 - **Storage**: `.beads/beads.db` (primary), `.beads/issues.jsonl` (sync)
 
@@ -116,10 +116,10 @@ wc -l .beads/issues.jsonl
 
 ## Compatibility
 
-### AgentiCorp's Bead System
-- AgentiCorp **does not** need to read YAML files anymore
+### Loom's Bead System
+- Loom **does not** need to read YAML files anymore
 - Internal bead loading should be updated to use `bd` CLI or read from `issues.jsonl`
-- Projects registered with AgentiCorp should also use bd format
+- Projects registered with Loom should also use bd format
 
 ### Future Projects
 All new projects should:
@@ -133,7 +133,7 @@ All new projects should:
 2. ✅ Documentation updated
 3. ✅ Git commit created
 4. 🔄 Push to remote (pending)
-5. 📢 Update AgentiCorp's internal bead loader to read from `issues.jsonl`
+5. 📢 Update Loom's internal bead loader to read from `issues.jsonl`
 6. 📢 Verify agent workflows work with bd format
 
 ---

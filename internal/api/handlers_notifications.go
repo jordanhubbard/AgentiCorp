@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/notifications"
+	"github.com/jordanhubbard/loom/internal/notifications"
 )
 
 // handleGetNotifications handles GET requests for user notifications

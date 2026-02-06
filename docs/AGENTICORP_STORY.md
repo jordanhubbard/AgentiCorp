@@ -1,6 +1,6 @@
-# AgentiCorp: The Story of Becoming CEO of Your Virtual Company
+# Loom: The Story of Becoming CEO of Your Virtual Company
 
-> **New to AgentiCorp?** Start here. This is the story of Sarah, who went from exhausted solo developer to CEO of her own virtual software company—overnight.
+> **New to Loom?** Start here. This is the story of Sarah, who went from exhausted solo developer to CEO of her own virtual software company—overnight.
 
 ## Prologue: The Discovery
 
@@ -8,7 +8,7 @@ Sarah stared at her laptop screen, frustrated. Another late night debugging a me
 
 "What if I had a whole company working on this?" she thought wistfully.
 
-That's when she discovered AgentiCorp.
+That's when she discovered Loom.
 
 ## Chapter 1: Becoming CEO
 
@@ -54,7 +54,7 @@ context:
   lint_command: "golangci-lint run"
 ```
 
-Within seconds, AgentiCorp:
+Within seconds, Loom:
 - Generated an SSH key for the project
 - Asked her to add it as a GitHub deploy key (with write access)
 - Cloned the repository
@@ -118,7 +118,7 @@ Marcus created a **decision bead** tagged `[CEO]`:
 >
 > Engineering recommends Option 1. DevOps concerned about migration risk.
 
-Sarah's phone buzzed—AgentiCorp sent her a notification. She reviewed the decision in the UI:
+Sarah's phone buzzed—Loom sent her a notification. She reviewed the decision in the UI:
 
 - ✓ Read Marcus's analysis
 - ✓ Read DevOps's concerns
@@ -264,7 +264,7 @@ Sarah hadn't written a single line of code. Her virtual company did it all.
 
 ### Monday Morning: Strategy Session
 
-Sarah reviews her inbox (AgentiCorp notifications):
+Sarah reviews her inbox (Loom notifications):
 - 3 decision beads require approval
 - 2 P0 bugs filed automatically
 - 1 release ready for approval
@@ -273,7 +273,7 @@ She spends 30 minutes making decisions, not writing code.
 
 ### Tuesday: Hands-Off Deployment
 
-At 2:00 AM (while Sarah sleeps), AgentiCorp:
+At 2:00 AM (while Sarah sleeps), Loom:
 - Ran the migration
 - Verified latency improvement
 - Rolled back a config issue automatically
@@ -358,7 +358,7 @@ When agents disagree or get stuck:
 
 ### The Feedback Loop
 
-AgentiCorp implements a tight feedback cycle:
+Loom implements a tight feedback cycle:
 
 ```
 Code → Build → Lint → Test → Review → Deploy
@@ -374,7 +374,7 @@ Agents automatically:
 
 ## Chapter 7: Sarah's Success (3 Months Later)
 
-After 3 months with AgentiCorp:
+After 3 months with Loom:
 
 - **180 beads completed** (vs. 23 before)
 - **8 major features shipped** (vs. 1 before)
@@ -410,18 +410,18 @@ Sarah's startup raised Series A. When investors asked "How'd you ship so fast?" 
 
 ## Epilogue: Your Turn
 
-### Step 1: Install AgentiCorp
+### Step 1: Install Loom
 
 ```bash
-git clone https://github.com/jordanhubbard/agenticorp
-cd agenticorp
+git clone https://github.com/jordanhubbard/loom
+cd loom
 docker compose up -d
 open http://localhost:8080
 ```
 
 ### Step 2: Become CEO
 
-Click "Register Project" and add your repo. AgentiCorp will:
+Click "Register Project" and add your repo. Loom will:
 - Generate SSH keys
 - Clone your repo
 - Load existing issues (if you use beads)
@@ -494,7 +494,7 @@ The system has checks and balances, like a real company.
 
 ### "How much does it cost?"
 
-AgentiCorp is open source. You pay for:
+Loom is open source. You pay for:
 - LLM API calls (Claude/OpenAI)
 - Your own infrastructure (Docker host)
 
@@ -502,7 +502,7 @@ Typical cost: $50-200/month for a small project, depending on activity level.
 
 ### "Can I use my own LLM?"
 
-Yes! AgentiCorp supports:
+Yes! Loom supports:
 - Anthropic Claude (Opus, Sonnet, Haiku)
 - OpenAI (GPT-4, GPT-3.5)
 - Custom endpoints (bring your own LLM)
@@ -511,12 +511,12 @@ Configure in your provider registry.
 
 ---
 
-**Welcome to AgentiCorp. You're now CEO of your own virtual software company.**
+**Welcome to Loom. You're now CEO of your own virtual software company.**
 
 You think. They build.
 
 ---
 
-*This story is the official onboarding document for AgentiCorp. For technical documentation, see [README.md](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).*
+*This story is the official onboarding document for Loom. For technical documentation, see [README.md](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).*
 
 *Last updated: 2026-02-05*

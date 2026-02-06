@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/build"
-	"github.com/jordanhubbard/agenticorp/internal/linter"
-	"github.com/jordanhubbard/agenticorp/internal/testing"
+	"github.com/jordanhubbard/loom/internal/build"
+	"github.com/jordanhubbard/loom/internal/linter"
+	"github.com/jordanhubbard/loom/internal/testing"
 )
 
 // FeedbackResult contains aggregated feedback from all checks

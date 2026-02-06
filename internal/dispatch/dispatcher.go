@@ -11,16 +11,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/agent"
-	"github.com/jordanhubbard/agenticorp/internal/beads"
-	"github.com/jordanhubbard/agenticorp/internal/database"
-	"github.com/jordanhubbard/agenticorp/internal/observability"
-	"github.com/jordanhubbard/agenticorp/internal/project"
-	"github.com/jordanhubbard/agenticorp/internal/provider"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
-	"github.com/jordanhubbard/agenticorp/internal/worker"
-	"github.com/jordanhubbard/agenticorp/internal/workflow"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/agent"
+	"github.com/jordanhubbard/loom/internal/beads"
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/observability"
+	"github.com/jordanhubbard/loom/internal/project"
+	"github.com/jordanhubbard/loom/internal/provider"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/worker"
+	"github.com/jordanhubbard/loom/internal/workflow"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 type StatusState string

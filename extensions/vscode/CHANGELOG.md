@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the AgentiCorp VS Code extension will be documented in this file.
+All notable changes to the Loom VS Code extension will be documented in this file.
 
 ## [1.0.0] - 2026-01-21
 
@@ -20,7 +20,7 @@ All notable changes to the AgentiCorp VS Code extension will be documented in th
 - TypeScript implementation with full type safety
 
 ### Features
-- Real-time chat with AgentiCorp
+- Real-time chat with Loom
 - Code selection context injection
 - Syntax highlighting in chat
 - Keyboard shortcuts

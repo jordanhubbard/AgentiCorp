@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // Activities provides Temporal activities for agenticorp operations

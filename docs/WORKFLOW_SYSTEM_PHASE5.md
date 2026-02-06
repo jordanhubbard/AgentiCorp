@@ -242,7 +242,7 @@ function generateMermaidDiagramWithHighlight(workflow, currentNodeKey) {
 - `.recent-executions table` - Styled table for execution list
 
 **Design Principles:**
-- Consistent with existing AgentiCorp UI
+- Consistent with existing Loom UI
 - Clear visual hierarchy
 - Responsive grid layout
 - Color-coded status badges

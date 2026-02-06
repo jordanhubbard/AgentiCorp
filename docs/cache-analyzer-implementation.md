@@ -255,7 +255,7 @@ The analyzer uses the analytics storage layer:
 
 ```go
 // Get database
-db := agenticorp.GetDatabase()
+db := loom.GetDatabase()
 
 // Create analytics storage
 storage, err := analytics.NewDatabaseStorage(db.DB())

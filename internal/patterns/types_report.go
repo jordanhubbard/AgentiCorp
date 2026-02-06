@@ -1,6 +1,6 @@
 package patterns
 
-import "github.com/jordanhubbard/agenticorp/internal/cache"
+import "github.com/jordanhubbard/loom/internal/cache"
 
 // ComprehensiveReport combines all analysis results
 type ComprehensiveReport struct {

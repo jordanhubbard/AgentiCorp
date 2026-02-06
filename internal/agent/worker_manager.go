@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/actions"
-	"github.com/jordanhubbard/agenticorp/internal/observability"
-	"github.com/jordanhubbard/agenticorp/internal/provider"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
-	"github.com/jordanhubbard/agenticorp/internal/worker"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/actions"
+	"github.com/jordanhubbard/loom/internal/observability"
+	"github.com/jordanhubbard/loom/internal/provider"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/worker"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // WorkerManager manages agents with worker pool integration

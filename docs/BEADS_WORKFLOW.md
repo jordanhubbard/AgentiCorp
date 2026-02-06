@@ -1,6 +1,6 @@
 # Beads Workflow Guide
 
-This guide explains how to use the beads system for tracking work in the AgentiCorp project.
+This guide explains how to use the beads system for tracking work in the Loom project.
 
 ## What are Beads?
 
@@ -35,7 +35,7 @@ bd update ac-XXX --status in_progress
 bd close ac-XXX
 ```
 
-### Using the AgentiCorp API
+### Using the Loom API
 
 ```bash
 # Create a bead
@@ -45,12 +45,12 @@ curl -X POST http://localhost:8080/api/v1/beads \
     "title": "Title of work",
     "description": "Description",
     "priority": 2,
-    "project_id": "agenticorp",
+    "project_id": "loom",
     "type": "task"
   }'
 
 # List beads
-curl http://localhost:8080/api/v1/beads?project_id=agenticorp
+curl http://localhost:8080/api/v1/beads?project_id=loom
 
 # Update a bead
 curl -X PATCH http://localhost:8080/api/v1/beads/ac-XXX \
@@ -80,7 +80,7 @@ curl -X PATCH http://localhost:8080/api/v1/beads/ac-XXX \
 
 ## Dispatch and Redispatch
 
-AgentiCorp automatically dispatches open beads to idle agents. The system tracks dispatch history in the bead's context:
+Loom automatically dispatches open beads to idle agents. The system tracks dispatch history in the bead's context:
 
 - **Auto-redispatch**: Open and in-progress beads are automatically marked for redispatch, allowing them to be picked up by idle agents if work stalls
 - **Dispatch hop limit**: If a bead is dispatched more than `max_hops` times (default: 20) without being closed, it is escalated to **P0 priority** and a **CEO decision bead** is created
@@ -148,4 +148,4 @@ When you are assigned work:
 
 ## Questions?
 
-See the main README.md or QUICKSTART.md for more information about the AgentiCorp system.
+See the main README.md or QUICKSTART.md for more information about the Loom system.

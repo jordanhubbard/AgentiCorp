@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/jordanhubbard/agenticorp/internal/routing"
+	"github.com/jordanhubbard/loom/internal/routing"
 )
 
 // handleSelectProvider handles provider selection with routing policy

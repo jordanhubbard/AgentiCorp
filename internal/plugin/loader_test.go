@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/plugin"
+	"github.com/jordanhubbard/loom/pkg/plugin"
 )
 
 func TestLoadManifest(t *testing.T) {

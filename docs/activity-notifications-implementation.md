@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the implementation of the activity feed and notifications system for AgentiCorp (ac-aiw). The system provides real-time activity tracking and user-specific notifications based on the existing EventBus infrastructure.
+This document describes the implementation of the activity feed and notifications system for Loom (ac-aiw). The system provides real-time activity tracking and user-specific notifications based on the existing EventBus infrastructure.
 
 ## Architecture
 
@@ -292,7 +292,7 @@ Implementation: Filter activities by `project_id IN (accessible_projects) OR vis
 
 ### Files Modified
 1. `internal/database/database.go` - Added migration call
-2. `internal/agenticorp/agenticorp.go` - Integrated activity and notification managers
+2. `internal/loom/loom.go` - Integrated activity and notification managers
 3. `internal/api/server.go` - Added routes and helper methods
 
 ### Total Lines of Code
@@ -305,13 +305,13 @@ Implementation: Filter activities by `project_id IN (accessible_projects) OR vis
 ### 1. Database Migration
 ```bash
 # Check tables created
-sqlite3 agenticorp.db ".tables" | grep -E "users|activity_feed|notifications|notification_preferences"
+sqlite3 loom.db ".tables" | grep -E "users|activity_feed|notifications|notification_preferences"
 
 # Verify schema
-sqlite3 agenticorp.db ".schema activity_feed"
+sqlite3 loom.db ".schema activity_feed"
 
 # Check default admin user
-sqlite3 agenticorp.db "SELECT * FROM users WHERE username='admin';"
+sqlite3 loom.db "SELECT * FROM users WHERE username='admin';"
 ```
 
 ### 2. Activity Feed
@@ -425,4 +425,4 @@ Suggested alerts:
 
 ## Conclusion
 
-The activity feed and notifications system provides comprehensive tracking of team activities and intelligent user notifications. Built on AgentiCorp's existing EventBus infrastructure, it offers both historical querying and real-time streaming with configurable user preferences and aggregation for improved signal-to-noise ratio.
+The activity feed and notifications system provides comprehensive tracking of team activities and intelligent user notifications. Built on Loom's existing EventBus infrastructure, it offers both historical querying and real-time streaming with configurable user preferences and aggregation for improved signal-to-noise ratio.

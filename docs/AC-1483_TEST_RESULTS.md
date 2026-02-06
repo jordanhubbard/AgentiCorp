@@ -112,7 +112,7 @@ curl http://localhost:8080/api/v1/beads/ac-1527 | jq '.context.dispatch_count'
 
 **Root Cause:**
 - `internal/api/handlers_beads.go` PATCH endpoint → `UpdateBead`
-- Auto-fix creation is in `CloseBead` function (agenticorp.go:1801-1810)
+- Auto-fix creation is in `CloseBead` function (loom.go:1801-1810)
 - Agents use `CloseBead` via actions, but manual API calls bypass it
 
 **Impact:**

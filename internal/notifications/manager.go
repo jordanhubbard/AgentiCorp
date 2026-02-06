@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/activity"
-	"github.com/jordanhubbard/agenticorp/internal/database"
+	"github.com/jordanhubbard/loom/internal/activity"
+	"github.com/jordanhubbard/loom/internal/database"
 )
 
 // Manager handles notification logic

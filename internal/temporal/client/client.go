@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 
-	"github.com/jordanhubbard/agenticorp/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/config"
 )
 
 // Client wraps the Temporal client with agenticorp-specific functionality

@@ -3,7 +3,7 @@ package actions
 import (
 	"context"
 
-	"github.com/jordanhubbard/agenticorp/internal/lsp"
+	"github.com/jordanhubbard/loom/internal/lsp"
 )
 
 // LSPOperator interface for dependency injection

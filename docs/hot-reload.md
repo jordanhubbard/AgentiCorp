@@ -59,7 +59,7 @@ hot_reload:
 
 ```go
 import (
-	"github.com/jordanhubbard/agenticorp/internal/hotreload"
+	"github.com/jordanhubbard/loom/internal/hotreload"
 )
 
 func main() {
@@ -250,7 +250,7 @@ It's designed for development environments only.
 
 3. **Check server logs**
    ```bash
-   grep "HotReload" logs/agenticorp.log
+   grep "HotReload" logs/loom.log
    ```
 
    Should see:
@@ -273,7 +273,7 @@ It's designed for development environments only.
 
 3. **Look for watcher errors**
    ```bash
-   grep "Watcher error" logs/agenticorp.log
+   grep "Watcher error" logs/loom.log
    ```
 
 ### Browser Not Reloading

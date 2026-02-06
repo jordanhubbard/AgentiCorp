@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // CreateConversationContext inserts a new conversation context

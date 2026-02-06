@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/auth"
-	"github.com/jordanhubbard/agenticorp/internal/cache"
+	"github.com/jordanhubbard/loom/internal/auth"
+	"github.com/jordanhubbard/loom/internal/cache"
 )
 
 // handleGetCacheStats handles GET /api/v1/cache/stats

@@ -1,6 +1,6 @@
 # Git Service
 
-Secure git operations for AgentiCorp agents with proper attribution, validation, and audit logging.
+Secure git operations for Loom agents with proper attribution, validation, and audit logging.
 
 ## Overview
 
@@ -9,7 +9,7 @@ The GitService provides safe git operations that enforce security constraints wh
 ## Quick Start
 
 ```go
-import "github.com/jordanhubbard/agenticorp/internal/git"
+import "github.com/jordanhubbard/loom/internal/git"
 
 // Create service
 service, err := git.NewGitService("/path/to/project", "proj-123")
@@ -186,7 +186,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 
 Keys stored per project:
 ```
-~/.agenticorp/projects/{project-id}/
+~/.loom/projects/{project-id}/
   ├── git_key       # Private SSH key
   ├── git_key.pub   # Public key
   └── git_audit.log # Audit trail
@@ -194,7 +194,7 @@ Keys stored per project:
 
 ## Audit Logging
 
-All operations logged to `~/.agenticorp/projects/{project-id}/git_audit.log`:
+All operations logged to `~/.loom/projects/{project-id}/git_audit.log`:
 
 ```json
 {
@@ -226,7 +226,7 @@ err := service.Push(...) // "cannot push to protected branch: main"
 err := service.Commit(...) // "potential secret detected in src/config.go"
 
 // SSH key missing
-err := service.Push(...) // "SSH key not found: ~/.agenticorp/projects/proj-123/git_key"
+err := service.Push(...) // "SSH key not found: ~/.loom/projects/proj-123/git_key"
 ```
 
 ## Testing
@@ -257,8 +257,8 @@ go test ./internal/git/... -tags=integration
 
 ```bash
 # Generate key for project
-cd ~/.agenticorp/projects/proj-123
-ssh-keygen -t ed25519 -C "agenticorp-proj-123" -f git_key -N ""
+cd ~/.loom/projects/proj-123
+ssh-keygen -t ed25519 -C "loom-proj-123" -f git_key -N ""
 
 # Add public key to GitHub/GitLab deploy keys with write access
 cat git_key.pub

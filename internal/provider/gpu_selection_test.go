@@ -3,7 +3,7 @@ package provider
 import (
 	"testing"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 func TestSelectGPU(t *testing.T) {

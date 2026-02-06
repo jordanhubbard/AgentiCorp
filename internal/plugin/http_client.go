@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/plugin"
+	"github.com/jordanhubbard/loom/pkg/plugin"
 )
 
 // HTTPPluginClient implements the plugin.Plugin interface over HTTP.

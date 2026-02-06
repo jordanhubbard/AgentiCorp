@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/config"
 )
 
 func TestGitHubWebhook_PROpened(t *testing.T) {

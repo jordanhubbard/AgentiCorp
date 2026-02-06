@@ -116,7 +116,7 @@ The Documentation Manager is triggered by the motivation system when:
 - **Tested**: All code examples must work
 - **Versioned**: Track docs for different versions
 
-### AgentiCorp Documentation Update Policy (Sticky)
+### Loom Documentation Update Policy (Sticky)
 
 - `README.md` is high-level only: update it only when user-facing workflows or top-level features materially change.
 - Prefer `docs/` updates for detailed changes and workflow docs.

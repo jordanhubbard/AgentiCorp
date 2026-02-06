@@ -1,9 +1,9 @@
-# Kubernetes Best Practices for AgentiCorp
+# Kubernetes Best Practices for Loom
 
 ## Current State Assessment
 
 ### ✅ Already Implemented
-- **Non-root user**: Dockerfile runs as `agenticorp` user (UID 1000)
+- **Non-root user**: Dockerfile runs as `loom` user (UID 1000)
 - **Health probes**: `/health`, `/health/live`, `/health/ready` endpoints
 - **Graceful shutdown**: SIGTERM handling with 10-second timeout
 - **Multi-stage builds**: Optimized Docker image with separate builder stage
@@ -67,7 +67,7 @@ import (
 var (
     BeadsProcessed = promauto.NewCounterVec(
         prometheus.CounterOpts{
-            Name: "agenticorp_beads_processed_total",
+            Name: "loom_beads_processed_total",
             Help: "Total number of beads processed",
         },
         []string{"status", "priority"},
@@ -75,7 +75,7 @@ var (
     
     AgentExecutionDuration = promauto.NewHistogramVec(
         prometheus.HistogramOpts{
-            Name:    "agenticorp_agent_execution_duration_seconds",
+            Name:    "loom_agent_execution_duration_seconds",
             Help:    "Agent execution duration in seconds",
             Buckets: prometheus.DefBuckets,
         },
@@ -84,7 +84,7 @@ var (
     
     ProviderRequests = promauto.NewCounterVec(
         prometheus.CounterOpts{
-            Name: "agenticorp_provider_requests_total",
+            Name: "loom_provider_requests_total",
             Help: "Total provider requests",
         },
         []string{"provider_id", "status"},
@@ -92,7 +92,7 @@ var (
     
     CommandExecutions = promauto.NewCounterVec(
         prometheus.CounterOpts{
-            Name: "agenticorp_shell_commands_total",
+            Name: "loom_shell_commands_total",
             Help: "Total shell commands executed",
         },
         []string{"exit_code"},
@@ -193,7 +193,7 @@ volumes:
     emptyDir: {}
   - name: data
     persistentVolumeClaim:
-      claimName: agenticorp-data
+      claimName: loom-data
 ```
 
 **Action Items**:
@@ -217,7 +217,7 @@ volumes:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: agenticorp-secrets
+  name: loom-secrets
 type: Opaque
 stringData:
   admin-password: "changeme"  # Generated securely
@@ -229,12 +229,12 @@ env:
   - name: AGENTICORP_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: agenticorp-secrets
+        name: loom-secrets
         key: admin-password
   - name: JWT_SECRET
     valueFrom:
       secretKeyRef:
-        name: agenticorp-secrets
+        name: loom-secrets
         key: jwt-secret
 ```
 
@@ -243,18 +243,18 @@ env:
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: agenticorp-external
+  name: loom-external
 spec:
   refreshInterval: 1h
   secretStoreRef:
     name: vault-backend
     kind: SecretStore
   target:
-    name: agenticorp-secrets
+    name: loom-secrets
   data:
     - secretKey: admin-password
       remoteRef:
-        key: agenticorp/admin
+        key: loom/admin
         property: password
 ```
 
@@ -279,12 +279,12 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: agenticorp
+    name: loom
   minReplicas: 2
   maxReplicas: 10
   metrics:
@@ -297,7 +297,7 @@ spec:
     - type: Pods
       pods:
         metric:
-          name: agenticorp_beads_queue_length
+          name: loom_beads_queue_length
         target:
           type: AverageValue
           averageValue: "10"
@@ -322,16 +322,16 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: agenticorp
+      app: loom
 ```
 
 **Action Items**:
-- [ ] Create PDB for agenticorp
+- [ ] Create PDB for loom
 - [ ] Create separate PDB for temporal
 - [ ] Set `minAvailable: 1` or `maxUnavailable: 1`
 
@@ -350,24 +350,24 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: agenticorp-db
+  name: loom-db
 spec:
-  serviceName: agenticorp-db
+  serviceName: loom-db
   replicas: 1
   selector:
     matchLabels:
-      app: agenticorp-db
+      app: loom-db
   template:
     metadata:
       labels:
-        app: agenticorp-db
+        app: loom-db
     spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
           env:
             - name: POSTGRES_DB
-              value: agenticorp
+              value: loom
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -410,11 +410,11 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   podSelector:
     matchLabels:
-      app: agenticorp
+      app: loom
   policyTypes:
     - Ingress
     - Egress
@@ -447,7 +447,7 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app: agenticorp-db
+              app: loom-db
       ports:
         - protocol: TCP
           port: 5432
@@ -476,8 +476,8 @@ spec:
 # k8s/deployment.yaml
 initContainers:
   - name: migrate
-    image: agenticorp:latest
-    command: ["/app/agenticorp", "-migrate"]
+    image: loom:latest
+    command: ["/app/loom", "-migrate"]
     env:
       - name: DATABASE_URL
         valueFrom:
@@ -536,13 +536,13 @@ topologySpreadConstraints:
     whenUnsatisfiable: DoNotSchedule
     labelSelector:
       matchLabels:
-        app: agenticorp
+        app: loom
   - maxSkew: 2
     topologyKey: kubernetes.io/hostname
     whenUnsatisfiable: ScheduleAnyway
     labelSelector:
       matchLabels:
-        app: agenticorp
+        app: loom
 ```
 
 **Action Items**:
@@ -660,22 +660,22 @@ helm install jaeger jaegertracing/jaeger-operator
 ```yaml
 # Prometheus alerts
 groups:
-  - name: agenticorp
+  - name: loom
     rules:
       - alert: HighErrorRate
-        expr: rate(agenticorp_errors_total[5m]) > 0.05
+        expr: rate(loom_errors_total[5m]) > 0.05
         for: 5m
         annotations:
           summary: "High error rate detected"
       
       - alert: BeadProcessingStalled
-        expr: rate(agenticorp_beads_processed_total[5m]) == 0
+        expr: rate(loom_beads_processed_total[5m]) == 0
         for: 15m
         annotations:
           summary: "No beads processed in 15 minutes"
       
       - alert: PodMemoryUsage
-        expr: container_memory_usage_bytes{pod=~"agenticorp.*"} / container_spec_memory_limit_bytes > 0.9
+        expr: container_memory_usage_bytes{pod=~"loom.*"} / container_spec_memory_limit_bytes > 0.9
         for: 5m
         annotations:
           summary: "Pod using >90% memory"
@@ -700,7 +700,7 @@ spec:
     namespaces:
       - default
     labelSelectors:
-      app: agenticorp
+      app: loom
   duration: "30s"
 ```
 
@@ -715,8 +715,8 @@ k6 run --vus 100 --duration 5m load-test.js
 Regularly test database backups:
 ```bash
 # Automated backup test
-kubectl exec -it agenticorp-db-0 -- pg_dump agenticorp > backup.sql
-kubectl delete pvc data-agenticorp-db-0
+kubectl exec -it loom-db-0 -- pg_dump loom > backup.sql
+kubectl delete pvc data-loom-db-0
 # Restore and verify
 ```
 

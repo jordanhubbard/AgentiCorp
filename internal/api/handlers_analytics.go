@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
-	"github.com/jordanhubbard/agenticorp/internal/auth"
+	"github.com/jordanhubbard/loom/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/auth"
 )
 
 // handleGetLogs handles GET /api/v1/analytics/logs

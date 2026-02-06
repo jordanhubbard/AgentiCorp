@@ -1,8 +1,8 @@
-# AgentiCorp Deployment Guide
+# Loom Deployment Guide
 
 **Last Updated:** February 2, 2026
 
-This guide covers deploying AgentiCorp in various environments, from development to production.
+This guide covers deploying Loom in various environments, from development to production.
 
 ## Table of Contents
 
@@ -28,8 +28,8 @@ This guide covers deploying AgentiCorp in various environments, from development
 
 ```bash
 # Clone the repository
-git clone https://github.com/jordanhubbard/AgentiCorp.git
-cd AgentiCorp
+git clone https://github.com/jordanhubbard/Loom.git
+cd Loom
 
 # Copy example configuration
 cp config.yaml.example config.yaml
@@ -40,15 +40,15 @@ vim config.yaml
 # Start dependencies (Temporal, PostgreSQL)
 docker compose up -d temporal postgres
 
-# Run AgentiCorp locally
-go run ./cmd/agenticorp
+# Run Loom locally
+go run ./cmd/loom
 
 # Or build and run
-go build -o agenticorp ./cmd/agenticorp
-./agenticorp --config config.yaml
+go build -o loom ./cmd/loom
+./loom --config config.yaml
 ```
 
-AgentiCorp will be available at `http://localhost:8080`
+Loom will be available at `http://localhost:8080`
 
 ---
 
@@ -56,14 +56,14 @@ AgentiCorp will be available at `http://localhost:8080`
 
 ### Docker Compose (Recommended for Development)
 
-The easiest way to run AgentiCorp with all dependencies:
+The easiest way to run Loom with all dependencies:
 
 ```bash
 # Start all services
 docker compose up -d
 
 # View logs
-docker compose logs -f agenticorp
+docker compose logs -f loom
 
 # Stop all services
 docker compose down
@@ -74,7 +74,7 @@ docker compose up -d
 ```
 
 **Services started:**
-- AgentiCorp API server (port 8080)
+- Loom API server (port 8080)
 - Temporal server (port 7233)
 - Temporal UI (port 8088)
 - PostgreSQL (port 5432)
@@ -94,18 +94,18 @@ FROM alpine:latest
 **Build custom image:**
 
 ```bash
-docker build -t agenticorp:custom .
+docker build -t loom:custom .
 ```
 
 **Run custom image:**
 
 ```bash
 docker run -d \
-  --name agenticorp \
+  --name loom \
   -p 8080:8080 \
   -v $(pwd)/config.yaml:/app/config.yaml \
   -v $(pwd)/data:/app/data \
-  agenticorp:custom
+  loom:custom
 ```
 
 ---
@@ -130,7 +130,7 @@ docker run -d \
 #### 2. Network Requirements
 
 **Inbound Ports:**
-- `8080` - AgentiCorp API server
+- `8080` - Loom API server
 - `8088` - Temporal UI (optional, can be internal-only)
 
 **Outbound Access:**
@@ -151,7 +151,7 @@ server:
 
 database:
   type: sqlite
-  path: /app/data/agenticorp.db
+  path: /app/data/loom.db
 
 security:
   enable_auth: true
@@ -203,8 +203,8 @@ docker compose -f docker-compose.prod.yml up -d
 version: '3.8'
 
 services:
-  agenticorp:
-    image: agenticorp:latest
+  loom:
+    image: loom:latest
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -214,8 +214,8 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - ./config.yaml:/app/config.yaml:ro
-      - agenticorp-data:/app/data
-      - agenticorp-keys:/app/data/projects
+      - loom-data:/app/data
+      - loom-keys:/app/data/projects
     depends_on:
       - temporal
       - postgres
@@ -255,8 +255,8 @@ services:
       retries: 5
 
 volumes:
-  agenticorp-data:
-  agenticorp-keys:
+  loom-data:
+  loom-keys:
   postgres-data:
 ```
 
@@ -279,14 +279,14 @@ kubectl apply -f k8s/ingress.yaml
 #### Option 3: Cloud Platforms
 
 **AWS ECS / Fargate:**
-- Use task definitions for AgentiCorp, Temporal, PostgreSQL
+- Use task definitions for Loom, Temporal, PostgreSQL
 - ECS Service Discovery for internal networking
 - Application Load Balancer for HTTPS termination
 - RDS PostgreSQL for managed database
 - EFS for persistent volumes
 
 **Google Cloud Run:**
-- Deploy AgentiCorp as Cloud Run service
+- Deploy Loom as Cloud Run service
 - Use Cloud SQL for PostgreSQL
 - Temporal as separate Cloud Run service
 
@@ -317,7 +317,7 @@ export TEMPORAL_HOST="temporal:7233"
 export TEMPORAL_NAMESPACE="default"
 
 # Database
-export DATABASE_PATH="/app/data/agenticorp.db"
+export DATABASE_PATH="/app/data/loom.db"
 ```
 
 ### Secrets Management
@@ -334,12 +334,12 @@ OPENAI_API_KEY=sk-...
 
 1. **Docker Secrets:**
    ```bash
-   echo "my-secret" | docker secret create agenticorp_password -
+   echo "my-secret" | docker secret create loom_password -
    ```
 
 2. **Kubernetes Secrets:**
    ```bash
-   kubectl create secret generic agenticorp-secrets \
+   kubectl create secret generic loom-secrets \
      --from-literal=password=my-password \
      --from-literal=jwt-secret=my-jwt
    ```
@@ -358,13 +358,13 @@ Use Nginx, Traefik, or cloud load balancer for SSL termination:
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name agenticorp.example.com;
+    server_name loom.example.com;
 
-    ssl_certificate /etc/ssl/certs/agenticorp.crt;
-    ssl_certificate_key /etc/ssl/private/agenticorp.key;
+    ssl_certificate /etc/ssl/certs/loom.crt;
+    ssl_certificate_key /etc/ssl/private/loom.key;
 
     location / {
-        proxy_pass http://agenticorp:8080;
+        proxy_pass http://loom:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -383,7 +383,7 @@ See `docker-compose.traefik.yml` for automatic HTTPS setup.
 
 ### Health Checks
 
-AgentiCorp provides health endpoints:
+Loom provides health endpoints:
 
 ```bash
 # Liveness check (is the service running?)
@@ -422,14 +422,14 @@ curl http://localhost:8080/api/v1/system/status
 
 **What to backup:**
 
-1. **Database:** `agenticorp.db`
+1. **Database:** `loom.db`
    ```bash
    # Backup
-   docker exec agenticorp sqlite3 /app/data/agenticorp.db ".backup /app/data/backup.db"
+   docker exec loom sqlite3 /app/data/loom.db ".backup /app/data/backup.db"
 
    # Or volume backup
-   docker run --rm -v agenticorp-data:/data -v $(pwd):/backup alpine \
-     tar czf /backup/agenticorp-data-$(date +%Y%m%d).tar.gz /data
+   docker run --rm -v loom-data:/data -v $(pwd):/backup alpine \
+     tar czf /backup/loom-data-$(date +%Y%m%d).tar.gz /data
    ```
 
 2. **Project SSH Keys:** `/app/data/projects/`
@@ -443,7 +443,7 @@ curl http://localhost:8080/api/v1/system/status
 docker compose down
 
 # Restore database
-cp backup.db data/agenticorp.db
+cp backup.db data/loom.db
 
 # Restart
 docker compose up -d
@@ -458,10 +458,10 @@ docker compose up -d
 
 ```bash
 # Vacuum SQLite database
-docker exec agenticorp sqlite3 /app/data/agenticorp.db "VACUUM;"
+docker exec loom sqlite3 /app/data/loom.db "VACUUM;"
 
 # Check database integrity
-docker exec agenticorp sqlite3 /app/data/agenticorp.db "PRAGMA integrity_check;"
+docker exec loom sqlite3 /app/data/loom.db "PRAGMA integrity_check;"
 
 # Clean old analytics logs (90+ days)
 curl -X POST http://localhost:8080/api/v1/analytics/cleanup?days=90
@@ -473,14 +473,14 @@ curl -X POST http://localhost:8080/api/v1/analytics/cleanup?days=90
 
 ### Common Issues
 
-#### 1. AgentiCorp won't start
+#### 1. Loom won't start
 
 **Symptoms:** Container exits immediately
 
 **Solutions:**
 ```bash
 # Check logs
-docker logs agenticorp
+docker logs loom
 
 # Common causes:
 # - Missing config.yaml
@@ -540,14 +540,14 @@ curl -X POST http://localhost:8080/api/v1/providers/openai/status \
 **Solutions:**
 ```bash
 # Check memory usage
-docker stats agenticorp
+docker stats loom
 
 # Limit container memory
-docker update --memory 4g --memory-swap 4g agenticorp
+docker update --memory 4g --memory-swap 4g loom
 
 # Or in docker-compose.yml:
 services:
-  agenticorp:
+  loom:
     mem_limit: 4g
     memswap_limit: 4g
 ```
@@ -559,13 +559,13 @@ services:
 **Solutions:**
 ```bash
 # Check for hung processes
-docker exec agenticorp ps aux
+docker exec loom ps aux
 
-# Restart AgentiCorp
-docker compose restart agenticorp
+# Restart Loom
+docker compose restart loom
 
 # If persistent, check for corruption
-docker exec agenticorp sqlite3 /app/data/agenticorp.db "PRAGMA integrity_check;"
+docker exec loom sqlite3 /app/data/loom.db "PRAGMA integrity_check;"
 ```
 
 ### Debug Mode
@@ -588,7 +588,7 @@ export LOG_LEVEL=debug
 ### Getting Help
 
 1. **Documentation:** Check docs/ directory
-2. **GitHub Issues:** https://github.com/jordanhubbard/AgentiCorp/issues
+2. **GitHub Issues:** https://github.com/jordanhubbard/Loom/issues
 3. **Logs:** Always include logs when reporting issues
 
 ---
@@ -612,7 +612,7 @@ export LOG_LEVEL=debug
    - Never commit API keys to git
 
 5. **Regular updates**
-   - Keep AgentiCorp updated
+   - Keep Loom updated
    - Update base Docker images
    - Apply security patches
 

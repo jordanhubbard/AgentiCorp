@@ -1,6 +1,6 @@
 # Analytics & Cost Tracking Guide
 
-Complete guide to using AgentiCorp's analytics, cost tracking, and alerting features.
+Complete guide to using Loom's analytics, cost tracking, and alerting features.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ Complete guide to using AgentiCorp's analytics, cost tracking, and alerting feat
 
 ## Overview
 
-AgentiCorp provides comprehensive analytics to help you:
+Loom provides comprehensive analytics to help you:
 - **Monitor Usage**: Track requests by provider, model, and user
 - **Control Costs**: Real-time cost tracking with budget alerts
 - **Optimize Performance**: Monitor latency and error rates
@@ -101,7 +101,7 @@ Choose from preset ranges:
 
 ### How Cost Tracking Works
 
-AgentiCorp tracks costs based on:
+Loom tracks costs based on:
 - **Token Usage**: Prompt + completion tokens
 - **Provider Pricing**: Cost per million tokens
 - **Request Metadata**: User, provider, model
@@ -160,7 +160,7 @@ Regular users see only their own costs automatically.
 
 ### Export Formats
 
-AgentiCorp supports:
+Loom supports:
 - **CSV**: Excel/Sheets compatible
 - **JSON**: Programmatic processing
 

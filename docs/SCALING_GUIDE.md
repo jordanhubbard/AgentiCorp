@@ -1,10 +1,10 @@
 # Horizontal Scaling Guide
 
-This guide explains how to scale AgentiCorp horizontally to handle increased load.
+This guide explains how to scale Loom horizontally to handle increased load.
 
 ## Overview
 
-AgentiCorp scales horizontally by adding more instances. Each instance:
+Loom scales horizontally by adding more instances. Each instance:
 - Shares state via PostgreSQL
 - Coordinates via distributed locks
 - Reports health to load balancer
@@ -31,12 +31,12 @@ Automatically scale based on metrics.
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: agenticorp-hpa
+  name: loom-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: agenticorp
+    name: loom
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -338,7 +338,7 @@ Create dashboards showing:
 # Ramp up load and observe scaling
 
 echo "Starting with 1 instance..."
-kubectl scale deployment agenticorp --replicas=1
+kubectl scale deployment loom --replicas=1
 
 sleep 60
 
@@ -348,11 +348,11 @@ k6 run --vus 100 --duration 5m load-test.js &
 sleep 60
 
 echo "Checking instance count..."
-kubectl get pods -l app=agenticorp
+kubectl get pods -l app=loom
 
 echo "Monitoring for 5 minutes..."
 for i in {1..60}; do
-    COUNT=$(kubectl get pods -l app=agenticorp --field-selector=status.phase=Running --no-headers | wc -l)
+    COUNT=$(kubectl get pods -l app=loom --field-selector=status.phase=Running --no-headers | wc -l)
     echo "Time: ${i}m, Instances: ${COUNT}"
     sleep 60
 done
@@ -379,20 +379,20 @@ Verify:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: agenticorp
+  name: loom
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: agenticorp
+      app: loom
   template:
     metadata:
       labels:
-        app: agenticorp
+        app: loom
     spec:
       containers:
-      - name: agenticorp
-        image: agenticorp:latest
+      - name: loom
+        image: loom:latest
         resources:
           requests:
             cpu: 500m
@@ -418,12 +418,12 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: agenticorp-hpa
+  name: loom-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: agenticorp
+    name: loom
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -471,7 +471,7 @@ spec:
 1. Check metrics server: `kubectl top nodes`
 2. Verify resource requests set
 3. Check HPA status: `kubectl get hpa`
-4. Review HPA events: `kubectl describe hpa agenticorp-hpa`
+4. Review HPA events: `kubectl describe hpa loom-hpa`
 5. Ensure cluster has capacity
 
 ### Performance Degrades with More Instances
@@ -505,4 +505,4 @@ spec:
 
 ---
 
-**AgentiCorp scales to enterprise workloads!** 🚀
+**Loom scales to enterprise workloads!** 🚀

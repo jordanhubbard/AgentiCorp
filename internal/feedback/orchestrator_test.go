@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/build"
-	"github.com/jordanhubbard/agenticorp/internal/linter"
-	testpkg "github.com/jordanhubbard/agenticorp/internal/testing"
+	"github.com/jordanhubbard/loom/internal/build"
+	"github.com/jordanhubbard/loom/internal/linter"
+	testpkg "github.com/jordanhubbard/loom/internal/testing"
 )
 
 func TestOrchestrator_Run_AllSuccess(t *testing.T) {

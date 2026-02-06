@@ -1,6 +1,6 @@
 # Feedback Loops
 
-This document describes the feedback loop orchestration system for AgentiCorp agents. The feedback orchestrator automatically runs build → lint → test cycles after code changes, providing immediate verification feedback.
+This document describes the feedback loop orchestration system for Loom agents. The feedback orchestrator automatically runs build → lint → test cycles after code changes, providing immediate verification feedback.
 
 ## Overview
 
@@ -235,7 +235,7 @@ Feedback loops are automatically triggered after:
 
 ### Phase Timing
 
-Typical execution times (AgentiCorp project):
+Typical execution times (Loom project):
 - **Build**: 1-3 seconds (Go build)
 - **Lint**: 0.5-2 seconds (golangci-lint)
 - **Test**: 2-5 seconds (unit tests)

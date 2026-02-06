@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/patterns"
+	"github.com/jordanhubbard/loom/internal/patterns"
 )
 
 // handlePatternAnalysis handles GET /api/v1/patterns/analysis

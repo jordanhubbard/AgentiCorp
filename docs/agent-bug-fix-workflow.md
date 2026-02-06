@@ -479,7 +479,7 @@ When CEO approves a code fix proposal by closing the approval bead with "approve
 4. Assigns to the agent who created the proposal
 5. Agent applies the fix automatically
 
-**Implementation:** `internal/agenticorp/agenticorp.go:1794-1809` (CloseBead function)
+**Implementation:** `internal/loom/loom.go:1794-1809` (CloseBead function)
 
 ### Future Enhancements
 

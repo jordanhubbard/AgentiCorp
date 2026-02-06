@@ -1,6 +1,6 @@
-# AgentiCorp Plugin Registry
+# Loom Plugin Registry
 
-The AgentiCorp Plugin Registry is a community-driven marketplace for discovering and sharing provider plugins.
+The Loom Plugin Registry is a community-driven marketplace for discovering and sharing provider plugins.
 
 ## Overview
 
@@ -15,13 +15,13 @@ The registry enables:
 
 ### Official Registry
 
-The official registry is hosted at: `https://registry.agenticorp.io`
+The official registry is hosted at: `https://registry.loom.io`
 
 **Local Registry**:  
-AgentiCorp also supports local registries stored in:
-- `~/.agenticorp/registry/` (user-level)
-- `/etc/agenticorp/registry/` (system-level)
-- Project-specific: `.agenticorp/registry/`
+Loom also supports local registries stored in:
+- `~/.loom/registry/` (user-level)
+- `/etc/loom/registry/` (system-level)
+- Project-specific: `.loom/registry/`
 
 ### Registry Index
 
@@ -36,11 +36,11 @@ The registry maintains an index of available plugins in `registry.json`:
       "name": "OpenAI Provider",
       "provider_type": "openai",
       "description": "Official OpenAI API integration",
-      "author": "AgentiCorp Team",
+      "author": "Loom Team",
       "version": "1.2.0",
       "license": "MIT",
-      "homepage": "https://github.com/agenticorp/plugin-openai",
-      "repository": "https://github.com/agenticorp/plugin-openai",
+      "homepage": "https://github.com/loom/plugin-openai",
+      "repository": "https://github.com/loom/plugin-openai",
       "downloads": 15420,
       "rating": 4.8,
       "reviews": 156,
@@ -53,8 +53,8 @@ The registry maintains an index of available plugins in `registry.json`:
       },
       "install": {
         "type": "http",
-        "manifest_url": "https://raw.githubusercontent.com/agenticorp/plugin-openai/main/plugin.yaml",
-        "docker_image": "agenticorp/plugin-openai:1.2.0"
+        "manifest_url": "https://raw.githubusercontent.com/loom/plugin-openai/main/plugin.yaml",
+        "docker_image": "loom/plugin-openai:1.2.0"
       },
       "published_at": "2026-01-15T10:00:00Z",
       "updated_at": "2026-01-20T14:30:00Z"
@@ -69,43 +69,43 @@ The registry maintains an index of available plugins in `registry.json`:
 
 ```bash
 # Search by name or tags
-agenticorp plugin search openai
+loom plugin search openai
 
 # List all plugins
-agenticorp plugin list
+loom plugin list
 
 # Show plugin details
-agenticorp plugin show openai-plugin
+loom plugin show openai-plugin
 ```
 
 ### Install a Plugin
 
 ```bash
 # Install from registry
-agenticorp plugin install openai-plugin
+loom plugin install openai-plugin
 
 # Install specific version
-agenticorp plugin install openai-plugin@1.2.0
+loom plugin install openai-plugin@1.2.0
 
 # Install from URL
-agenticorp plugin install https://example.com/plugin.yaml
+loom plugin install https://example.com/plugin.yaml
 ```
 
 ### Update Plugins
 
 ```bash
 # Update all plugins
-agenticorp plugin update
+loom plugin update
 
 # Update specific plugin
-agenticorp plugin update openai-plugin
+loom plugin update openai-plugin
 ```
 
 ### Remove Plugins
 
 ```bash
 # Remove a plugin
-agenticorp plugin remove openai-plugin
+loom plugin remove openai-plugin
 ```
 
 ## Publishing Plugins
@@ -188,10 +188,10 @@ Create `registry-submission.json`:
 
 ```bash
 # Submit via CLI
-agenticorp plugin submit registry-submission.json
+loom plugin submit registry-submission.json
 
 # Or via web interface
-# Visit: https://registry.agenticorp.io/submit
+# Visit: https://registry.loom.io/submit
 # Upload: registry-submission.json
 ```
 
@@ -309,7 +309,7 @@ Response:
   "submission_id": "sub-123456",
   "status": "approved",
   "plugin_id": "my-ai-plugin",
-  "reviewed_by": "reviewer@agenticorp.io",
+  "reviewed_by": "reviewer@loom.io",
   "reviewed_at": "2026-01-22T10:00:00Z",
   "notes": "Approved! Great plugin."
 }
@@ -317,7 +317,7 @@ Response:
 
 ## Local Registry
 
-AgentiCorp supports local plugin registries for:
+Loom supports local plugin registries for:
 - Private/enterprise plugins
 - Development and testing
 - Air-gapped environments
@@ -327,10 +327,10 @@ AgentiCorp supports local plugin registries for:
 
 ```bash
 # Create registry directory
-mkdir -p ~/.agenticorp/registry
+mkdir -p ~/.loom/registry
 
 # Create index
-cat > ~/.agenticorp/registry/registry.json << 'EOF'
+cat > ~/.loom/registry/registry.json << 'EOF'
 {
   "version": "1.0",
   "plugins": []
@@ -342,7 +342,7 @@ EOF
 
 ```bash
 # Add plugin entry to registry.json
-cat >> ~/.agenticorp/registry/registry.json << 'EOF'
+cat >> ~/.loom/registry/registry.json << 'EOF'
 {
   "id": "my-local-plugin",
   "name": "My Local Plugin",
@@ -351,24 +351,24 @@ cat >> ~/.agenticorp/registry/registry.json << 'EOF'
 EOF
 
 # Or use CLI
-agenticorp plugin add-local \
+loom plugin add-local \
   --id my-local-plugin \
   --manifest /path/to/plugin.yaml
 ```
 
 ### Configure Registry Sources
 
-Edit `~/.agenticorp/config.yaml`:
+Edit `~/.loom/config.yaml`:
 
 ```yaml
 plugin_registry:
   sources:
     - name: official
-      url: https://registry.agenticorp.io
+      url: https://registry.loom.io
       enabled: true
       
     - name: local
-      url: file://~/.agenticorp/registry
+      url: file://~/.loom/registry
       enabled: true
       
     - name: enterprise
@@ -385,10 +385,10 @@ plugin_registry:
 
 ```bash
 # Rate a plugin
-agenticorp plugin rate openai-plugin --rating 5
+loom plugin rate openai-plugin --rating 5
 
 # Add review
-agenticorp plugin review openai-plugin \
+loom plugin review openai-plugin \
   --rating 5 \
   --comment "Excellent plugin, works perfectly!"
 ```
@@ -408,9 +408,9 @@ When reviewing plugins:
 ### Verified Plugins
 
 Plugins marked as "verified" have been:
-- Reviewed by AgentiCorp team
+- Reviewed by Loom team
 - Security scanned for vulnerabilities
-- Tested with AgentiCorp
+- Tested with Loom
 - Maintained by trusted authors
 
 ### Security Best Practices
@@ -434,7 +434,7 @@ Plugins marked as "verified" have been:
 If you discover a security vulnerability:
 
 1. **Do not** disclose publicly
-2. Email: security@agenticorp.io
+2. Email: security@loom.io
 3. Include: plugin ID, description, steps to reproduce
 4. Wait for response before disclosure
 
@@ -442,8 +442,8 @@ If you discover a security vulnerability:
 
 Plugins are organized into categories:
 
-- **Official** - Maintained by AgentiCorp team
-- **Verified** - Reviewed and verified by AgentiCorp
+- **Official** - Maintained by Loom team
+- **Verified** - Reviewed and verified by Loom
 - **Community** - Community-contributed plugins
 - **Enterprise** - Commercial/enterprise plugins
 - **Experimental** - Beta/experimental plugins
@@ -459,7 +459,7 @@ Plugin authors can access analytics:
 - Error rates
 - User ratings and reviews
 
-Access at: `https://registry.agenticorp.io/dashboard`
+Access at: `https://registry.loom.io/dashboard`
 
 ## Future Features
 
@@ -488,15 +488,15 @@ Help improve the registry:
 - [Plugin Development Guide](PLUGIN_DEVELOPMENT.md)
 - [Registry API Documentation](REGISTRY_API.md)
 - [Security Guidelines](SECURITY.md)
-- [GitHub Repository](https://github.com/jordanhubbard/AgentiCorp)
-- [Community Forum](https://forum.agenticorp.io)
+- [GitHub Repository](https://github.com/jordanhubbard/Loom)
+- [Community Forum](https://forum.loom.io)
 
 ## Support
 
-- **Documentation**: https://docs.agenticorp.io
-- **Issues**: https://github.com/jordanhubbard/AgentiCorp/issues
-- **Discussions**: https://github.com/jordanhubbard/AgentiCorp/discussions
-- **Email**: support@agenticorp.io
+- **Documentation**: https://docs.loom.io
+- **Issues**: https://github.com/jordanhubbard/Loom/issues
+- **Discussions**: https://github.com/jordanhubbard/Loom/discussions
+- **Email**: support@loom.io
 
 ---
 

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Manager handles persona loading, saving, and live editing

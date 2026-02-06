@@ -1,8 +1,8 @@
-# AgentiCorp v1.1 Release Notes
+# Loom v1.1 Release Notes
 
 ## 🎉 Request/Response Logging and Analytics (bd-054 Epic)
 
-We're excited to announce a comprehensive analytics and cost tracking system for AgentiCorp!
+We're excited to announce a comprehensive analytics and cost tracking system for Loom!
 
 ### ✨ New Features
 
@@ -136,7 +136,7 @@ Comprehensive test coverage:
 This release is fully backward compatible. Analytics is opt-in and doesn't affect existing functionality.
 
 **Beads Migration:**
-- AgentiCorp's own beads migrated to standard `bd` CLI
+- Loom's own beads migrated to standard `bd` CLI
 - All 114 YAML files converted to `issues.jsonl`
 - See [BEADS_MIGRATION.md](docs/BEADS_MIGRATION.md) for details
 

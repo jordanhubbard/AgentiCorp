@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/logging"
+	"github.com/jordanhubbard/loom/internal/logging"
 )
 
 // HandleLogsRecent returns recent log entries

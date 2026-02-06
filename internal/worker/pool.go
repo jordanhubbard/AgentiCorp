@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/database"
-	"github.com/jordanhubbard/agenticorp/internal/provider"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/provider"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Pool manages a pool of workers

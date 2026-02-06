@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/types"
+	"github.com/jordanhubbard/loom/pkg/types"
 )
 
 func TestNewSimpleMaker(t *testing.T) {

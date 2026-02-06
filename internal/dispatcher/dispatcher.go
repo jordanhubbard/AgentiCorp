@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/jordanhubbard/agenticorp/pkg/types"
+	"github.com/jordanhubbard/loom/pkg/types"
 )
 
 // TaskDispatcher manages task distribution to agents

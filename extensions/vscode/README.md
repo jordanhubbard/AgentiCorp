@@ -1,6 +1,6 @@
-# AgentiCorp VS Code Extension
+# Loom VS Code Extension
 
-Integrate AgentiCorp's AI-powered coding assistant directly into Visual Studio Code.
+Integrate Loom's AI-powered coding assistant directly into Visual Studio Code.
 
 ## Features
 
@@ -26,17 +26,17 @@ Configure the extension via VS Code settings:
 
 ```json
 {
-  "agenticorp.apiEndpoint": "http://localhost:8080",
-  "agenticorp.apiKey": "",
-  "agenticorp.model": "default",
-  "agenticorp.autoContext": true,
-  "agenticorp.maxContextLines": 100
+  "loom.apiEndpoint": "http://localhost:8080",
+  "loom.apiKey": "",
+  "loom.model": "default",
+  "loom.autoContext": true,
+  "loom.maxContextLines": 100
 }
 ```
 
 ## Requirements
 
-- AgentiCorp server running (default: `http://localhost:8080`)
+- Loom server running (default: `http://localhost:8080`)
 - VS Code 1.85.0 or higher
 
 ## Installation
@@ -60,19 +60,19 @@ npm run package  # Creates .vsix file
 
 ## Quick Start
 
-1. **Start AgentiCorp server**:
+1. **Start Loom server**:
    ```bash
    docker compose up -d
-   # Or: ./agenticorp
+   # Or: ./loom
    ```
 
 2. **Open chat panel**:
-   - Click AgentiCorp icon in Activity Bar
-   - Or: `Ctrl+Shift+P` → "AgentiCorp: Open Chat"
+   - Click Loom icon in Activity Bar
+   - Or: `Ctrl+Shift+P` → "Loom: Open Chat"
 
 3. **Ask a question**:
    - Type in chat panel
-   - Or select code → Right-click → AgentiCorp actions
+   - Or select code → Right-click → Loom actions
 
 ## Usage Examples
 
@@ -80,7 +80,7 @@ npm run package  # Creates .vsix file
 
 ```
 You: How do I read a file in Go?
-AgentiCorp: Here's how to read a file in Go...
+Loom: Here's how to read a file in Go...
 ```
 
 ### Code Explanation
@@ -105,41 +105,41 @@ AgentiCorp: Here's how to read a file in Go...
 
 ## Keyboard Shortcuts
 
-- `Ctrl+Shift+P` → "AgentiCorp: Open Chat" - Open chat panel
-- Right-click selection → AgentiCorp menu - Code actions
+- `Ctrl+Shift+P` → "Loom: Open Chat" - Open chat panel
+- Right-click selection → Loom menu - Code actions
 - `Ctrl+Enter` in chat - Send message
 
 ## Configuration Options
 
-### `agenticorp.apiEndpoint`
+### `loom.apiEndpoint`
 
-AgentiCorp API endpoint URL.
+Loom API endpoint URL.
 
 - Type: `string`
 - Default: `"http://localhost:8080"`
 
-### `agenticorp.apiKey`
+### `loom.apiKey`
 
 Optional API key for authentication.
 
 - Type: `string`
 - Default: `""`
 
-### `agenticorp.model`
+### `loom.model`
 
 Preferred AI model to use.
 
 - Type: `string`
 - Default: `"default"`
 
-### `agenticorp.autoContext`
+### `loom.autoContext`
 
 Automatically include file context in requests.
 
 - Type: `boolean`
 - Default: `true`
 
-### `agenticorp.maxContextLines`
+### `loom.maxContextLines`
 
 Maximum lines of context to include.
 
@@ -150,11 +150,11 @@ Maximum lines of context to include.
 
 ### Connection Error
 
-**Problem**: "AgentiCorp API is not reachable"
+**Problem**: "Loom API is not reachable"
 
 **Solution**:
-1. Verify AgentiCorp server is running: `curl http://localhost:8080/health`
-2. Check `agenticorp.apiEndpoint` setting
+1. Verify Loom server is running: `curl http://localhost:8080/health`
+2. Check `loom.apiEndpoint` setting
 3. Check firewall/network settings
 
 ### Authentication Error
@@ -162,7 +162,7 @@ Maximum lines of context to include.
 **Problem**: 401 Unauthorized
 
 **Solution**:
-1. Set `agenticorp.apiKey` in settings
+1. Set `loom.apiKey` in settings
 2. Verify API key is valid
 3. Check server authentication configuration
 
@@ -172,7 +172,7 @@ Maximum lines of context to include.
 
 **Solution**:
 1. Check server load: `curl http://localhost:8080/health`
-2. Reduce `agenticorp.maxContextLines`
+2. Reduce `loom.maxContextLines`
 3. Use faster model in settings
 
 ## Development
@@ -180,8 +180,8 @@ Maximum lines of context to include.
 ### Setup
 
 ```bash
-git clone https://github.com/jordanhubbard/AgentiCorp.git
-cd AgentiCorp/extensions/vscode
+git clone https://github.com/jordanhubbard/Loom.git
+cd Loom/extensions/vscode
 npm install
 ```
 
@@ -203,7 +203,7 @@ npm run watch
 npm run package
 ```
 
-Creates `agenticorp-vscode-1.0.0.vsix`
+Creates `loom-vscode-1.0.0.vsix`
 
 ### Test
 
@@ -221,13 +221,13 @@ npm run test
 
 ```
 extension.ts       - Extension activation and commands
-client.ts          - AgentiCorp API client
+client.ts          - Loom API client
 chatPanel.ts       - Chat UI webview provider
 ```
 
 ### API Integration
 
-The extension communicates with AgentiCorp via REST API:
+The extension communicates with Loom via REST API:
 
 ```typescript
 POST /api/v1/chat/completions
@@ -249,9 +249,9 @@ POST /api/v1/chat/completions
 
 ## Support
 
-- **Documentation**: https://github.com/jordanhubbard/AgentiCorp
-- **Issues**: https://github.com/jordanhubbard/AgentiCorp/issues
-- **Discussions**: https://github.com/jordanhubbard/AgentiCorp/discussions
+- **Documentation**: https://github.com/jordanhubbard/Loom
+- **Issues**: https://github.com/jordanhubbard/Loom/issues
+- **Discussions**: https://github.com/jordanhubbard/Loom/discussions
 
 ## License
 
@@ -263,4 +263,4 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-**Powered by AgentiCorp** 🤖
+**Powered by Loom** 🤖

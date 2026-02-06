@@ -3,7 +3,7 @@ package activity
 import (
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/database"
+	"github.com/jordanhubbard/loom/internal/database"
 )
 
 // Activity represents an activity feed entry

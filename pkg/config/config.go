@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/secrets"
+	"github.com/jordanhubbard/loom/pkg/secrets"
 	"gopkg.in/yaml.v3"
 )
 

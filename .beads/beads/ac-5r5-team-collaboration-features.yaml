@@ -1,0 +1,58 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-5r5
+type: epic
+title: Team Collaboration Features
+description: |
+    Enable effective team collaboration on agent-driven projects with shared workspaces
+    and real-time updates.
+
+    Problem: AgentiCorp is currently single-user focused, limiting team collaboration.
+
+    Goals:
+    - Shared workspaces
+    - Real-time collaboration on beads
+    - Agent work visibility across team
+    - Commenting and discussion threads
+    - Team usage analytics
+
+    Sub-features to implement:
+    - Multi-user workspace support
+    - Shared bead board with real-time updates
+    - Team member permissions
+    - Activity feed and notifications
+    - Team cost tracking and budgets
+
+    Success Criteria: Teams can effectively collaborate on agent-driven projects.
+
+    User Impact: Enables team workflows and coordination.
+
+    Related document: personas/default/product-manager/FUTURE_GOALS.md (BEAD-010)
+status: open
+priority: 3
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - collaboration
+    - epic
+    - multi-user
+    - p3
+    - team
+    - workspace
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T13:01:43Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:41.055171-08:00
+updatedat: 2026-02-06T05:01:43.150534-08:00
+closedat: null

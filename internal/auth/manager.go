@@ -120,7 +120,7 @@ func (m *Manager) GenerateToken(user *User) (string, error) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(now),
-			Issuer:    "agenticorp",
+			Issuer:    "loom",
 			Subject:   user.ID,
 		},
 	}

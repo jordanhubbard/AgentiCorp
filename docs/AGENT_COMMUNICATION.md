@@ -2,7 +2,7 @@
 
 ## Overview
 
-AgentiCorp agents can communicate directly with each other to collaborate on complex tasks, share context, make consensus decisions, and delegate work. This document defines the protocol for inter-agent communication.
+Loom agents can communicate directly with each other to collaborate on complex tasks, share context, make consensus decisions, and delegate work. This document defines the protocol for inter-agent communication.
 
 ## Architecture
 

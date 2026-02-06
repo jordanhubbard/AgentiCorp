@@ -191,8 +191,8 @@ config.ExpensivePercentile = 0.1  // Top 10%
 
 ```go
 import (
-    "github.com/jordanhubbard/agenticorp/internal/patterns"
-    "github.com/jordanhubbard/agenticorp/internal/analytics"
+    "github.com/jordanhubbard/loom/internal/patterns"
+    "github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // Initialize storage

@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 // TestParseModelName tests extraction of metadata from model names

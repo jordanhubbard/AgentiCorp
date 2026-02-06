@@ -8,7 +8,7 @@
 
 ## Summary
 
-Implemented complete authentication and authorization system enabling secure multi-user deployments and safe cloud hosting of AgentiCorp instances.
+Implemented complete authentication and authorization system enabling secure multi-user deployments and safe cloud hosting of Loom instances.
 
 ## All Child Beads Complete
 
@@ -413,6 +413,6 @@ With authentication complete, next priority epics are:
 
 ## Conclusion
 
-The Authentication & Authorization epic is **100% complete**. AgentiCorp now has enterprise-grade security with JWT/API key auth, role-based access control, user management UI, and per-user provider credential isolation.
+The Authentication & Authorization epic is **100% complete**. Loom now has enterprise-grade security with JWT/API key auth, role-based access control, user management UI, and per-user provider credential isolation.
 
 **Status:** ✅ **SHIPPED AND PRODUCTION-READY**

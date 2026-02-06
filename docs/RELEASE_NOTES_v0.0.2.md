@@ -6,7 +6,7 @@
 
 ## Overview
 
-Version 0.0.2 introduces a complete end-to-end self-healing workflow system that automatically detects, investigates, and fixes bugs with minimal human intervention. This release transforms AgentiCorp from a reactive system into a proactive, self-improving platform.
+Version 0.0.2 introduces a complete end-to-end self-healing workflow system that automatically detects, investigates, and fixes bugs with minimal human intervention. This release transforms Loom from a reactive system into a proactive, self-improving platform.
 
 ## 🎯 Major Features
 
@@ -78,7 +78,7 @@ Eliminates manual steps after CEO approval:
 3. System auto-assigns to proposing agent
 4. Agent applies fix
 
-**Implementation:** `internal/agenticorp/agenticorp.go:createApplyFixBead()`
+**Implementation:** `internal/loom/loom.go:createApplyFixBead()`
 
 **Detection Logic:**
 - Bead title contains "code fix approval"
@@ -237,14 +237,14 @@ Enables proactive agent workflows with scheduled tasks:
 - `internal/hotreload/` - Hot-reload infrastructure (3 files)
 - `internal/dispatch/autobug_router.go` - Bug routing logic
 - `internal/motivation/perpetual.go` - Perpetual tasks
-- `internal/agenticorp/auto_fix_test.go` - Auto-fix tests
+- `internal/loom/auto_fix_test.go` - Auto-fix tests
 
 ### Enhanced Packages
 
 - `internal/dispatch/dispatcher.go` - Bug investigation instructions
-- `internal/agenticorp/agenticorp.go` - Auto-fix creation
+- `internal/loom/loom.go` - Auto-fix creation
 - `pkg/config/config.go` - Hot-reload configuration
-- `cmd/agenticorp/main.go` - Hot-reload integration
+- `cmd/loom/main.go` - Hot-reload integration
 
 ### New Dependencies
 
@@ -319,7 +319,7 @@ None required.
    hot_reload:
      enabled: true
    ```
-2. Restart AgentiCorp
+2. Restart Loom
 3. Hot-reload client loads automatically in browser
 4. File changes trigger automatic refresh
 
@@ -375,12 +375,12 @@ This release represents a major milestone in autonomous software development. Sp
 ## 📞 Support
 
 For issues, questions, or feedback:
-- GitHub Issues: https://github.com/jordanhubbard/AgentiCorp/issues
+- GitHub Issues: https://github.com/jordanhubbard/Loom/issues
 - Documentation: `docs/` directory
 - Testing Guide: `docs/TESTING_SELF_HEALING.md`
 
 ---
 
-**Full Changelog:** https://github.com/jordanhubbard/AgentiCorp/compare/v0.0.1...v0.0.2
+**Full Changelog:** https://github.com/jordanhubbard/Loom/compare/v0.0.1...v0.0.2
 
 **Commits in this release:** 12

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to AgentiCorp will be documented in this file.
+All notable changes to Loom will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement motivation system for proactive agent workflows
 - dashboard, file APIs, and logging filters
 - provider tooling for file and git actions
-- agenticorp binary to gitignore
+- loom binary to gitignore
 - robust JSON extraction for provider responses
 - authentication configuration toggle and auto-filing bug tracking system
 - comprehensive Kubernetes best practices guide
@@ -197,7 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement motivation system for proactive agent workflows
 - dashboard, file APIs, and logging filters
 - provider tooling for file and git actions
-- agenticorp binary to gitignore
+- loom binary to gitignore
 - robust JSON extraction for provider responses
 - authentication configuration toggle and auto-filing bug tracking system
 - comprehensive Kubernetes best practices guide

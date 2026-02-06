@@ -6,9 +6,9 @@
 
 ## Executive Summary
 
-Successfully implemented a complete configurable workflow system for AgentiCorp, enabling multi-step agent coordination with role-based routing, approval mechanisms, cycle detection, and escalation to CEO.
+Successfully implemented a complete configurable workflow system for Loom, enabling multi-step agent coordination with role-based routing, approval mechanisms, cycle detection, and escalation to CEO.
 
-The system transforms AgentiCorp from single-task dispatch to orchestrated multi-agent workflows with proper safety mechanisms.
+The system transforms Loom from single-task dispatch to orchestrated multi-agent workflows with proper safety mechanisms.
 
 ## Three-Phase Implementation
 
@@ -311,7 +311,7 @@ Automatic workflow selection based on bead:
 
 ### Startup Verification
 ```bash
-docker logs agenticorp 2>&1 | grep Workflow
+docker logs loom 2>&1 | grep Workflow
 ```
 
 Expected:
@@ -330,10 +330,10 @@ Workflow engine connected to dispatcher
 ```bash
 # Create test bead
 curl -X POST http://localhost:8080/api/v1/beads \
-  -d '{"title":"[Test] Bug","type":"task","priority":1,"project_id":"agenticorp-self"}'
+  -d '{"title":"[Test] Bug","type":"task","priority":1,"project_id":"loom-self"}'
 
 # Watch workflow activity
-docker logs --follow agenticorp | grep "\[Workflow\]"
+docker logs --follow loom | grep "\[Workflow\]"
 ```
 
 Expected:
@@ -432,7 +432,7 @@ WHERE status = 'escalated';
 
 ## Conclusion
 
-The workflow system is fully operational and provides AgentiCorp with powerful multi-agent orchestration capabilities. The five-phase implementation delivers:
+The workflow system is fully operational and provides Loom with powerful multi-agent orchestration capabilities. The five-phase implementation delivers:
 
 - **Phase 1:** Solid foundation with database, engine, and default workflows
 - **Phase 2:** Seamless dispatcher integration with automatic routing
@@ -440,7 +440,7 @@ The workflow system is fully operational and provides AgentiCorp with powerful m
 - **Phase 4:** REST API and visualization UI for complete observability (100% COMPLETE)
 - **Phase 5:** Advanced features with real-time updates and analytics (100% COMPLETE)
 
-The system successfully transforms AgentiCorp from a single-task dispatcher into a sophisticated workflow orchestration platform capable of coordinating multiple agents through complex multi-step processes with proper safety, approval, escalation, full visibility, and real-time monitoring.
+The system successfully transforms Loom from a single-task dispatcher into a sophisticated workflow orchestration platform capable of coordinating multiple agents through complex multi-step processes with proper safety, approval, escalation, full visibility, and real-time monitoring.
 
 **Phase 3 Fully Complete (2026-01-27):**
 - ✅ Automatic CEO escalation bead creation

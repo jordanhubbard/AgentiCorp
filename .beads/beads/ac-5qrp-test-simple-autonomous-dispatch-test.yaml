@@ -1,0 +1,86 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-5qrp
+type: task
+title: '[TEST] Simple autonomous dispatch test'
+description: 'This is a simple test bead to verify autonomous dispatch works. No workflow, no special requirements. Just assign to any idle agent and execute. Task: Echo ''Autonomous operation working\!'' and close this bead.'
+status: closed
+priority: 2
+projectid: agenticorp-self
+assignedto: agent-1770345233-CEO (Default)
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags: []
+context:
+    agent_id: agent-1770345233-CEO (Default)
+    agent_output: |-
+        We need to respond with strict JSON only, matching the required output format. We are the CEO, need to decide on actions for bead ac-5qrp. The bead is a simple test to echo a message and close bead. Likely we need to execute something? As CEO, we may need to approve or create actions. The bead description says just assign to any idle agent and execute. Probably we need to run a command to echo message? Or maybe we need to create a bead? Actually bead already exists. We might need to run a command to echo the message and then close bead. The required output format is the JSON with "actions": [ ... ].
+
+        We need to decide what action to take. Possibly "run_command" to echo the message, then "close_bead". Or we could "escalate_ceo"? But likely we should execute the bead: echo message and close bead. So actions: run_command to echo, then close_bead. But we can only output a single JSON object with actions array. Each action can be multiple entries. We can include two actions: one run_command, one close_bead. However close_bead requires bead_id. Provide bead_id "ac-5qrp". Provide reason maybe "Completed test bead". So actions array will have two objects: first run_command with command "echo 'Autonomous operation working!'" maybe with working_dir? Not needed. Then close_bead with bead_id "ac-5qrp". But the JSON structure for each action includes fields appropriate to the action type. For run_command, we need "command". For close_bead, we need "bead_id" and optionally "reason". The JSON spec for actions: each object can have fields depending on type. They gave example for write_file includes path, content. For run_command, need "command". Also maybe "working_dir"? Not required but can include. Provide "command": "echo 'Autonomous operation working!'" . Then close_bead: "bead_id": "ac-5qrp", "reason": "Completed test bead". Should we also include "type"? The action type is indicated by the "type" field? Actually the action object includes "type": "run_command" etc. So we need to include "type": "run_command" and "type": "close_bead". Also include other fields as needed.
+
+        Thus output JSON will have "actions": [ { "type": "run_command", "command": "echo 'Autonomous operation working!'" }, { "type": "close_bead", "bead_id": "ac-5qrp", "reason": "Completed test bead" } ], "notes": "Executed test bead as requested."
+
+        Make sure no extra text. Provide strictly JSON.
+
+        Check required fields: For run_command, required "command". Could also include "working_dir"? Not required. Provide just command.
+
+        For close_bead, required "bead_id". Provide "reason". Also maybe "type": "close_bead". Provide "bead_id". Provide "reason". That's fine.
+
+        Thus final JSON:
+
+        {
+          "actions": [
+            {
+              "type": "run_command",
+              "command": "echo 'Autonomous operation working!'"
+            },
+            {
+              "type": "close_bead",
+              "bead_id": "ac-5qrp",
+              "reason": "Completed test bead"
+            }
+          ],
+          "notes": "Executed test bead as requested."
+        }
+
+        Make sure no trailing commas. Provide exactly that.
+        </think>
+        {
+          "actions": [
+            {
+              "type": "run_command",
+              "command": "echo 'Autonomous operation working!'"
+            },
+            {
+              "type": "close_bead",
+              "bead_id": "ac-5qrp",
+              "reason": "Completed test bead"
+            }
+          ],
+          "notes": "Executed test bead as requested."
+        }
+    agent_task_id: task-ac-5qrp-1770356824384399000
+    agent_tokens: "1871"
+    agent_worker_id: worker-agent-1770345233-CEO (Default)-1770356823
+    close_reason: Completed test bead
+    conversation_session_id: 14e7c157-fc3a-4fba-9a85-a09551437f41
+    dispatch_count: "1"
+    dispatch_history: '["agent-1770345233-CEO (Default)"]'
+    last_run_at: "2026-02-06T05:47:21Z"
+    loop_detected: "false"
+    provider_id: sparky-local
+    provider_model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T05:47:04Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-02-05T21:07:23.752898-08:00
+updatedat: 2026-02-05T21:47:21.996457-08:00
+closedat: 2026-02-05T21:47:21.994734-08:00

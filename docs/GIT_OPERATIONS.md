@@ -1,10 +1,10 @@
 # Git Operations for Managed Projects
 
-AgentiCorp manages git repositories for all registered projects, handling clone, pull, commit, and push operations within its container environment.
+Loom manages git repositories for all registered projects, handling clone, pull, commit, and push operations within its container environment.
 
 ## Overview
 
-When you register a project with AgentiCorp, it:
+When you register a project with Loom, it:
 
 1. **Clones** the project's git repository into `/app/src/<project-id>`
 2. **Loads beads** from `.beads/beads/*.yaml` in the cloned repository
@@ -12,7 +12,7 @@ When you register a project with AgentiCorp, it:
 4. **Commits** agent changes with descriptive messages
 5. **Pushes** completed work back to the project's remote repository
 
-All git operations are proxied through AgentiCorp's `gitops.Manager`, ensuring proper authentication, isolation, and error handling.
+All git operations are proxied through Loom's `gitops.Manager`, ensuring proper authentication, isolation, and error handling.
 
 ## Project Git Configuration
 
@@ -30,7 +30,7 @@ git_credential_id: myapp-deploy-key
 
 ### Git Authentication Methods
 
-AgentiCorp supports multiple authentication methods:
+Loom supports multiple authentication methods:
 
 | Method | Use Case | Configuration |
 |--------|----------|---------------|
@@ -50,7 +50,7 @@ git_credential_id: myapp-deploy-key
 **Setup:**
 1. Generate SSH key pair: `ssh-keygen -t ed25519 -f ~/.ssh/myapp-deploy`
 2. Add public key to GitHub/GitLab as deploy key (read/write access)
-3. Store private key in AgentiCorp keymanager with ID `myapp-deploy-key`
+3. Store private key in Loom keymanager with ID `myapp-deploy-key`
 4. Configure project to use that credential ID
 
 ### Token Authentication
@@ -88,7 +88,7 @@ Each project gets an isolated work directory:
 
 ### Clone on Registration
 
-When a project is registered with `git_repo` configured, AgentiCorp automatically:
+When a project is registered with `git_repo` configured, Loom automatically:
 
 ```go
 // Performed by gitops.Manager.CloneProject()
@@ -102,7 +102,7 @@ git clone --single-branch --branch main https://github.com/user/myapp /app/src/m
 
 ### Pull for Updates
 
-Periodically or on demand, AgentiCorp syncs with remote:
+Periodically or on demand, Loom syncs with remote:
 
 ```go
 // Performed by gitops.Manager.PullProject()
@@ -178,7 +178,7 @@ Content-Type: application/json
 {
   "message": "Update configuration",
   "author_name": "Agent PM",
-  "author_email": "agent-pm@agenticorp.local"
+  "author_email": "agent-pm@loom.local"
 }
 ```
 
@@ -255,15 +255,15 @@ All git operations are logged:
 **Solution:**
 1. Verify `git_repo` URL is correct
 2. Check credential is valid and has access
-3. Test connectivity: `docker exec agenticorp ping github.com`
-4. Check logs: `docker logs agenticorp | grep gitops`
+3. Test connectivity: `docker exec loom ping github.com`
+4. Check logs: `docker logs loom | grep gitops`
 
 ### Merge Conflicts
 
 **Symptom**: `git pull` fails with conflict errors
 
 **Solution:**
-1. AgentiCorp pauses affected beads
+1. Loom pauses affected beads
 2. Human intervention required
 3. Resolve conflicts manually in work dir
 4. Resume beads after resolution
@@ -289,7 +289,7 @@ All git operations are logged:
 ```
 your-project/
 ├── .beads/
-│   └── beads/          # Work items for AgentiCorp
+│   └── beads/          # Work items for Loom
 │       ├── bd-001.yaml
 │       └── bd-002.yaml
 ├── src/                # Source code
@@ -300,13 +300,13 @@ your-project/
 ### Branch Strategy
 
 - **main/master**: Protected, requires PR reviews
-- **agenticorp**: Branch for agent work (recommended)
+- **loom**: Branch for agent work (recommended)
 - **feature/***: Per-bead feature branches
 
-Configure AgentiCorp to work on dedicated branch:
+Configure Loom to work on dedicated branch:
 ```yaml
 git_repo: https://github.com/user/myapp
-branch: agenticorp  # Agents work here, not main
+branch: loom  # Agents work here, not main
 ```
 
 ### Commit Messages

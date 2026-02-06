@@ -2,7 +2,7 @@
 
 ## Overview
 
-AgentiCorp's automated code review system enables code-reviewer agents to review pull requests, provide feedback, and ensure code quality before merging. This document describes the end-to-end workflow for automated PR reviews.
+Loom's automated code review system enables code-reviewer agents to review pull requests, provide feedback, and ensure code quality before merging. This document describes the end-to-end workflow for automated PR reviews.
 
 ## Workflow Diagram
 
@@ -329,7 +329,7 @@ Human reviewer makes final decision
 ☑️ Please address the critical issue before merging.
 
 ---
-🤖 Automated review by AgentiCorp Code Reviewer
+🤖 Automated review by Loom Code Reviewer
 ```
 
 ### Inline Comment Template
@@ -356,7 +356,7 @@ db.Query(query, userID)
 
 ### Project-Level Configuration
 
-File: `.agenticorp/review-config.yaml`
+File: `.loom/review-config.yaml`
 
 ```yaml
 code_review:

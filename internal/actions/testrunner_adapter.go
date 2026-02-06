@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/testing"
+	"github.com/jordanhubbard/loom/internal/testing"
 )
 
 // TestRunnerAdapter adapts internal/testing.TestRunner to the actions.TestRunner interface

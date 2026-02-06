@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // InMemoryStorage is a simple in-memory implementation for testing

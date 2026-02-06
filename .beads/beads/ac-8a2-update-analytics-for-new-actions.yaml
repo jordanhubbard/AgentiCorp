@@ -1,0 +1,31 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-8a2
+type: task
+title: Update Analytics for New Actions
+description: Track usage of all new actions in analytics system for visibility into which actions agents use most.
+status: open
+priority: 2
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - agentic
+    - analytics
+    - monitoring
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T13:01:43Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-02-04T01:41:14.601079-08:00
+updatedat: 2026-02-06T05:01:43.147524-08:00
+closedat: null

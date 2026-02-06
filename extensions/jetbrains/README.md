@@ -1,4 +1,4 @@
-# AgentiCorp JetBrains Plugin
+# Loom JetBrains Plugin
 
 AI-powered coding assistant for IntelliJ IDEA, PyCharm, WebStorm, and all JetBrains IDEs.
 
@@ -16,7 +16,7 @@ AI-powered coding assistant for IntelliJ IDEA, PyCharm, WebStorm, and all JetBra
 1. Open IDE Settings: `File` → `Settings` (Windows/Linux) or `IntelliJ IDEA` → `Preferences` (macOS)
 2. Select `Plugins`
 3. Click `Marketplace` tab
-4. Search for "AgentiCorp"
+4. Search for "Loom"
 5. Click `Install`
 6. Restart IDE
 
@@ -29,9 +29,9 @@ AI-powered coding assistant for IntelliJ IDEA, PyCharm, WebStorm, and all JetBra
 
 ## Configuration
 
-1. `Settings` → `Tools` → `AgentiCorp`
+1. `Settings` → `Tools` → `Loom`
 2. Configure:
-   - **API Endpoint**: AgentiCorp server URL (default: `http://localhost:8080`)
+   - **API Endpoint**: Loom server URL (default: `http://localhost:8080`)
    - **API Key**: Optional authentication key
    - **Model**: Preferred AI model
    - **Enable Inline Suggestions**: Toggle code completions
@@ -40,14 +40,14 @@ AI-powered coding assistant for IntelliJ IDEA, PyCharm, WebStorm, and all JetBra
 
 ### Chat Window
 
-1. Click AgentiCorp icon in right sidebar
+1. Click Loom icon in right sidebar
 2. Type question in input field
 3. Press `Ctrl+Enter` to send
 
 ### Code Actions
 
 1. Select code
-2. Right-click → `AgentiCorp`
+2. Right-click → `Loom`
 3. Choose action:
    - Explain Code
    - Generate Tests
@@ -87,7 +87,7 @@ Plugin JAR created in `build/distributions/`
 
 - JetBrains IDE 2023.2 or later
 - Java 17 or later
-- AgentiCorp server running
+- Loom server running
 
 ## Supported IDEs
 
@@ -105,9 +105,9 @@ Plugin JAR created in `build/distributions/`
 ## Architecture
 
 ```
-AgentiCorpClient.kt       - API client
+LoomClient.kt       - API client
 ChatToolWindowFactory.kt  - Chat UI
-AgentiCorpCompletionContributor.kt - Inline completions
+LoomCompletionContributor.kt - Inline completions
 Actions/*.kt              - Context menu actions
 Settings/*.kt             - Configuration UI
 ```

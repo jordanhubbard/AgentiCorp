@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/activity"
-	"github.com/jordanhubbard/agenticorp/internal/auth"
+	"github.com/jordanhubbard/loom/internal/activity"
+	"github.com/jordanhubbard/loom/internal/auth"
 )
 
 // handleGetActivityFeed handles GET requests for activity feed

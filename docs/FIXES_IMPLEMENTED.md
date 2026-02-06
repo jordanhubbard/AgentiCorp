@@ -1,17 +1,17 @@
-# AgentiCorp Work Flow Fixes - Implementation Summary
+# Loom Work Flow Fixes - Implementation Summary
 
-This document summarizes the critical fixes implemented to resolve the "no work flowing through AgentiCorp" issue.
+This document summarizes the critical fixes implemented to resolve the "no work flowing through Loom" issue.
 
 ## Implementation Date
 2026-02-02
 
 ## Problem Statement
-The AgentiCorp system was not generating any work - no beads were being processed, no code changes were being generated, and agents were not executing tasks. This indicated critical blockages in the work flow pipeline.
+The Loom system was not generating any work - no beads were being processed, no code changes were being generated, and agents were not executing tasks. This indicated critical blockages in the work flow pipeline.
 
 ## Fixes Implemented
 
 ### ✅ Fix #2: Activate Providers on Startup (CRITICAL)
-**File:** `internal/agenticorp/agenticorp.go` (lines 567-591)
+**File:** `internal/loom/loom.go` (lines 567-591)
 
 **Problem:** Providers were defaulting to "pending" status, causing the dispatcher to park immediately with "no active providers registered".
 
@@ -26,7 +26,7 @@ The AgentiCorp system was not generating any work - no beads were being processe
 ---
 
 ### ✅ Fix #3: Add Temporal Failure Fallback (CRITICAL)
-**File:** `cmd/agenticorp/main.go` (lines 104-127)
+**File:** `cmd/loom/main.go` (lines 104-127)
 
 **Problem:** If Temporal was configured but the server wasn't running, the fallback dispatch loop wouldn't start, causing zero dispatch activity.
 
@@ -43,7 +43,7 @@ The AgentiCorp system was not generating any work - no beads were being processe
 ### ✅ Fix #5: Reset Stuck Agents (HIGH)
 **Files:**
 - `internal/agent/worker_manager.go` (lines 594-637) - Added ResetStuckAgents method
-- `internal/agenticorp/agenticorp.go` (lines 2699-2703) - Added call in maintenance loop
+- `internal/loom/loom.go` (lines 2699-2703) - Added call in maintenance loop
 
 **Problem:** Agents stuck in "working" state for too long, or paused agents with providers, couldn't be dispatched to.
 
@@ -59,7 +59,7 @@ The AgentiCorp system was not generating any work - no beads were being processe
 ---
 
 ### ✅ Fix #1: Start Motivation Engine (HIGH)
-**File:** `internal/agenticorp/agenticorp.go` (lines 687-697)
+**File:** `internal/loom/loom.go` (lines 687-697)
 
 **Problem:** The motivation engine was created and default motivations were registered, but `engine.Start(ctx)` was never called, so no automatic bead creation occurred.
 
@@ -73,7 +73,7 @@ The AgentiCorp system was not generating any work - no beads were being processe
 ---
 
 ### ✅ Fix #4: Validate Projects and Create Sample Bead (MEDIUM)
-**File:** `internal/agenticorp/agenticorp.go` (lines 699-727)
+**File:** `internal/loom/loom.go` (lines 699-727)
 
 **Problem:** If no projects had beads, there would be nothing for the dispatcher to work on.
 
@@ -112,13 +112,13 @@ The AgentiCorp system was not generating any work - no beads were being processe
 
 ## Files Modified
 
-1. **internal/agenticorp/agenticorp.go**
+1. **internal/loom/loom.go**
    - Provider activation logic (Fix #2)
    - Motivation engine start (Fix #1)
    - Project/bead validation (Fix #4)
    - Maintenance loop agent reset (Fix #5)
 
-2. **cmd/agenticorp/main.go**
+2. **cmd/loom/main.go**
    - Temporal fallback dispatch loop (Fix #3)
 
 3. **internal/agent/worker_manager.go**
@@ -159,7 +159,7 @@ After these fixes, the system should show:
 
 4. **Monitor dispatch activity:**
    ```bash
-   tail -f agenticorp.log | grep -E "(Dispatch|Motivation|Agent)"
+   tail -f loom.log | grep -E "(Dispatch|Motivation|Agent)"
    ```
    Should see regular dispatch attempts
 
@@ -167,7 +167,7 @@ After these fixes, the system should show:
    ```bash
    curl -X POST http://localhost:8080/api/v1/beads \
      -H "Content-Type: application/json" \
-     -d '{"title": "Test", "project_id": "agenticorp", "description": "Test dispatch", "priority": 2, "type": "task"}'
+     -d '{"title": "Test", "project_id": "loom", "description": "Test dispatch", "priority": 2, "type": "task"}'
    ```
 
 ## Expected Outcomes

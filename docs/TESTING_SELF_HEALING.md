@@ -6,7 +6,7 @@ This document describes how to test the complete self-healing workflow end-to-en
 
 ## Prerequisites
 
-1. **AgentiCorp running**
+1. **Loom running**
    ```bash
    make run
    ```
@@ -53,7 +53,7 @@ curl http://localhost:8080/api/v1/beads?tags=auto-filed
 
 **Verify:**
 ```bash
-grep "Auto-bug detected" logs/agenticorp.log
+grep "Auto-bug detected" logs/loom.log
 ```
 
 ### Step 4: Verify Agent Investigation
@@ -207,7 +207,7 @@ Follow same investigation → approval → fix → verification workflow.
 
 1. Edit `web/static/index.html`:
    ```html
-   <title>AgentiCorp - Test</title>
+   <title>Loom - Test</title>
    ```
 
 2. Save file
@@ -221,7 +221,7 @@ Follow same investigation → approval → fix → verification workflow.
 ### Setup
 
 1. Enable hot-reload in config.yaml
-2. Start AgentiCorp
+2. Start Loom
 3. Open browser with DevTools
 
 ### Execute
@@ -278,7 +278,7 @@ window.addEventListener('error', handleGlobalError);
 
 **Debug:**
 ```bash
-grep "Auto-bug" logs/agenticorp.log
+grep "Auto-bug" logs/loom.log
 ```
 
 ### Agent Not Investigating

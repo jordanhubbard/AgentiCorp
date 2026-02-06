@@ -76,7 +76,7 @@ Uses **optimistic locking** with version numbers:
 ### Joining a Bead
 
 ```go
-import "github.com/jordanhubbard/agenticorp/internal/collaboration"
+import "github.com/jordanhubbard/loom/internal/collaboration"
 
 store := collaboration.NewContextStore()
 

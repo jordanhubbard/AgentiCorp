@@ -1,0 +1,49 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-5gl
+type: feature
+title: Real-time collaboration on beads
+description: |
+    Enable real-time collaborative editing and updates on beads across team
+    members.
+
+    Tasks:
+    - Implement WebSocket infrastructure
+    - Add real-time sync protocol
+    - Implement conflict resolution
+    - Add presence indicators
+    - Test with 10+ concurrent users
+
+    Acceptance:
+    - Changes sync in real-time
+    - Sync latency <1s
+    - Conflicts resolved correctly
+    - User presence shown
+    - Works with 10+ users
+status: open
+priority: 3
+projectid: agenticorp-self
+assignedto: ""
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - collaboration
+    - feature
+    - p3
+    - real-time
+    - websocket
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T13:01:43Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:52.002224-08:00
+updatedat: 2026-02-06T05:01:43.14878-08:00
+closedat: null

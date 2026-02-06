@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get AgentiCorp up and running in 5 minutes.
+Get Loom up and running in 5 minutes.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ Get AgentiCorp up and running in 5 minutes.
 
 ```bash
 # Clone the repository
-git clone https://github.com/jordanhubbard/agenticorp.git
-cd agenticorp
+git clone https://github.com/jordanhubbard/loom.git
+cd loom
 
 # Set up development environment
 make dev-setup
@@ -26,11 +26,11 @@ make run
 
 ### Option 2: Pre-built Binary
 
-Download the latest release from [GitHub Releases](https://github.com/jordanhubbard/agenticorp/releases).
+Download the latest release from [GitHub Releases](https://github.com/jordanhubbard/loom/releases).
 
 ```bash
 # Extract and run
-./agenticorp -config config.yaml
+./loom -config config.yaml
 ```
 
 ## First Steps
@@ -39,10 +39,10 @@ Download the latest release from [GitHub Releases](https://github.com/jordanhubb
 
 ```bash
 # With default configuration
-./agenticorp
+./loom
 
 # With custom config
-./agenticorp -config /path/to/config.yaml
+./loom -config /path/to/config.yaml
 ```
 
 The server will start on:
@@ -173,7 +173,7 @@ Monitor in real-time via the Web UI!
 
 1. **Spawn multiple agents** on different branches
 2. **Or same branch** with file coordination
-3. **AgentiCorp coordinates** file locks
+3. **Loom coordinates** file locks
 4. **Decision maker agent** resolves conflicts
 5. **Work flows autonomously**
 
@@ -315,7 +315,7 @@ Check:
 3. Git repo path is correct
 4. Agent has access to files
 
-View logs in terminal where agenticorp is running.
+View logs in terminal where loom is running.
 
 ### Web UI Not Loading
 
@@ -337,9 +337,9 @@ web_ui:
 
 ## Getting Help
 
-- **Issues**: https://github.com/jordanhubbard/agenticorp/issues
-- **Discussions**: https://github.com/jordanhubbard/agenticorp/discussions
-- **Documentation**: https://github.com/jordanhubbard/agenticorp/wiki
+- **Issues**: https://github.com/jordanhubbard/loom/issues
+- **Discussions**: https://github.com/jordanhubbard/loom/discussions
+- **Documentation**: https://github.com/jordanhubbard/loom/wiki
 
 ## Quick Reference
 

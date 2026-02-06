@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jordanhubbard/agenticorp/internal/database"
+	"github.com/jordanhubbard/loom/internal/database"
 )
 
 // handleConversation handles operations on a specific conversation session

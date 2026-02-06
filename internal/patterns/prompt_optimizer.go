@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // PromptOptimizer analyzes prompts and suggests optimizations

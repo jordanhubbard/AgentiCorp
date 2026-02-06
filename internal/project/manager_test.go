@@ -3,7 +3,7 @@ package project
 import (
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func TestProjectStateManagement(t *testing.T) {

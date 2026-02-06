@@ -1,6 +1,6 @@
 # Streaming Support
 
-AgentiCorp supports real-time streaming of LLM responses using Server-Sent Events (SSE).
+Loom supports real-time streaming of LLM responses using Server-Sent Events (SSE).
 
 ## Overview
 
@@ -91,7 +91,7 @@ Standard non-streaming endpoint that returns the complete response at once.
 
 ## Built-in Streaming Test UI
 
-AgentiCorp includes a built-in streaming test interface accessible at:
+Loom includes a built-in streaming test interface accessible at:
 
 **Web UI → Streaming Test** tab
 
@@ -224,7 +224,7 @@ for event in client.events():
 
 ### Supported Providers
 
-All AgentiCorp providers now support streaming:
+All Loom providers now support streaming:
 
 - **OpenAI-compatible providers** - Full streaming support via SSE format
   - Uses standard `data:` lines with JSON chunks
@@ -264,7 +264,7 @@ Streaming requests have a 5-minute timeout. For longer responses, the timeout ca
 ## Performance Considerations
 
 ### Buffering
-AgentiCorp disables nginx buffering with `X-Accel-Buffering: no` header to ensure immediate streaming.
+Loom disables nginx buffering with `X-Accel-Buffering: no` header to ensure immediate streaming.
 
 ### Connection Management
 - Each streaming connection maintains an open HTTP connection
@@ -286,7 +286,7 @@ Streaming endpoints respect the same authentication and authorization as other A
 ## Implementation Details
 
 ### SSE Format
-AgentiCorp follows the standard SSE specification:
+Loom follows the standard SSE specification:
 - Each event has an `event:` line specifying the event type
 - Each event has a `data:` line with JSON payload
 - Events are separated by blank lines

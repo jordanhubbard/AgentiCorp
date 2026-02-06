@@ -124,7 +124,7 @@ The DevOps Engineer is triggered by the motivation system when:
 
 ```
 # Monitor and improve coverage
-REVIEW_PROJECT_COVERAGE project:agenticorp
+REVIEW_PROJECT_COVERAGE project:loom
 # Current: 65% (below 70% threshold)
 IDENTIFY_GAPS
   - auth module: 45% coverage

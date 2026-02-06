@@ -3,8 +3,8 @@ package patterns
 import (
 	"context"
 
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
-	"github.com/jordanhubbard/agenticorp/internal/cache"
+	"github.com/jordanhubbard/loom/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/cache"
 )
 
 // Manager coordinates pattern analysis and optimization

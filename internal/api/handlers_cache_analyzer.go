@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
-	"github.com/jordanhubbard/agenticorp/internal/cache"
+	"github.com/jordanhubbard/loom/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/cache"
 )
 
 // handleCacheAnalysis runs cache opportunity analysis

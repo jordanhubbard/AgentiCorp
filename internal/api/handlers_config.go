@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	agenticorppkg "github.com/jordanhubbard/agenticorp/internal/agenticorp"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	loompkg "github.com/jordanhubbard/loom/internal/loom"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // handleConfig handles GET/PUT /api/v1/config (JSON).
@@ -21,7 +21,7 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 		s.respondJSON(w, http.StatusOK, snap)
 
 	case http.MethodPut:
-		var snap agenticorppkg.ConfigSnapshot
+		var snap loompkg.ConfigSnapshot
 		if err := s.parseJSON(r, &snap); err != nil {
 			s.respondError(w, http.StatusBadRequest, "Invalid request body")
 			return

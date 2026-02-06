@@ -39,7 +39,7 @@ Consensus decisions allow teams of agents to:
 ### Creating a Decision
 
 ```go
-import "github.com/jordanhubbard/agenticorp/internal/consensus"
+import "github.com/jordanhubbard/loom/internal/consensus"
 
 dm := consensus.NewDecisionManager()
 defer dm.Close()

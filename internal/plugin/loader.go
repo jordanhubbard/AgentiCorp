@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/jordanhubbard/agenticorp/pkg/plugin"
+	"github.com/jordanhubbard/loom/pkg/plugin"
 	"gopkg.in/yaml.v3"
 )
 

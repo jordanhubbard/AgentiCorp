@@ -116,7 +116,7 @@ Perpetual tasks are implemented through the **Motivation System** (`internal/mot
 Perpetual tasks are registered when the motivation engine starts:
 
 ```go
-import "github.com/jordanhubbard/agenticorp/internal/motivation"
+import "github.com/jordanhubbard/loom/internal/motivation"
 
 // Register default motivations (includes perpetual tasks)
 err := motivation.RegisterDefaults(registry)

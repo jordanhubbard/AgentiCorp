@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: temporal
       POSTGRES_DB: temporal
     networks:
-      - agenticorp-network
+      - loom-network
     volumes:
       - temporal-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -39,7 +39,7 @@ services:
     ports:
       - "7233:7233"  # gRPC port
     networks:
-      - agenticorp-network
+      - loom-network
     volumes:
       - ./config/temporal:/etc/temporal/config/dynamicconfig
     healthcheck:
@@ -61,16 +61,16 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
       - TEMPORAL_CORS_ORIGINS=http://localhost:3000
     ports:
-      - "8088:8080"  # Temporal UI on different port to avoid conflict with agenticorp
+      - "8088:8080"  # Temporal UI on different port to avoid conflict with loom
     networks:
-      - agenticorp-network
+      - loom-network
 
-  agenticorp:
+  loom:
     build:
       context: .
       dockerfile: Dockerfile
-    image: agenticorp:latest
-    container_name: agenticorp
+    image: loom:latest
+    container_name: loom
     restart: unless-stopped
     depends_on:
       temporal:
@@ -78,13 +78,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - AGENTICORP_PASSWORD=${AGENTICORP_PASSWORD}
+      - LOOM_PASSWORD=${LOOM_PASSWORD}
       - TZ=UTC
       - TEMPORAL_HOST=temporal:7233
       - TEMPORAL_NAMESPACE=default
       - CONFIG_PATH=/app/src/config.yaml
     networks:
-      - agenticorp-network
+      - loom-network
     extra_hosts:
       - "plubbit.local:10.11.101.250"
       - "sparky.local:10.11.100.116"
@@ -92,26 +92,26 @@ services:
       # Mount entire source directory for hot-reload and bead access
       - .:/app/src:rw
       # Persist SQLite database across container restarts
-      - agenticorp-db:/app/data
+      - loom-db:/app/data
       # Persist beads across container restarts
-      - agenticorp-beads:/app/src/.beads
+      - loom-beads:/app/src/.beads
       # Mount SSH keys for git operations (read-only)
-      - ~/.ssh/id_ecdsa:/home/agenticorp/.ssh/id_ecdsa:ro
-      - ~/.ssh/id_ecdsa.pub:/home/agenticorp/.ssh/id_ecdsa.pub:ro
-      - ~/.ssh/known_hosts:/home/agenticorp/.ssh/known_hosts:ro
+      - ~/.ssh/id_ecdsa:/home/loom/.ssh/id_ecdsa:ro
+      - ~/.ssh/id_ecdsa.pub:/home/loom/.ssh/id_ecdsa.pub:ro
+      - ~/.ssh/known_hosts:/home/loom/.ssh/known_hosts:ro
     healthcheck:
-      test: ["CMD", "/app/agenticorp", "-version"]
+      test: ["CMD", "/app/loom", "-version"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  agenticorp-test:
+  loom-test:
     build:
       context: .
       dockerfile: Dockerfile
       target: builder
-    container_name: agenticorp-test
+    container_name: loom-test
     depends_on:
       temporal:
         condition: service_healthy
@@ -119,14 +119,14 @@ services:
       - TEMPORAL_HOST=temporal:7233
       - TEMPORAL_REQUIRED=true
     networks:
-      - agenticorp-network
+      - loom-network
     command: ["go", "test", "-v", "./..."]
 
 networks:
-  agenticorp-network:
+  loom-network:
     driver: bridge
 
 volumes:
   temporal-db-data:
-  agenticorp-db:
-  agenticorp-beads:
+  loom-db:
+  loom-beads:

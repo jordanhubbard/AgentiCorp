@@ -491,7 +491,7 @@ result := &TestResult{
 
 ### Project-Level Config
 
-Support `.agenticorp/testing.yaml` for project-specific settings:
+Support `.loom/testing.yaml` for project-specific settings:
 
 ```yaml
 testing:
@@ -734,5 +734,5 @@ Protect against:
 - Jest JSON Reporter: https://jestjs.io/docs/cli#--json
 - Pytest JSON Report: https://github.com/numirias/pytest-json-report
 - Process Sandboxing: Linux namespaces, cgroups
-- AgentiCorp Worker Architecture: `internal/worker/worker.go`
+- Loom Worker Architecture: `internal/worker/worker.go`
 - Conversation Context: `docs/CONVERSATION_ARCHITECTURE.md`

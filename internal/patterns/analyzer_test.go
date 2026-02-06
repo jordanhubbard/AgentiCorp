@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/analytics"
 )
 
 // MockStorage is a mock implementation of analytics.Storage for testing

@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Provider represents an AI engine running on-prem or in the cloud

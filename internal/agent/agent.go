@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jordanhubbard/agenticorp/pkg/types"
+	"github.com/jordanhubbard/loom/pkg/types"
 )
 
 // BaseAgent implements the basic agent functionality

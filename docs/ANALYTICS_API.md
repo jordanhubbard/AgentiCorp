@@ -1,6 +1,6 @@
 # Analytics & Export API Documentation
 
-This document describes the analytics and data export API endpoints in AgentiCorp.
+This document describes the analytics and data export API endpoints in Loom.
 
 ## Overview
 
@@ -151,7 +151,7 @@ Timestamp,User ID,Method,Path,Provider ID,Model,Prompt Tokens,Completion Tokens,
 
 **Response:**
 - Content-Type: `text/csv` or `application/json`
-- Content-Disposition: `attachment; filename="agenticorp-logs-YYYY-MM-DD.{csv,json}"`
+- Content-Disposition: `attachment; filename="loom-logs-YYYY-MM-DD.{csv,json}"`
 
 ### Export Statistics Summary
 
@@ -216,7 +216,7 @@ user-bob,450,1.7000,
 ### Export Last 7 Days (CSV)
 
 ```bash
-curl -X GET "https://api.agenticorp.example/api/v1/analytics/export-stats?format=csv&start_time=2026-01-14T00:00:00Z&end_time=2026-01-21T00:00:00Z" \
+curl -X GET "https://api.loom.example/api/v1/analytics/export-stats?format=csv&start_time=2026-01-14T00:00:00Z&end_time=2026-01-21T00:00:00Z" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -o analytics-export.csv
 ```
@@ -224,14 +224,14 @@ curl -X GET "https://api.agenticorp.example/api/v1/analytics/export-stats?format
 ### Get Cost Breakdown for Specific User (Admin)
 
 ```bash
-curl -X GET "https://api.agenticorp.example/api/v1/analytics/costs?user_id=user-alice" \
+curl -X GET "https://api.loom.example/api/v1/analytics/costs?user_id=user-alice" \
   -H "Authorization: Bearer ADMIN_TOKEN"
 ```
 
 ### Export Full Request Logs (JSON)
 
 ```bash
-curl -X GET "https://api.agenticorp.example/api/v1/analytics/export?format=json&start_time=2026-01-21T00:00:00Z" \
+curl -X GET "https://api.loom.example/api/v1/analytics/export?format=json&start_time=2026-01-21T00:00:00Z" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -o logs-export.json
 ```
@@ -265,7 +265,7 @@ For automated exports, use cron or a scheduler to call the export API:
 
 ```bash
 # Daily export at midnight (crontab example)
-0 0 * * * curl -X GET "https://api.agenticorp.example/api/v1/analytics/export-stats?format=csv" \
+0 0 * * * curl -X GET "https://api.loom.example/api/v1/analytics/export-stats?format=csv" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -o /backups/analytics-$(date +\%Y-\%m-\%d).csv
 ```

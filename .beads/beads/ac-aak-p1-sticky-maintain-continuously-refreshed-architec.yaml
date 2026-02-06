@@ -1,0 +1,78 @@
+entitymetadata:
+    schemaversion: ""
+    attributes: {}
+    migratedat: null
+    migratedfrom: ""
+id: ac-aak
+type: task
+title: P1 (sticky) Maintain continuously refreshed architecture diagram
+description: |
+    This is a sticky, ongoing bead.
+
+    Goal
+    - Maintain an up-to-date architecture diagram that reflects the current
+      AgentiCorp system.
+
+    Trigger conditions (update is required when ANY occur)
+    - A new service is added
+    - A new agent type or core agent lifecycle feature is added
+    - A new persona is added or persona responsibilities materially change
+    - A new feature is added that is tracked as an EPIC bead (must update diagram)
+
+    Requirements
+    - Architecture diagram must be refreshed as necessary and remain accurate.
+    - Diagram should reflect:
+      - Services (API server, Temporal, DB/key manager, UI, etc.)
+      - Major subsystems and data flow (beads, decisions, dispatch, event bus)
+      - How personas/agents interact with beads and decisions
+    - Store the diagram in a stable location under docs/ (e.g., docs/architecture/)
+      and/or update ARCHITECTURE.md if that is the canonical home.
+
+    Conventions
+    - Prefer a text-based diagram that is easy to diff (Mermaid or ASCII) unless a
+      rendered asset is required.
+    - The diagram should include the date of last update.
+
+    Recent Update (January 21, 2026)
+    - Updated for v1.0 Production Ready milestone completion:
+      * Added Provider Routing System (section 3.1)
+      * Added Authentication & Authorization System (section 3.2)
+      * Updated Provider System to include routing and cost metadata
+      * Updated System Overview with new v1.0 capabilities
+      * Updated "Last Updated" timestamp to January 21, 2026
+
+    Previous Update (January 20, 2026)
+    - Added comprehensive Mermaid diagrams:
+      * System Component Diagram showing all managers and data flow
+      * Bead Processing Sequence Diagram
+      * Org Chart Structure visualization
+    - Updated component documentation to include:
+      * Org Chart System (section 5)
+      * Model Catalog System (section 6)
+      * Testing Infrastructure (section 11)
+    - Preserved legacy ASCII diagram for backwards compatibility
+    - Renumbered all sections to maintain consistency
+status: open
+priority: 1
+projectid: agenticorp-self
+assignedto: agent-1768861966-project-manager
+blockedby: []
+blocks: []
+relatedto: []
+parent: ""
+children: []
+tags:
+    - architecture
+    - diagram
+    - docs
+    - p1
+    - sticky
+context:
+    redispatch_requested: "true"
+    redispatch_requested_at: "2026-02-06T05:47:04Z"
+duedate: null
+milestoneid: ""
+estimatedtime: 0
+createdat: 2026-01-21T11:25:29.378742-08:00
+updatedat: 2026-02-05T21:47:04.377215-08:00
+closedat: null

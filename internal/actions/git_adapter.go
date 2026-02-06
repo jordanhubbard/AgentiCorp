@@ -3,7 +3,7 @@ package actions
 import (
 	"context"
 
-	"github.com/jordanhubbard/agenticorp/internal/git"
+	"github.com/jordanhubbard/loom/internal/git"
 )
 
 // GitService interface for dependency injection

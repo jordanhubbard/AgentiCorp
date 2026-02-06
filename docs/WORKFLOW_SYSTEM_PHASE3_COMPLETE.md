@@ -258,10 +258,10 @@ edges:
 | Feature | Status | Files Modified | Description |
 |---------|--------|----------------|-------------|
 | **CEO Escalation Bead Creation** | ✅ Complete | dispatcher.go | Automatically creates CEO decision beads for escalated workflows |
-| **Approval Actions** | ✅ Complete | schema.go, router.go, agenticorp.go | approve_bead and reject_bead actions for workflow control |
+| **Approval Actions** | ✅ Complete | schema.go, router.go, loom.go | approve_bead and reject_bead actions for workflow control |
 | **Commit Node Enforcement** | ✅ Complete | dispatcher.go | Only Engineering Managers can execute commit nodes |
 | **Timeout Enforcement** | ✅ Complete | engine.go, dispatcher.go | Nodes timeout and advance with timeout condition |
-| **Workflow Operator Interface** | ✅ Complete | router.go, agenticorp.go | Actions can control workflow advancement |
+| **Workflow Operator Interface** | ✅ Complete | router.go, loom.go | Actions can control workflow advancement |
 | **Escalation Tracking** | ✅ Complete | engine.go | Full escalation context and history |
 
 ## Workflow Edge Conditions - Full Support

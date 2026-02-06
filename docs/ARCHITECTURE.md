@@ -1,12 +1,12 @@
-# AgentiCorp Architecture Guide
+# Loom Architecture Guide
 
 **Last Updated**: February 2, 2026 (Work flow fixes + pattern analysis engine)
 
-This document describes the architecture of AgentiCorp, the Agent Orchestration System for managing distributed AI workflows.
+This document describes the architecture of Loom, the Agent Orchestration System for managing distributed AI workflows.
 
 ## System Overview
 
-AgentiCorp is a comprehensive agent orchestration platform that:
+Loom is a comprehensive agent orchestration platform that:
 - Coordinates multiple AI agents with different roles (personas)
 - Manages work items (beads) through a distributed workflow engine
 - Integrates with external LLM providers for agent execution
@@ -35,7 +35,7 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 **Purpose**: Manage autonomous AI agents with role-based personas
 
 **Key Files**: 
-- `internal/agenticorp/worker_manager.go`
+- `internal/loom/worker_manager.go`
 - `internal/models/agent.go`
 
 **Concepts**:
@@ -83,7 +83,7 @@ AgentiCorp is a comprehensive agent orchestration platform that:
 - `pkg/provider/provider.go`
 - `internal/models/provider.go`
 - `internal/routing/router.go` (NEW v1.0)
-- `internal/agenticorp/agenticorp.go` (provider management)
+- `internal/loom/loom.go` (provider management)
 
 **Concepts**:
 - **Provider**: An external LLM service (local or cloud)
@@ -190,7 +190,7 @@ Format: `<resource>:<action>` (e.g., `agents:read`, `beads:write`)
 
 **Key Files**:
 - `internal/models/project.go`
-- `internal/agenticorp/project_manager.go`
+- `internal/loom/project_manager.go`
 
 **Concepts**:
 - **Project**: A container for beads, agents, and work
@@ -283,7 +283,7 @@ Format: `<resource>:<action>` (e.g., `agents:read`, `beads:write`)
 - **Schedule**: Recurring workflow execution
 
 **Key Workflows**:
-- `AgentiCorpHeartbeatWorkflow`: Master clock (10s interval)
+- `LoomHeartbeatWorkflow`: Master clock (10s interval)
 - `DispatcherWorkflow`: Work distribution (5s interval)
 - `ProviderHeartbeatWorkflow`: Provider health checks (30s interval)
 - `BeadProcessingWorkflow`: Agent work execution
@@ -760,13 +760,13 @@ api:
 
 # Database
 database:
-  path: ./agenticorp.db
+  path: ./loom.db
 
 # Temporal
 temporal:
   host: temporal:7233
-  namespace: agenticorp-default
-  task_queue: agenticorp-tasks
+  namespace: loom-default
+  task_queue: loom-tasks
   enabled: true
 
 # Projects
@@ -800,7 +800,7 @@ make run
 
 ### Docker Deployment
 
-- AgentiCorp container on port 8080
+- Loom container on port 8080
 - Temporal server on port 7233
 - Temporal UI on port 8088
 - PostgreSQL for Temporal state
@@ -990,7 +990,7 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    subgraph "Project: AgentiCorp"
+    subgraph "Project: Loom"
         PC[Project Config]
         OC[Org Chart]
         
@@ -1049,7 +1049,7 @@ graph TD
 └────────────────┬──────────────────────────────────────────┘
                  │
 ┌────────────────▼──────────────────────────────────────────┐
-│              AgentiCorp Core Engine                        │
+│              Loom Core Engine                        │
 ├─────────────────────────────────────────────────────────┤
 │                                                           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
@@ -1121,7 +1121,7 @@ sequenceDiagram
 
 ## Extensions
 
-AgentiCorp can be extended via:
+Loom can be extended via:
 
 1. **Custom Personas**: Add new agent roles in `personas/`
 2. **Custom Beads**: Define work items in project `.beads/` directories

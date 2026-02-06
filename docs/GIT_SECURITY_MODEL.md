@@ -1,6 +1,6 @@
 # Git Security Model
 
-This document defines the security model for git operations performed by AgentiCorp agents. Agents need git access to commit code, push branches, and create pull requests, but must operate within strict security constraints to protect repository integrity.
+This document defines the security model for git operations performed by Loom agents. Agents need git access to commit code, push branches, and create pull requests, but must operate within strict security constraints to protect repository integrity.
 
 ## Security Principles
 
@@ -182,7 +182,7 @@ func ValidateCommitMessage(msg string) error {
 Each project has dedicated SSH keys for agent operations:
 
 ```
-~/.agenticorp/projects/{project-id}/
+~/.loom/projects/{project-id}/
   ├── git_key           # Private SSH key
   ├── git_key.pub       # Public SSH key
   └── git_config        # Git configuration
@@ -192,18 +192,18 @@ Each project has dedicated SSH keys for agent operations:
 
 ```bash
 # Generate key for project
-ssh-keygen -t ed25519 -C "agenticorp-{project-id}@example.com" \
-    -f ~/.agenticorp/projects/{project-id}/git_key -N ""
+ssh-keygen -t ed25519 -C "loom-{project-id}@example.com" \
+    -f ~/.loom/projects/{project-id}/git_key -N ""
 
 # Add to GitHub/GitLab deploy keys (with write access)
-cat ~/.agenticorp/projects/{project-id}/git_key.pub
+cat ~/.loom/projects/{project-id}/git_key.pub
 ```
 
 ### Key Usage
 
 ```go
 func (s *GitService) configureSSH(projectID string) error {
-    keyPath := fmt.Sprintf("%s/.agenticorp/projects/%s/git_key",
+    keyPath := fmt.Sprintf("%s/.loom/projects/%s/git_key",
         os.Getenv("HOME"), projectID)
 
     // Configure git to use project-specific key
@@ -227,7 +227,7 @@ func (s *GitService) configureSSH(projectID string) error {
 **GitHub:**
 ```
 Settings → Deploy keys → Add deploy key
-Title: AgentiCorp Agent Access ({project-id})
+Title: Loom Agent Access ({project-id})
 Key: <public key contents>
 ☑ Allow write access
 ```
@@ -235,7 +235,7 @@ Key: <public key contents>
 **GitLab:**
 ```
 Settings → Repository → Deploy Keys
-Title: AgentiCorp Agent Access
+Title: Loom Agent Access
 Key: <public key contents>
 ☑ Write access allowed
 ```
@@ -339,7 +339,7 @@ func (s *GitService) CreatePR(ctx context.Context, req PRRequest) error {
 
 All git operations logged to:
 ```
-~/.agenticorp/projects/{project-id}/git_audit.log
+~/.loom/projects/{project-id}/git_audit.log
 ```
 
 **Log Entry Format:**

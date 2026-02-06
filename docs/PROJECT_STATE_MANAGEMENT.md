@@ -1,10 +1,10 @@
 # Project State Management
 
-This document describes the project lifecycle management capabilities of AgentiCorp.
+This document describes the project lifecycle management capabilities of Loom.
 
 ## Overview
 
-AgentiCorp supports sophisticated project state management with three lifecycle states:
+Loom supports sophisticated project state management with three lifecycle states:
 - **Open**: Active project with ongoing work
 - **Closed**: Completed project with no remaining work
 - **Reopened**: Previously closed project that has been reopened
@@ -14,7 +14,7 @@ AgentiCorp supports sophisticated project state management with three lifecycle 
 - **Comments**: Add timestamped comments to track project decisions
 - **Closure Workflow**: Close projects only when no open work remains
 - **Agent Consensus**: If open work exists, requires agent agreement to close
-- **Perpetual Projects**: Mark projects (like AgentiCorp itself) that never close
+- **Perpetual Projects**: Mark projects (like Loom itself) that never close
 
 ## API Endpoints
 
@@ -56,9 +56,9 @@ Add projects to your `config.yaml`:
 
 ```yaml
 projects:
-  - id: agenticorp-self
-    name: AgentiCorp Self-Improvement
-    git_repo: https://github.com/jordanhubbard/agenticorp
+  - id: loom-self
+    name: Loom Self-Improvement
+    git_repo: https://github.com/jordanhubbard/loom
     branch: main
     is_perpetual: true  # Never closes
     
@@ -69,12 +69,12 @@ projects:
     is_perpetual: false  # Can be closed
 ```
 
-## The AgentiCorp Persona
+## The Loom Persona
 
-The AgentiCorp includes a special persona that works on improving the platform itself. This persona:
-- Works on the perpetual `agenticorp-self` project
+The Loom includes a special persona that works on improving the platform itself. This persona:
+- Works on the perpetual `loom-self` project
 - Collaborates with UX, Engineering, PM, and Product personas
 - Continuously improves the platform
 - Never closes because there's always room for improvement
 
-See `personas/agenticorp/` for the complete definition.
+See `personas/loom/` for the complete definition.

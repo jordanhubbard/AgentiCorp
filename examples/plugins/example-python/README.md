@@ -1,6 +1,6 @@
 # Example Python Plugin
 
-This is a complete working example of an AgentiCorp plugin implemented in Python using Flask.
+This is a complete working example of an Loom plugin implemented in Python using Flask.
 
 ## Features
 
@@ -89,11 +89,11 @@ pytest test_plugin.py -v
 # Start the plugin
 python plugin.py &
 
-# Copy manifest to AgentiCorp
-mkdir -p /path/to/agenticorp/plugins/example-python
-cp plugin.yaml /path/to/agenticorp/plugins/example-python/
+# Copy manifest to Loom
+mkdir -p /path/to/loom/plugins/example-python
+cp plugin.yaml /path/to/loom/plugins/example-python/
 
-# Restart AgentiCorp to load the plugin
+# Restart Loom to load the plugin
 ```
 
 ### Option 2: Docker
@@ -118,12 +118,12 @@ Create `/etc/systemd/system/example-python-plugin.service`:
 
 ```ini
 [Unit]
-Description=AgentiCorp Example Python Plugin
+Description=Loom Example Python Plugin
 After=network.target
 
 [Service]
 Type=simple
-User=agenticorp
+User=loom
 WorkingDirectory=/opt/example-python-plugin
 ExecStart=/usr/bin/python3 /opt/example-python-plugin/plugin.py
 Restart=always
@@ -158,7 +158,7 @@ Configuration is validated according to the schema in `plugin.yaml`.
 
 ## Error Handling
 
-The plugin returns structured errors compatible with AgentiCorp:
+The plugin returns structured errors compatible with Loom:
 
 ```json
 {

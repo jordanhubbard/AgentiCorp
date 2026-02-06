@@ -1,6 +1,6 @@
-# Contributing to AgentiCorp
+# Contributing to Loom
 
-Thank you for your interest in contributing to AgentiCorp! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Loom! This document provides guidelines and instructions for contributing.
 
 ## Getting Started
 
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to AgentiCorp! This document provide
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/jordanhubbard/agenticorp.git
-cd agenticorp
+git clone https://github.com/jordanhubbard/loom.git
+cd loom
 ```
 
 2. **Set up development environment**
@@ -46,12 +46,12 @@ The web UI will be available at http://localhost:8080
 ## Project Structure
 
 ```
-agenticorp/
+loom/
 ├── api/                    # OpenAPI specifications
-├── cmd/agenticorp/           # Main application entry point
+├── cmd/loom/           # Main application entry point
 ├── internal/              # Internal packages
 │   ├── agent/            # Agent management
-│   ├── agenticorp/          # Core orchestration logic
+│   ├── loom/          # Core orchestration logic
 │   ├── api/              # HTTP API handlers
 │   ├── beads/            # Beads integration
 │   ├── decision/         # Decision bead handling
@@ -288,4 +288,4 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ## Thank You!
 
-Your contributions help make AgentiCorp better for everyone. We appreciate your time and effort!
+Your contributions help make Loom better for everyone. We appreciate your time and effort!

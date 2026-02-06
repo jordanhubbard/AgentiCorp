@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/motivation"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/motivation"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // MotivationActivities provides Temporal activities for motivation operations

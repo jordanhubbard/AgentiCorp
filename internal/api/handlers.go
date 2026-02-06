@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 	"net/http"
 	"strings"
 )

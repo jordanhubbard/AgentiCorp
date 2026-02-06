@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 func TestSelectProvider_MinimizeCost(t *testing.T) {

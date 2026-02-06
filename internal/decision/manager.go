@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Manager manages decision beads and decision-making

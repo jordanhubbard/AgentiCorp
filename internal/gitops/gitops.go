@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/observability"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/observability"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Manager handles git operations for managed projects

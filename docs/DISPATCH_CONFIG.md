@@ -206,7 +206,7 @@ dispatch:
 
 **Solution**:
 1. Increase `max_hops` in config.yaml
-2. Restart agenticorp service
+2. Restart loom service
 3. Re-open the escalated bead if appropriate
 
 ```yaml

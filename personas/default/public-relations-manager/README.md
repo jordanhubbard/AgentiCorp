@@ -20,12 +20,12 @@ This persona implements the requirements for an autonomous GitHub issue manageme
 ### Prerequisites
 
 1. **GitHub API Access**: The PR Manager needs GitHub API credentials to monitor and update issues
-2. **Registered Projects**: Projects must be registered in AgentiCorp with GitHub repository URLs
+2. **Registered Projects**: Projects must be registered in Loom with GitHub repository URLs
 3. **Bead System**: The `bd` (beads) CLI tool should be available for work tracking
 
 ### Setting Up GitHub Access
 
-Configure GitHub credentials for the persona to use. Add to your AgentiCorp configuration:
+Configure GitHub credentials for the persona to use. Add to your Loom configuration:
 
 ```yaml
 personas:
@@ -329,4 +329,4 @@ To improve this persona:
 
 ## License
 
-This persona follows the same license as the AgentiCorp project.
+This persona follows the same license as the Loom project.

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func TestNewManager(t *testing.T) {
@@ -51,7 +51,7 @@ func TestCloneProject(t *testing.T) {
 	project := &models.Project{
 		ID:            "test-clone",
 		Name:          "Test Clone",
-		GitRepo:       "https://github.com/jordanhubbard/agenticorp.git",
+		GitRepo:       "https://github.com/jordanhubbard/loom.git",
 		Branch:        "main",
 		BeadsPath:     ".beads",
 		GitAuthMethod: models.GitAuthNone,
@@ -95,7 +95,7 @@ func TestCommitChanges(t *testing.T) {
 	project := &models.Project{
 		ID:            "test-commit",
 		Name:          "Test Commit",
-		GitRepo:       "https://github.com/jordanhubbard/agenticorp.git",
+		GitRepo:       "https://github.com/jordanhubbard/loom.git",
 		Branch:        "main",
 		BeadsPath:     ".beads",
 		GitAuthMethod: models.GitAuthNone,
@@ -152,7 +152,7 @@ func TestCommitChangesNoChanges(t *testing.T) {
 	project := &models.Project{
 		ID:            "test-no-changes",
 		Name:          "Test No Changes",
-		GitRepo:       "https://github.com/jordanhubbard/agenticorp.git",
+		GitRepo:       "https://github.com/jordanhubbard/loom.git",
 		Branch:        "main",
 		BeadsPath:     ".beads",
 		GitAuthMethod: models.GitAuthNone,

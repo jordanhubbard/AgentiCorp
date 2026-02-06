@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/motivation"
+	"github.com/jordanhubbard/loom/internal/motivation"
 )
 
 // MotivationResponse represents a motivation in API responses

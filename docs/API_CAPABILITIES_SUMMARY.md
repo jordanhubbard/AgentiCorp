@@ -1,4 +1,4 @@
-# AgentiCorp API Capabilities Summary
+# Loom API Capabilities Summary
 
 **Date:** 2026-01-22  
 **System Status:** Running and Healthy  
@@ -19,7 +19,7 @@
 
 ### Running Containers
 ```
-- agenticorp (port 8080) - HEALTHY
+- loom (port 8080) - HEALTHY
 - temporal (port 7233) - HEALTHY  
 - temporal-postgresql - HEALTHY
 - temporal-ui (port 8088) - HEALTHY
@@ -112,7 +112,7 @@ GET /api/v1/agents
 POST /api/v1/agents
 {
   "persona_name": "default/web-designer",
-  "project_id": "agenticorp-self",
+  "project_id": "loom-self",
   "provider_id": "mock-local"
 }
 
@@ -146,7 +146,7 @@ POST /api/v1/work
 {
   "prompt": "Analyze the current web UI design",
   "agent_id": "optional-specific-agent",
-  "project_id": "agenticorp-self"
+  "project_id": "loom-self"
 }
 ```
 
@@ -168,7 +168,7 @@ PUT /api/v1/personas/{name}
 GET /api/v1/projects
 
 # Get project details
-GET /api/v1/projects/agenticorp-self
+GET /api/v1/projects/loom-self
 
 # Create project
 POST /api/v1/projects
@@ -182,7 +182,7 @@ POST /api/v1/projects/git/push
 ### Beads (Work Items) ✅
 ```bash
 # List beads
-GET /api/v1/beads?project_id=agenticorp-self&status=open
+GET /api/v1/beads?project_id=loom-self&status=open
 
 # Create bead
 POST /api/v1/beads
@@ -294,7 +294,7 @@ curl -X POST http://localhost:8080/api/v1/repl \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Please review the AgentiCorp web UI codebase and provide recommendations for improvements. Focus on accessibility, usability, and modern web standards.",
+    "message": "Please review the Loom web UI codebase and provide recommendations for improvements. Focus on accessibility, usability, and modern web standards.",
     "timeout_sec": 300
   }' | jq .
 ```
@@ -329,7 +329,7 @@ curl -X POST http://localhost:8080/api/v1/agents \
   -H "Content-Type: application/json" \
   -d '{
     "persona_name": "default/web-designer",
-    "project_id": "agenticorp-self",
+    "project_id": "loom-self",
     "provider_id": "your-real-provider-id"
   }' | jq .
 ```
@@ -343,7 +343,7 @@ curl -X POST http://localhost:8080/api/v1/work \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Review web/static/index.html and web/static/js/app.js. Evaluate accessibility, performance, and UX. Provide 5 specific, actionable recommendations.",
-    "project_id": "agenticorp-self"
+    "project_id": "loom-self"
   }' | jq .
 ```
 
@@ -438,8 +438,8 @@ curl -X POST http://localhost:8080/api/v1/work \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "As a web designer, review the AgentiCorp UI and provide a detailed UX assessment.",
-    "project_id": "agenticorp-self",
+    "prompt": "As a web designer, review the Loom UI and provide a detailed UX assessment.",
+    "project_id": "loom-self",
     "persona_hint": "web-designer"
   }' | jq .
 ```
@@ -504,6 +504,6 @@ curl -X POST http://localhost:8080/api/v1/repl \
 ---
 
 **Generated:** 2026-01-22 at 13:28 UTC  
-**System:** AgentiCorp v1.0.0  
+**System:** Loom v1.0.0  
 **API Version:** v1  
 **Authentication:** JWT Bearer Token

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // PersonaMatcher provides fuzzy matching for persona-based routing

@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/database"
-	"github.com/jordanhubbard/agenticorp/internal/modelcatalog"
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
-	"github.com/jordanhubbard/agenticorp/internal/provider"
-	"github.com/jordanhubbard/agenticorp/internal/temporal/eventbus"
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/modelcatalog"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
+	"github.com/jordanhubbard/loom/internal/provider"
+	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
 )
 
 // ProviderHeartbeatInput represents heartbeat activity input.

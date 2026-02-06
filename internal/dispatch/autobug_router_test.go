@@ -3,7 +3,7 @@ package dispatch
 import (
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 func TestAutoBugRouter_FrontendJSError(t *testing.T) {

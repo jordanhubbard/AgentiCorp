@@ -1,6 +1,6 @@
-# AgentiCorp System Manual
+# Loom System Manual
 
-Complete user and developer manual for AgentiCorp - the Agent Orchestration System.
+Complete user and developer manual for Loom - the Agent Orchestration System.
 
 ## Quick Links
 
@@ -12,9 +12,9 @@ Complete user and developer manual for AgentiCorp - the Agent Orchestration Syst
 - **Beads Workflow**: [docs/BEADS_WORKFLOW.md](docs/BEADS_WORKFLOW.md) - Work item definitions
 - **Project State Management**: [docs/PROJECT_STATE_MANAGEMENT.md](docs/PROJECT_STATE_MANAGEMENT.md) - State persistence
 
-## What is AgentiCorp?
+## What is Loom?
 
-AgentiCorp is a comprehensive **agent orchestration system** that:
+Loom is a comprehensive **agent orchestration system** that:
 
 1. **Coordinates multiple AI agents** with different roles (personas)
 2. **Manages distributed work** through a powerful workflow engine
@@ -328,7 +328,7 @@ See [docs/TEMPORAL_DSL.md](docs/TEMPORAL_DSL.md) for complete syntax.
 docker compose up -d
 
 # View logs
-docker compose logs -f agenticorp
+docker compose logs -f loom
 
 # Stop
 docker compose down
@@ -412,13 +412,13 @@ api:
 
 # Database
 database:
-  path: ./agenticorp.db
+  path: ./loom.db
 
 # Temporal
 temporal:
   host: temporal:7233
-  namespace: agenticorp-default
-  task_queue: agenticorp-tasks
+  namespace: loom-default
+  task_queue: loom-tasks
   enabled: true
 
 # Projects
@@ -447,14 +447,14 @@ projects:
 1. Verify beads path exists in git repo
 2. Check YAML syntax with `make lint-yaml`
 3. Verify `project_id` matches registered project
-4. Look for loading errors in logs: `docker logs agenticorp`
+4. Look for loading errors in logs: `docker logs loom`
 
 ### Agents remain paused
 
 1. Check if provider is registered
 2. Verify provider status is `active` (not `pending`)
 3. Check agent assignment via UI
-4. Look for errors: `docker logs agenticorp | grep -i error`
+4. Look for errors: `docker logs loom | grep -i error`
 
 ### Temporal connection issues
 
@@ -552,7 +552,7 @@ cleaned, _ := temporalManager.StripTemporalDSL(agentOutput)
 
 ## Version Information
 
-- **AgentiCorp**: Latest
+- **Loom**: Latest
 - **Temporal**: 1.22.4+
 - **PostgreSQL**: 15+
 - **Go**: 1.24+

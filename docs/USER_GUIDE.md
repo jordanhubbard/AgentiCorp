@@ -1,6 +1,6 @@
-# AgentiCorp User Guide
+# Loom User Guide
 
-This guide helps new users run AgentiCorp, register projects, and work with agents and beads.
+This guide helps new users run Loom, register projects, and work with agents and beads.
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ This guide helps new users run AgentiCorp, register projects, and work with agen
 - Docker Compose 1.29+
 - Go 1.24+ (optional for local development)
 
-### Start AgentiCorp
+### Start Loom
 
 ```bash
 docker compose up -d
@@ -22,7 +22,7 @@ For local development with the full container stack, you can also use:
 make run
 ```
 
-Once running, AgentiCorp serves the API on `:8080` and the Temporal UI on `:8088`.
+Once running, Loom serves the API on `:8080` and the Temporal UI on `:8088`.
 
 ## Project Registration
 
@@ -46,9 +46,9 @@ Example:
 
 ```yaml
 projects:
-  - id: agenticorp
-    name: AgentiCorp
-    git_repo: git@github.com:jordanhubbard/agenticorp.git
+  - id: loom
+    name: Loom
+    git_repo: git@github.com:jordanhubbard/loom.git
     branch: main
     beads_path: .beads
     git_auth_method: ssh
@@ -59,7 +59,7 @@ projects:
       test_command: "make test"
 ```
 
-AgentiCorp loads beads from each project’s `beads_path` and uses them to build the work graph.
+Loom loads beads from each project’s `beads_path` and uses them to build the work graph.
 
 ### Git Access (SSH Keys)
 
@@ -74,7 +74,7 @@ Dispatch will pause until git access and the beads path are valid.
 ## Personas and Agents
 
 Default personas live under `personas/default/`. The system persona(s) live under
-`personas/agenticorp/`.
+`personas/loom/`.
 
 Agents are created from personas and attached to projects. The Project Viewer UI
 shows agent assignments and bead progress in real time.
@@ -94,14 +94,14 @@ Key fields:
 ## Operational Workflow
 
 1. Register projects in `config.yaml`.
-2. Start AgentiCorp (docker compose or binary).
+2. Start Loom (docker compose or binary).
 3. Confirm beads are loaded in the UI and API.
 4. Assign agents to projects and monitor progress.
 5. Use decisions/approvals for escalations (e.g., CEO workflow).
 
 ## Testing
 
-AgentiCorp’s default `make test` runs the full Docker stack with Temporal:
+Loom’s default `make test` runs the full Docker stack with Temporal:
 
 ```bash
 make test
@@ -119,9 +119,9 @@ Changes are applied immediately and reflected across the UI.
 
 ## CEO REPL
 
-The CEO REPL lets you send high-priority questions directly to AgentiCorp. It uses
+The CEO REPL lets you send high-priority questions directly to Loom. It uses
 Temporal to route the request through the best available provider (quality and
-latency weighted) with the AgentiCorp persona context.
+latency weighted) with the Loom persona context.
 
 1. Navigate to the **CEO REPL** section.
 2. Enter your question and click **Send**.
@@ -129,7 +129,7 @@ latency weighted) with the AgentiCorp persona context.
 
 ## Activity Feed and Notifications
 
-AgentiCorp provides a comprehensive activity tracking and notification system to keep teams informed about important events.
+Loom provides a comprehensive activity tracking and notification system to keep teams informed about important events.
 
 ### Activity Feed
 
@@ -142,7 +142,7 @@ The activity feed shows all important events across your projects, including bea
 curl http://localhost:8080/api/v1/activity-feed
 
 # Filter by project
-curl http://localhost:8080/api/v1/activity-feed?project_id=agenticorp
+curl http://localhost:8080/api/v1/activity-feed?project_id=loom
 
 # Filter by event type
 curl http://localhost:8080/api/v1/activity-feed?event_type=bead.created
@@ -237,7 +237,7 @@ For complete API documentation and technical details, see [docs/activity-notific
 
 ## Configuration
 
-AgentiCorp is configured via `config.yaml`. Key sections include:
+Loom is configured via `config.yaml`. Key sections include:
 
 ### Dispatch Configuration
 

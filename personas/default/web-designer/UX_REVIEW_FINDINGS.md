@@ -1,12 +1,12 @@
-# AgentiCorp UX Review - Web Designer Persona Findings
+# Loom UX Review - Web Designer Persona Findings
 
 **Reviewer**: Web Designer Persona
 **Date**: 2026-01-18
-**Scope**: AgentiCorp Web Interface (web/static/)
+**Scope**: Loom Web Interface (web/static/)
 
 ## Executive Summary
 
-The AgentiCorp web interface provides a functional foundation for agent orchestration with a clean, modern design. However, there are several opportunities to improve usability, accessibility, and visual polish. Key areas for improvement include:
+The Loom web interface provides a functional foundation for agent orchestration with a clean, modern design. However, there are several opportunities to improve usability, accessibility, and visual polish. Key areas for improvement include:
 
 1. Enhanced visual feedback for user actions
 2. Improved accessibility and keyboard navigation

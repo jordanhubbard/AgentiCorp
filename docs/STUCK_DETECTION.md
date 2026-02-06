@@ -1,6 +1,6 @@
 # Stuck Detection Heuristics
 
-This document describes how AgentiCorp detects when an agent is truly stuck versus actively investigating a complex problem.
+This document describes how Loom detects when an agent is truly stuck versus actively investigating a complex problem.
 
 ## Overview
 

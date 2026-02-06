@@ -19,13 +19,13 @@ Check persona definition without execution:
 
 ```bash
 # Validate syntax
-agenticorp validate-persona personas/backend-dev.md
+loom validate-persona personas/backend-dev.md
 
 # Check completeness
-agenticorp check-persona --completeness personas/backend-dev.md
+loom check-persona --completeness personas/backend-dev.md
 
 # Lint best practices
-agenticorp lint-persona personas/backend-dev.md
+loom lint-persona personas/backend-dev.md
 ```
 
 **Checks:**
@@ -41,7 +41,7 @@ Test persona responses interactively:
 
 ```bash
 # Start test session
-agenticorp test-persona backend-dev
+loom test-persona backend-dev
 
 # Send test prompts
 > Explain how to optimize a database query
@@ -93,7 +93,7 @@ test_suite:
 Run tests:
 
 ```bash
-agenticorp run-tests personas/backend-dev/tests.yaml
+loom run-tests personas/backend-dev/tests.yaml
 ```
 
 ### 4. Capability Verification
@@ -102,10 +102,10 @@ Test each claimed capability:
 
 ```bash
 # Generate capability tests
-agenticorp generate-capability-tests backend-dev
+loom generate-capability-tests backend-dev
 
 # Run capability verification
-agenticorp verify-capabilities backend-dev
+loom verify-capabilities backend-dev
 ```
 
 **For each capability**, generates and runs tests:
@@ -119,10 +119,10 @@ Compare personas against each other:
 
 ```bash
 # Compare two personas
-agenticorp compare-personas backend-dev senior-backend-dev
+loom compare-personas backend-dev senior-backend-dev
 
 # A/B test
-agenticorp ab-test --persona1 backend-dev --persona2 alternative-backend --prompts test-set.txt
+loom ab-test --persona1 backend-dev --persona2 alternative-backend --prompts test-set.txt
 ```
 
 **Metrics:**
@@ -218,9 +218,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Validate Personas
-        run: agenticorp validate-personas personas/
+        run: loom validate-personas personas/
       - name: Run Tests
-        run: agenticorp run-all-tests
+        run: loom run-all-tests
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:

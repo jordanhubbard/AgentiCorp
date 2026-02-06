@@ -1,6 +1,6 @@
 # Worker System Examples
 
-This directory contains examples demonstrating how to use the AgentiCorp worker system.
+This directory contains examples demonstrating how to use the Loom worker system.
 
 ## Examples
 
@@ -38,7 +38,7 @@ go run main.go
 
 **Expected output:**
 ```
-=== AgentiCorp Worker System Demo ===
+=== Loom Worker System Demo ===
 
 Step 1: Setting up provider registry...
 ✓ Registered provider: OpenAI GPT-4

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 // GPUInfo represents information about an available GPU

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jordanhubbard/agenticorp/internal/executor"
+	"github.com/jordanhubbard/loom/internal/executor"
 )
 
 // ShellActivity handles shell command execution for agents

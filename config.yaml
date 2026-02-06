@@ -1,4 +1,4 @@
-# AgentiCorp Configuration
+# Loom Configuration
 
 server:
   http_port: 8081
@@ -13,7 +13,7 @@ server:
 
 database:
   type: sqlite
-  path: ./agenticorp.db  # Local development database
+  path: ./loom.db  # Local development database
 
 beads:
   bd_path: bd  # Path to bd executable
@@ -54,7 +54,7 @@ security:
 temporal:
   host: localhost:7233
   namespace: default
-  task_queue: agenticorp-tasks
+  task_queue: loom-tasks
   workflow_execution_timeout: 24h
   workflow_task_timeout: 10s
   enable_event_bus: true
@@ -82,9 +82,9 @@ providers:
     enabled: true
 
 projects:
-  - id: agenticorp-self
-    name: AgentiCorp Self-Improvement
-    git_repo: /Users/jkh/Src/AgentiCorp
+  - id: loom-self
+    name: Loom Self-Improvement
+    git_repo: .
     branch: main
     beads_path: .beads
     git_auth_method: none
@@ -93,7 +93,7 @@ projects:
     context:
       build_command: "go build"
       test_command: "go test ./..."
-      description: "The AgentiCorp project itself - perpetual self-improvement"
+      description: "The Loom project itself - perpetual self-improvement"
   # NOTE: Only one project should be configured at a time until multi-project
   # agent allocation is fixed. The system has a global max_concurrent agent limit
   # that prevents multiple projects from having their own agent teams.

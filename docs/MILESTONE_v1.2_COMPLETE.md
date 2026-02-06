@@ -9,13 +9,13 @@
 
 ## Overview
 
-Successfully completed **Milestone 3: Extensibility & Scale (v1.2)**, delivering a comprehensive plugin system and enterprise-scale high availability features to AgentiCorp.
+Successfully completed **Milestone 3: Extensibility & Scale (v1.2)**, delivering a comprehensive plugin system and enterprise-scale high availability features to Loom.
 
 ## Completed Epics
 
 ### 1. Custom Provider Plugin System (bd-055)
 
-Enable community to extend AgentiCorp with custom AI providers without modifying source code.
+Enable community to extend Loom with custom AI providers without modifying source code.
 
 **Features Delivered:**
 - ✅ Complete plugin interface with lifecycle management
@@ -216,10 +216,10 @@ plugins:
   registry:
     sources:
       - name: official
-        url: https://registry.agenticorp.io
+        url: https://registry.loom.io
         enabled: true
       - name: local
-        url: file://~/.agenticorp/registry
+        url: file://~/.loom/registry
         enabled: true
 ```
 
@@ -228,7 +228,7 @@ plugins:
 ```yaml
 database:
   type: postgres
-  dsn: postgresql://user:pass@host:5432/agenticorp?sslmode=require
+  dsn: postgresql://user:pass@host:5432/loom?sslmode=require
 
 cache:
   backend: redis  # Shared cache for distributed
@@ -290,7 +290,7 @@ k6 run load-test.js
 ### For Plugin Developers
 
 - Create plugins for any AI provider
-- No AgentiCorp source code changes needed
+- No Loom source code changes needed
 - Process isolation for safety
 - Hot-reload for fast iteration
 - Share via plugin registry
@@ -418,7 +418,7 @@ Identified for next milestones:
 
 ## What's Next
 
-With Milestone v1.2 complete, AgentiCorp now has:
+With Milestone v1.2 complete, Loom now has:
 - ✅ Production readiness (v1.0)
 - ✅ Analytics & caching (v1.1)
 - ✅ Extensibility & scale (v1.2)
@@ -462,7 +462,7 @@ With Milestone v1.2 complete, AgentiCorp now has:
 
 **Milestone v1.2** is **100% COMPLETE** with all success criteria met, comprehensive testing, complete documentation, and production-ready code.
 
-AgentiCorp now provides:
+Loom now provides:
 - **Extensibility**: Plugin system for any AI provider
 - **Community**: Marketplace for sharing plugins
 - **Scale**: 1000+ req/sec sustained

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/workflow"
+	"github.com/jordanhubbard/loom/internal/workflow"
 )
 
 // UpsertWorkflow inserts or updates a workflow

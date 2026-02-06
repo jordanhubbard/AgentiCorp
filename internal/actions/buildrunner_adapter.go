@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/build"
+	"github.com/jordanhubbard/loom/internal/build"
 )
 
 // BuildRunnerAdapter adapts the BuildRunner to the actions interface

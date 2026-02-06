@@ -1,7 +1,7 @@
 .PHONY: all build build-all run restart test test-api coverage fmt vet deps clean distclean install config dev-setup docker-build docker-run docker-stop docker-clean help lint lint-yaml lint-docs release release-major release-minor release-patch
 
 # Build variables
-BINARY_NAME=agenticorp
+BINARY_NAME=loom
 VERSION?=dev
 LDFLAGS=-ldflags "-X main.version=$(VERSION)"
 BEADS_DIR=.beads/beads
@@ -35,7 +35,7 @@ define run_with_failure_bead
 			"" \
 			"status: open" \
 			"priority: 0" \
-			"project_id: agenticorp" \
+			"project_id: loom" \
 			"assigned_to: null" \
 			"blocked_by: []" \
 			"blocks: []" \
@@ -68,10 +68,10 @@ build:
 # Build for multiple platforms
 build-all: lint-yaml
 	@echo "Building for multiple platforms..."
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-linux-amd64 ./cmd/agenticorp
-	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-darwin-amd64 ./cmd/agenticorp
-	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o $(BINARY_NAME)-darwin-arm64 ./cmd/agenticorp
-	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-windows-amd64.exe ./cmd/agenticorp
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-linux-amd64 ./cmd/loom
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-darwin-amd64 ./cmd/loom
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o $(BINARY_NAME)-darwin-arm64 ./cmd/loom
+	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o $(BINARY_NAME)-windows-amd64.exe ./cmd/loom
 
 # Run the application
 run: build
@@ -84,7 +84,7 @@ restart: build
 
 # Run tests
 test:
-	$(call run_with_failure_bead,test,bash -c "docker compose up -d --build && docker compose run --rm agenticorp-test; status=$$?; docker compose down; exit $$status")
+	$(call run_with_failure_bead,test,bash -c "docker compose up -d --build && docker compose run --rm loom-test; status=$$?; docker compose down; exit $$status")
 
 # Run tests with coverage
 coverage:
@@ -122,8 +122,8 @@ clean:
 distclean: clean
 	@echo "Stopping containers..."
 	@docker compose down -v --remove-orphans 2>/dev/null || true
-	@echo "Removing agenticorp docker images..."
-	@docker rmi agenticorp:latest agenticorp-agenticorp-test:latest 2>/dev/null || true
+	@echo "Removing loom docker images..."
+	@docker rmi loom:latest loom-loom-test:latest 2>/dev/null || true
 	@echo "Pruning dangling docker images..."
 	@docker image prune -f
 	@echo "Removing Go build cache for this module..."
@@ -165,7 +165,7 @@ docker-build:
 
 # Run application in Docker using docker compose
 docker-run:
-	@echo "Starting agenticorp in Docker..."
+	@echo "Starting loom in Docker..."
 	@docker compose up -d
 
 # Stop Docker containers
@@ -180,7 +180,7 @@ docker-clean: docker-stop
 	@docker rmi $(BINARY_NAME):$(VERSION) || true
 
 help:
-	@echo "AgentiCorp - Makefile Commands"
+	@echo "Loom - Makefile Commands"
 	@echo ""
 	@echo "Development:"
 	@echo "  make build        - Build the application"

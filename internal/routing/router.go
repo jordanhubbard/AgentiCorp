@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	internalmodels "github.com/jordanhubbard/agenticorp/internal/models"
+	internalmodels "github.com/jordanhubbard/loom/internal/models"
 )
 
 // RoutingPolicy defines how providers should be selected

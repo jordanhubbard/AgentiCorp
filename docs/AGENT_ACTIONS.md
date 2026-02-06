@@ -1,6 +1,6 @@
 # Agent Actions Reference
 
-This document describes the action schema for AgentiCorp agents. Agents use these actions to interact with the codebase, run commands, manage beads, and execute tests.
+This document describes the action schema for Loom agents. Agents use these actions to interact with the codebase, run commands, manage beads, and execute tests.
 
 ## Action Envelope Format
 

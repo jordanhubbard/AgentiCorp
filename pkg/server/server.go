@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jordanhubbard/agenticorp/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/config"
 )
 
 // Server represents the AgentiCorp HTTP server

@@ -9,13 +9,13 @@
 
 ## Overview
 
-Successfully completed **Milestone 4: Developer Experience (v2.0)**, delivering comprehensive IDE integrations and visual persona management tools to AgentiCorp.
+Successfully completed **Milestone 4: Developer Experience (v2.0)**, delivering comprehensive IDE integrations and visual persona management tools to Loom.
 
 ## Completed Epics
 
 ### 1. IDE Integration Plugins (bd-058)
 
-Bring AgentiCorp directly into developer workflows with native IDE support.
+Bring Loom directly into developer workflows with native IDE support.
 
 **Features Delivered:**
 - ✅ Complete VS Code extension with chat and inline suggestions
@@ -27,7 +27,7 @@ Bring AgentiCorp directly into developer workflows with native IDE support.
 
 **Child Beads (4/4):**
 1. bd-094: VS Code extension with AI chat panel
-2. bd-095: Inline code suggestions from AgentiCorp
+2. bd-095: Inline code suggestions from Loom
 3. bd-096: JetBrains plugin
 4. bd-097: Vim/Neovim integration
 
@@ -226,14 +226,14 @@ GET    /api/v1/personas/:id/test-results
 
 ```bash
 # From marketplace
-code --install-extension agenticorp.agenticorp-vscode
+code --install-extension loom.loom-vscode
 
 # From source
 cd extensions/vscode
 npm install
 npm run compile
 npm run package
-code --install-extension agenticorp-vscode-1.0.0.vsix
+code --install-extension loom-vscode-1.0.0.vsix
 ```
 
 ### JetBrains
@@ -248,10 +248,10 @@ cd extensions/jetbrains
 
 ```vim
 " vim-plug
-Plug 'jordanhubbard/AgentiCorp', {'rtp': 'extensions/vim'}
+Plug 'jordanhubbard/Loom', {'rtp': 'extensions/vim'}
 
 " Vundle
-Plugin 'jordanhubbard/AgentiCorp', {'rtp': 'extensions/vim'}
+Plugin 'jordanhubbard/Loom', {'rtp': 'extensions/vim'}
 ```
 
 ### Persona Editor
@@ -313,7 +313,7 @@ Navigate to: `http://localhost:8080/persona-editor.html`
 
 ## What's Next
 
-With Milestone v2.0 complete, AgentiCorp now has:
+With Milestone v2.0 complete, Loom now has:
 - ✅ Production readiness (v1.0)
 - ✅ Analytics & caching (v1.1)
 - ✅ Extensibility & scale (v1.2)
@@ -345,7 +345,7 @@ With Milestone v2.0 complete, AgentiCorp now has:
 
 **Milestone v2.0** is **100% COMPLETE** with all success criteria met, comprehensive IDE integrations, visual editing tools, and production-ready code.
 
-AgentiCorp now provides:
+Loom now provides:
 - **IDE Integration**: VS Code, JetBrains, Vim/Neovim
 - **Visual Tools**: Persona editor, workflow builder
 - **Templates**: 15+ pre-built personas

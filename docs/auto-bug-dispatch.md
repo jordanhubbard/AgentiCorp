@@ -298,7 +298,7 @@ curl http://localhost:8080/api/v1/beads/{bead-id}
 2. **Check routing analysis**:
    ```bash
    # Look for dispatcher logs
-   grep "Auto-bug detected" logs/agenticorp.log
+   grep "Auto-bug detected" logs/loom.log
    ```
 
 3. **Check for persona hint**:

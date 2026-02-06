@@ -1,6 +1,6 @@
-# AgentiCorp Entities Reference
+# Loom Entities Reference
 
-Complete reference for all entities (data structures) in the AgentiCorp system.
+Complete reference for all entities (data structures) in the Loom system.
 
 ## Table of Contents
 
@@ -70,7 +70,7 @@ An autonomous AI entity with a specific role and behavioral instructions.
 {
   "id": "agent-ceo-default",
   "name": "CEO (Default)",
-  "project_id": "proj-agenticorp",
+  "project_id": "proj-loom",
   "persona_id": "persona-ceo",
   "role": "ceo",
   "status": "idle",
@@ -286,10 +286,10 @@ A container for beads, agents, and related work.
 ### Example
 
 ```yaml
-id: agenticorp
-name: AgentiCorp
+id: loom
+name: Loom
 description: Agent orchestration and workflow engine
-git_repo: https://github.com/jordanhubbard/agenticorp
+git_repo: https://github.com/jordanhubbard/loom
 branch: main
 beads_path: .beads
 is_sticky: true
@@ -367,7 +367,7 @@ Instructions, guidelines, and behavioral rules for agent roles.
 ### Model Definition
 
 **File Storage**: `personas/*/name.md`  
-**Categories**: `personas/default/` (standard roles), `personas/agenticorp/` (system roles)
+**Categories**: `personas/default/` (standard roles), `personas/loom/` (system roles)
 
 **Structure**:
 
@@ -458,7 +458,7 @@ Temporal workflow definition representing a long-running business process.
 
 | Workflow | Purpose | Interval | Inputs |
 |----------|---------|----------|--------|
-| `AgentiCorpHeartbeatWorkflow` | Master clock | 10s | - |
+| `LoomHeartbeatWorkflow` | Master clock | 10s | - |
 | `DispatcherWorkflow` | Route work | 5s | Project ID (optional) |
 | `ProviderHeartbeatWorkflow` | Health checks | 30s | Provider ID |
 | `BeadProcessingWorkflow` | Execute bead | On-demand | Bead ID, Agent ID |
@@ -782,7 +782,7 @@ Users can configure:
 
 All entities are persisted to:
 
-1. **SQLite Database** (`agenticorp.db`)
+1. **SQLite Database** (`loom.db`)
    - Primary storage for agents, beads, providers, projects, decisions
    - Transactional consistency
    - Auto-backup capability

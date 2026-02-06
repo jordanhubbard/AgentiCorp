@@ -142,7 +142,7 @@ Implemented workflow loading from YAML:
 
 **Startup Integration:**
 ```go
-// In internal/agenticorp/agenticorp.go Initialize()
+// In internal/loom/loom.go Initialize()
 if a.database != nil && a.workflowEngine != nil {
     workflowsDir := "./workflows/defaults"
     if _, err := os.Stat(workflowsDir); err == nil {
@@ -160,14 +160,14 @@ if a.database != nil && a.workflowEngine != nil {
 
 Confirmed successful loading:
 ```
-2026/01/27 08:05:39 agenticorp.go:548: Loading default workflows from ./workflows/defaults
+2026/01/27 08:05:39 loom.go:548: Loading default workflows from ./workflows/defaults
 2026/01/27 08:05:39 loader.go:81: [Workflow] Loaded workflow: Bug Fix Workflow (wf-bug-default)
 2026/01/27 08:05:39 loader.go:81: [Workflow] Loaded workflow: Feature Development Workflow (wf-feature-default)
 2026/01/27 08:05:39 loader.go:81: [Workflow] Loaded workflow: UI/Design Workflow (wf-ui-default)
 2026/01/27 08:05:39 loader.go:167: [Workflow] Installed default workflow: Bug Fix Workflow
 2026/01/27 08:05:39 loader.go:167: [Workflow] Installed default workflow: Feature Development Workflow
 2026/01/27 08:05:39 loader.go:167: [Workflow] Installed default workflow: UI/Design Workflow
-2026/01/27 08:05:39 agenticorp.go:552: Successfully loaded default workflows
+2026/01/27 08:05:39 loom.go:552: Successfully loaded default workflows
 ```
 
 ## Files Created/Modified
@@ -183,7 +183,7 @@ Confirmed successful loading:
 8. `workflows/defaults/ui.yaml` - UI/design workflow definition
 
 ### Files Modified:
-1. `internal/agenticorp/agenticorp.go` - Added workflow engine initialization and loading
+1. `internal/loom/loom.go` - Added workflow engine initialization and loading
 2. `internal/database/database.go` - Added workflow migration call
 3. `Dockerfile` - Added workflows directory copy
 

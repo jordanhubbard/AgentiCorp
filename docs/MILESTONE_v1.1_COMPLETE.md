@@ -9,7 +9,7 @@
 
 ## Overview
 
-Successfully completed **Milestone 2: Visibility & Intelligence (v1.1)**, delivering comprehensive analytics, cost tracking, and intelligent caching to AgentiCorp.
+Successfully completed **Milestone 2: Visibility & Intelligence (v1.1)**, delivering comprehensive analytics, cost tracking, and intelligent caching to Loom.
 
 ## Completed Epics
 
@@ -433,7 +433,7 @@ Identified opportunities for future work:
 
 ## What's Next
 
-With Milestone v1.1 complete, AgentiCorp now has:
+With Milestone v1.1 complete, Loom now has:
 - ✅ Full production readiness (v1.0)
 - ✅ Comprehensive analytics (v1.1)
 - ✅ Intelligent caching (v1.1)
@@ -455,7 +455,7 @@ With Milestone v1.1 complete, AgentiCorp now has:
 
 **Milestone v1.1** is **100% COMPLETE** with all success criteria met, comprehensive testing, complete documentation, and production-ready code.
 
-AgentiCorp now provides:
+Loom now provides:
 - **Visibility**: Real-time usage monitoring and cost tracking
 - **Intelligence**: Smart caching and anomaly detection
 - **Control**: Budget alerts and spending management

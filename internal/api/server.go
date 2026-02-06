@@ -8,22 +8,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jordanhubbard/agenticorp/internal/agenticorp"
-	"github.com/jordanhubbard/agenticorp/internal/analytics"
-	"github.com/jordanhubbard/agenticorp/internal/auth"
-	"github.com/jordanhubbard/agenticorp/internal/cache"
-	"github.com/jordanhubbard/agenticorp/internal/files"
-	"github.com/jordanhubbard/agenticorp/internal/keymanager"
-	"github.com/jordanhubbard/agenticorp/internal/logging"
-	"github.com/jordanhubbard/agenticorp/internal/metrics"
-	"github.com/jordanhubbard/agenticorp/pkg/config"
-	"github.com/jordanhubbard/agenticorp/pkg/models"
+	"github.com/jordanhubbard/loom/internal/loom"
+	"github.com/jordanhubbard/loom/internal/analytics"
+	"github.com/jordanhubbard/loom/internal/auth"
+	"github.com/jordanhubbard/loom/internal/cache"
+	"github.com/jordanhubbard/loom/internal/files"
+	"github.com/jordanhubbard/loom/internal/keymanager"
+	"github.com/jordanhubbard/loom/internal/logging"
+	"github.com/jordanhubbard/loom/internal/metrics"
+	"github.com/jordanhubbard/loom/pkg/config"
+	"github.com/jordanhubbard/loom/pkg/models"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Server represents the HTTP API server
 type Server struct {
-	agenticorp      *agenticorp.AgentiCorp
+	agenticorp      *loom.Loom
 	keyManager      *keymanager.KeyManager
 	authManager     *auth.Manager
 	analyticsLogger *analytics.Logger
@@ -37,7 +37,7 @@ type Server struct {
 }
 
 // NewServer creates a new API server
-func NewServer(arb *agenticorp.AgentiCorp, km *keymanager.KeyManager, am *auth.Manager, cfg *config.Config) *Server {
+func NewServer(arb *loom.Loom, km *keymanager.KeyManager, am *auth.Manager, cfg *config.Config) *Server {
 	// Initialize analytics logger with default privacy config
 	var analyticsLogger *analytics.Logger
 	if arb != nil && arb.GetDatabase() != nil {
@@ -422,7 +422,7 @@ func (s *Server) defaultProjectID() string {
 		return ""
 	}
 	if pm := s.agenticorp.GetProjectManager(); pm != nil {
-		if project, err := pm.GetProject("agenticorp"); err == nil && project != nil {
+		if project, err := pm.GetProject("loom"); err == nil && project != nil {
 			return project.ID
 		}
 		if projects := pm.ListProjects(); len(projects) > 0 && projects[0] != nil {

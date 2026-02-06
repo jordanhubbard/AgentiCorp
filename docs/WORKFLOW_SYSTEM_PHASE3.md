@@ -94,7 +94,7 @@ This workflow has exceeded the maximum number of cycles (3) or attempts. Please 
 **Files Modified:**
 - `internal/actions/schema.go` - Added approve_bead and reject_bead actions
 - `internal/actions/router.go` - Implemented approval handlers
-- `internal/agenticorp/agenticorp.go` - Added AdvanceWorkflowWithCondition
+- `internal/loom/loom.go` - Added AdvanceWorkflowWithCondition
 
 **New Actions:**
 
@@ -166,10 +166,10 @@ case ActionApproveBead:
 
 ### 4. Workflow Condition Routing ✅
 
-**File:** `internal/agenticorp/agenticorp.go`
+**File:** `internal/loom/loom.go`
 
 ```go
-func (a *AgentiCorp) AdvanceWorkflowWithCondition(beadID, agentID string, condition string, resultData map[string]string) error {
+func (a *Loom) AdvanceWorkflowWithCondition(beadID, agentID string, condition string, resultData map[string]string) error {
     // Get workflow execution
     execution, err := a.workflowEngine.GetDatabase().GetWorkflowExecutionByBeadID(beadID)
 
@@ -199,7 +199,7 @@ Connected to action router:
 ```go
 actionRouter := &actions.Router{
     // ... existing fields
-    Workflow:  arb, // AgentiCorp implements WorkflowOperator
+    Workflow:  arb, // Loom implements WorkflowOperator
     // ...
 }
 ```
@@ -318,7 +318,7 @@ curl -X POST http://localhost:8080/api/v1/beads \
     "description": "Test approval workflow",
     "type": "task",
     "priority": 1,
-    "project_id": "agenticorp-self"
+    "project_id": "loom-self"
   }'
 ```
 
@@ -376,7 +376,7 @@ curl -X POST http://localhost:8080/api/v1/agents/{agent_id}/actions \
 1. `internal/workflow/engine.go` - Escalation infrastructure and info generation
 2. `internal/actions/schema.go` - Added approve_bead and reject_bead actions
 3. `internal/actions/router.go` - Approval action handlers
-4. `internal/agenticorp/agenticorp.go` - AdvanceWorkflowWithCondition method
+4. `internal/loom/loom.go` - AdvanceWorkflowWithCondition method
 5. `internal/dispatch/dispatcher.go` - Escalation detection
 
 ## Code Statistics

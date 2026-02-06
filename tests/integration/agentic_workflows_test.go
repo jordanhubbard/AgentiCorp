@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/jordanhubbard/agenticorp/internal/actions"
+	"github.com/jordanhubbard/loom/internal/actions"
 )
 
 // TestBugFixWorkflow tests the complete bug fix workflow:

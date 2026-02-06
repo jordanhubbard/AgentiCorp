@@ -1,6 +1,6 @@
 # Integration Tests
 
-This directory contains end-to-end integration tests for AgentiCorp's agentic workflows.
+This directory contains end-to-end integration tests for Loom's agentic workflows.
 
 ## Overview
 
@@ -197,7 +197,7 @@ err := actions.Validate(envelope)  // ✓ Structure valid
 // router.Execute(envelope)  // ✗ Not done in these tests
 ```
 
-For full execution tests with mocks, see `cmd/agenticorp/integration_test.go` (when implemented).
+For full execution tests with mocks, see `cmd/loom/integration_test.go` (when implemented).
 
 ## Adding New Tests
 
@@ -250,7 +250,7 @@ func TestMyNewWorkflow(t *testing.T) {
 - [Agent Actions Reference](../../docs/WORKFLOW_ACTIONS.md) - Action schema documentation
 - [Git Workflow](../../docs/GIT_SECURITY_MODEL.md) - Git operations and security
 - [Feedback Loops](../../docs/FEEDBACK_LOOPS.md) - Build/lint/test orchestration
-- [AgentiCorp Story](../../docs/AGENTICORP_STORY.md) - High-level system overview
+- [Loom Story](../../docs/AGENTICORP_STORY.md) - High-level system overview
 
 ## CI/CD Integration
 

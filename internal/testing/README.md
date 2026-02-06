@@ -1,6 +1,6 @@
 # Testing Package
 
-The `internal/testing` package provides a robust test execution framework for AgentiCorp agents. It enables agents to run tests across multiple frameworks, parse results, and iterate based on feedback.
+The `internal/testing` package provides a robust test execution framework for Loom agents. It enables agents to run tests across multiple frameworks, parse results, and iterate based on feedback.
 
 ## Features
 
@@ -17,7 +17,7 @@ The `internal/testing` package provides a robust test execution framework for Ag
 import (
     "context"
     "time"
-    "github.com/jordanhubbard/agenticorp/internal/testing"
+    "github.com/jordanhubbard/loom/internal/testing"
 )
 
 // Create a test runner
@@ -333,7 +333,7 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/jordanhubbard/agenticorp/internal/testing"
+    "github.com/jordanhubbard/loom/internal/testing"
     "time"
 )
 

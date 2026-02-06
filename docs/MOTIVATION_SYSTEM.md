@@ -1,10 +1,10 @@
-# AgentiCorp Motivation System
+# Loom Motivation System
 
-The Motivation System is the core mechanism by which AgentiCorp proactively initiates work rather than waiting for external commands. Motivations are human-readable triggers that cause agents to wake and begin work when the system would otherwise be idle.
+The Motivation System is the core mechanism by which Loom proactively initiates work rather than waiting for external commands. Motivations are human-readable triggers that cause agents to wake and begin work when the system would otherwise be idle.
 
 ## Overview
 
-Unlike traditional task queues where work is pushed externally, AgentiCorp's motivation system allows agents to be **pulled** into action by internal triggers. This creates a self-driving system that:
+Unlike traditional task queues where work is pushed externally, Loom's motivation system allows agents to be **pulled** into action by internal triggers. This creates a self-driving system that:
 
 - Wakes agents when their expertise is needed
 - Responds to calendar events (deadlines, quarters, months)
