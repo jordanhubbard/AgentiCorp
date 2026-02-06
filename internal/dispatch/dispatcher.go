@@ -1064,16 +1064,40 @@ func (d *Dispatcher) ensureBeadHasWorkflow(ctx context.Context, bead *models.Bea
 		return execution, nil
 	}
 
-	// Determine workflow type from bead
-	workflowType := "bug" // Default
+	// Determine workflow type - check for self-improvement first
+	var workflowType string
 	title := strings.ToLower(bead.Title)
-	if strings.Contains(title, "feature") || strings.Contains(title, "enhancement") {
+
+	// Check if bead is tagged for self-improvement (highest priority)
+	isSelfImprovement := false
+	for _, tag := range bead.Tags {
+		tagLower := strings.ToLower(tag)
+		if tagLower == "self-improvement" || tagLower == "code-review" ||
+		   tagLower == "maintainability" || tagLower == "refactoring" {
+			isSelfImprovement = true
+			break
+		}
+	}
+
+	// Also check title for self-improvement keywords
+	if strings.Contains(title, "[code review]") || strings.Contains(title, "[refactor]") ||
+	   strings.Contains(title, "[optimization]") || strings.Contains(title, "[self-improvement]") ||
+	   strings.Contains(title, "[maintenance]") {
+		isSelfImprovement = true
+	}
+
+	if isSelfImprovement {
+		workflowType = "self-improvement"
+		log.Printf("[Workflow] Matched bead %s to self-improvement workflow (tags: %v)", bead.ID, bead.Tags)
+	} else if strings.Contains(title, "feature") || strings.Contains(title, "enhancement") {
 		workflowType = "feature"
 	} else if strings.Contains(title, "ui") || strings.Contains(title, "design") || strings.Contains(title, "css") || strings.Contains(title, "html") {
 		workflowType = "ui"
+	} else {
+		workflowType = "bug" // Default
 	}
 
-	// Get default workflow for this type
+	// Get workflow for this type
 	workflows, err := d.workflowEngine.GetDatabase().ListWorkflows(workflowType, bead.ProjectID)
 	if err != nil || len(workflows) == 0 {
 		log.Printf("[Workflow] No workflow found for type %s, bead %s", workflowType, bead.ID)
