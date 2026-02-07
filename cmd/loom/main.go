@@ -101,6 +101,9 @@ func main() {
 		}
 	}
 
+	// Wire key manager into Loom for SSH key DB persistence
+	arb.SetKeyManager(km)
+
 	go arb.StartMaintenanceLoop(runCtx)
 
 	// FIX #3: Always start fallback dispatch loop

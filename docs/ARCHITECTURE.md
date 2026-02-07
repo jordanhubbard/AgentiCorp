@@ -1119,6 +1119,234 @@ sequenceDiagram
     API-->>User: Applied confirmation
 ```
 
+## Workflow Diagrams
+
+### Docker Services Architecture
+
+```mermaid
+graph TB
+    User([User / Browser])
+    User -->|":8080"| Loom
+    User -->|":8088"| TemporalUI
+
+    subgraph Docker["Docker Compose Stack"]
+        Loom["Loom API Server<br/>:8080<br/>Go binary"]
+        TemporalUI["Temporal UI<br/>:8088"]
+        Temporal["Temporal Server<br/>:7233 gRPC"]
+        PostgreSQL["PostgreSQL<br/>Temporal state"]
+
+        Loom -->|"gRPC :7233"| Temporal
+        TemporalUI -->|"gRPC :7233"| Temporal
+        Temporal --> PostgreSQL
+    end
+
+    subgraph Storage["Persistent Volumes"]
+        DB["loom-db<br/>/app/data<br/>SQLite + SSH keys"]
+        Beads["loom-beads<br/>.beads/"]
+        Source[".:/app/src<br/>Source code"]
+    end
+
+    Loom --> DB
+    Loom --> Beads
+    Loom --> Source
+
+    subgraph Providers["LLM Providers"]
+        OpenAI["OpenAI API"]
+        Local["Local vLLM / Ollama"]
+        Anthropic["Anthropic API"]
+    end
+
+    Loom -->|"HTTP/HTTPS"| Providers
+
+    subgraph Git["Git Remotes"]
+        GitHub["GitHub / GitLab"]
+    end
+
+    Loom -->|"SSH (deploy keys)"| Git
+```
+
+### Project Bootstrap Workflow
+
+```mermaid
+sequenceDiagram
+    actor Admin as Administrator
+    participant API as Loom API
+    participant BS as BootstrapService
+    participant Git as Git
+    participant BD as Beads (bd CLI)
+    participant KM as KeyManager
+    participant DB as Database
+
+    Admin->>API: POST /api/v1/projects/bootstrap<br/>{github_url, name, branch, prd_text}
+    API->>BS: Bootstrap(request)
+    BS->>Git: Clone repository
+    BS->>BS: Create project structure<br/>(plans/BOOTSTRAP.md, settings.json)
+    BS->>BD: bd init (initialize beads)
+    BS->>Git: Commit initial structure
+
+    BS->>API: RegisterProject()
+    API->>DB: Store project metadata
+
+    Note over BS,KM: SSH Key Generation
+    BS->>BS: ssh-keygen -t ed25519
+    BS->>KM: StoreKey(private key, encrypted)
+    BS->>DB: UpsertCredential(public key, key reference)
+
+    BS->>BD: Create PM bead<br/>"Expand PRD with Best Practices"
+    BS->>Git: Commit PM bead
+
+    BS-->>API: BootstrapResult{project_id, public_key, instructions}
+    API-->>Admin: 200 OK + public key
+
+    Note over Admin,Git: Manual Step
+    Admin->>Git: Add public key as deploy key<br/>(Settings → Deploy keys)
+
+    Note over API,DB: Automated from here
+    API->>API: Dispatch cycle picks up PM bead
+    API->>API: PM agent expands PRD → creates epics/stories
+    API->>API: Agents work through beads autonomously
+```
+
+### Agent Dispatch Cycle
+
+```mermaid
+flowchart TD
+    Start([Heartbeat Tick<br/>every 10s]) --> LoadBeads[Load ready beads<br/>no blocking dependencies]
+    LoadBeads --> AnyReady{Any beads<br/>ready?}
+    AnyReady -->|No| Wait([Wait for next tick])
+    AnyReady -->|Yes| MatchPersona[Match bead to<br/>agent persona]
+    MatchPersona --> CheckProvider{Provider<br/>healthy?}
+    CheckProvider -->|No| PauseAgent[Pause agent<br/>wait for provider]
+    PauseAgent --> Wait
+    CheckProvider -->|Yes| AssignWork[Assign bead to agent<br/>status → in_progress]
+    AssignWork --> Execute[Agent executes<br/>via LLM provider]
+    Execute --> Result{Outcome}
+    Result -->|Complete| CloseBead[Close bead<br/>unblock dependents]
+    Result -->|Blocked| BlockBead[Block bead<br/>create decision]
+    Result -->|Escalate| Escalate[Escalate to CEO<br/>create decision bead]
+    Result -->|Error| Retry[Increment hop count<br/>redispatch]
+    CloseBead --> Wait
+    BlockBead --> Wait
+    Escalate --> Wait
+    Retry --> LoopCheck{Max hops<br/>exceeded?}
+    LoopCheck -->|No| Wait
+    LoopCheck -->|Yes| Escalate
+```
+
+### Authentication Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as Loom API
+    participant Auth as Auth Manager
+    participant JWT as JWT Middleware
+
+    Note over User,JWT: Login
+    User->>API: POST /api/v1/auth/login<br/>{username, password}
+    API->>Auth: ValidateCredentials()
+    Auth->>Auth: bcrypt.Compare(password, hash)
+    Auth-->>API: User + Role
+    API->>Auth: GenerateToken(user)
+    Auth-->>API: JWT token (24h TTL)
+    API-->>User: {token, expires_in, user}
+
+    Note over User,JWT: Authenticated Request
+    User->>API: GET /api/v1/beads<br/>Authorization: Bearer {token}
+    API->>JWT: ValidateToken()
+    JWT->>Auth: ParseClaims(token)
+    Auth-->>JWT: {user_id, role, permissions}
+    JWT->>JWT: CheckPermission("beads:read")
+    JWT-->>API: Authorized
+    API-->>User: 200 OK + beads list
+
+    Note over User,JWT: API Key Alternative
+    User->>API: GET /api/v1/beads<br/>X-API-Key: {key}
+    API->>Auth: ValidateAPIKey(key)
+    Auth->>Auth: bcrypt.Compare(key, hash)
+    Auth-->>API: Permissions list
+    API-->>User: 200 OK + beads list
+```
+
+### Provider Management Flow
+
+```mermaid
+flowchart TD
+    Register[Register Provider<br/>POST /api/v1/providers] --> HealthCheck[Immediate health check<br/>send test completion]
+    HealthCheck --> Healthy{Responds<br/>correctly?}
+    Healthy -->|Yes| Active[Status: active]
+    Healthy -->|No| Error[Status: error]
+
+    Active --> Negotiate[Model negotiation<br/>GET /providers/{id}/models]
+    Negotiate --> SelectBest[Select best model<br/>by capability score]
+    SelectBest --> Ready([Provider ready<br/>for agent use])
+
+    Ready --> Heartbeat[Heartbeat loop<br/>every 30s via Temporal]
+    Heartbeat --> StillHealthy{Still<br/>healthy?}
+    StillHealthy -->|Yes| UpdateMetrics[Update latency,<br/>success rate, tokens]
+    UpdateMetrics --> Heartbeat
+    StillHealthy -->|No| Degrade[Status: error<br/>pause agents]
+    Degrade --> Failover{Backup<br/>provider?}
+    Failover -->|Yes| Route[Route to backup<br/>via routing policy]
+    Failover -->|No| AlertAdmin[Alert admin<br/>agents paused]
+
+    subgraph Routing["Routing Policies"]
+        Cost["minimize_cost"]
+        Latency["minimize_latency"]
+        Quality["maximize_quality"]
+        Balanced["balanced<br/>30% cost, 30% latency, 40% quality"]
+    end
+
+    Route --> Routing
+```
+
+### User Journey: From PRD to Working Project
+
+```mermaid
+sequenceDiagram
+    actor User as User
+    actor Admin as Administrator
+    participant UI as Loom Web UI
+    participant API as Loom API
+    participant Agents as AI Agents
+    participant Git as GitHub
+
+    Note over Admin: One-time setup
+    Admin->>UI: Register LLM provider
+    Admin->>UI: Bootstrap project with PRD
+
+    UI->>API: POST /projects/bootstrap
+    API-->>UI: {project_id, public_key}
+    Admin->>Git: Add deploy key (public_key)
+
+    Note over User: Ongoing workflow
+    User->>UI: Login (username/password)
+    UI->>API: POST /auth/login → JWT token
+    User->>UI: Open project dashboard
+
+    loop Automated Agent Work
+        Agents->>API: Pick up ready beads
+        Agents->>Agents: Process work via LLM
+        Agents->>Git: Commit changes, push
+        Agents->>API: Update bead status
+        API->>UI: SSE event stream updates
+        UI-->>User: Real-time progress
+    end
+
+    Note over User,Agents: Decision Points
+    Agents->>API: Create decision bead
+    UI-->>User: Notification: decision needed
+    User->>UI: Review and approve decision
+    UI->>API: POST /decisions/{id}/decide
+    Agents->>Agents: Resume work
+
+    Note over User: Project Complete
+    Agents->>API: Create CEO demo bead
+    UI-->>User: "MVP ready for review"
+    User->>UI: Review, approve, or request changes
+    User->>Git: Pull completed project
+```
+
 ## Extensions
 
 Loom can be extended via:

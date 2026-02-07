@@ -145,6 +145,20 @@ func (p *Project) SetSchemaVersion(v SchemaVersion)   { p.EntityMetadata.SchemaV
 func (p *Project) GetEntityMetadata() *EntityMetadata { return &p.EntityMetadata }
 func (p *Project) GetID() string                      { return p.ID }
 
+// Credential represents a stored SSH key or other credential for a project
+type Credential struct {
+	ID                  string     `json:"id"`
+	ProjectID           string     `json:"project_id"`
+	Type                string     `json:"type"`                    // "ssh_ed25519"
+	PrivateKeyEncrypted string     `json:"private_key_encrypted"`   // AES-GCM encrypted, base64
+	PublicKey           string     `json:"public_key"`              // Plaintext public key
+	KeyID               string     `json:"key_id,omitempty"`        // Reference to keymanager key
+	Description         string     `json:"description,omitempty"`
+	CreatedAt           time.Time  `json:"created_at"`
+	UpdatedAt           time.Time  `json:"updated_at"`
+	RotatedAt           *time.Time `json:"rotated_at,omitempty"`
+}
+
 // BeadStatus represents the status of a bead
 type BeadStatus string
 

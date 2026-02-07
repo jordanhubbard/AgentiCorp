@@ -3,20 +3,25 @@ package gitops
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/keymanager"
 	"github.com/jordanhubbard/loom/internal/observability"
 	"github.com/jordanhubbard/loom/pkg/models"
 )
 
 // Manager handles git operations for managed projects
 type Manager struct {
-	baseWorkDir   string // Base directory for all project clones (e.g., /app/src)
-	projectKeyDir string // Base directory for per-project SSH keys
+	baseWorkDir   string                    // Base directory for all project clones (e.g., /app/src)
+	projectKeyDir string                    // Base directory for per-project SSH keys
+	db            *database.Database        // Database for credential persistence (optional)
+	keyManager    *keymanager.KeyManager    // Key manager for encryption (optional)
 }
 
 func logGitEvent(event string, project *models.Project, fields map[string]interface{}) {
@@ -49,8 +54,9 @@ func projectIDFromWorkDir(workDir string) string {
 	return filepath.Base(workDir)
 }
 
-// NewManager creates a new git operations manager
-func NewManager(baseWorkDir, projectKeyDir string) (*Manager, error) {
+// NewManager creates a new git operations manager.
+// db and km are optional — pass nil to disable database-backed key persistence.
+func NewManager(baseWorkDir, projectKeyDir string, db *database.Database, km *keymanager.KeyManager) (*Manager, error) {
 	// Ensure base work directory exists
 	if err := os.MkdirAll(baseWorkDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create base work directory: %w", err)
@@ -66,7 +72,19 @@ func NewManager(baseWorkDir, projectKeyDir string) (*Manager, error) {
 	return &Manager{
 		baseWorkDir:   baseWorkDir,
 		projectKeyDir: projectKeyDir,
+		db:            db,
+		keyManager:    km,
 	}, nil
+}
+
+// GetProjectKeyDir returns the base directory for per-project SSH keys.
+func (m *Manager) GetProjectKeyDir() string {
+	return m.projectKeyDir
+}
+
+// SetKeyManager sets the key manager for encrypted credential storage.
+func (m *Manager) SetKeyManager(km *keymanager.KeyManager) {
+	m.keyManager = km
 }
 
 // CloneProject clones a project's git repository into its work directory
@@ -662,12 +680,21 @@ func (m *Manager) EnsureProjectSSHKey(projectID string) (string, error) {
 
 	privatePath := m.projectPrivateKeyPath(projectID)
 	publicPath := m.projectPublicKeyPath(projectID)
+	generated := false
+
 	if _, err := os.Stat(privatePath); os.IsNotExist(err) {
-		if err := m.generateSSHKeyPair(privatePath); err != nil {
-			logGitError("git.ssh_key.ensure.error", project, map[string]interface{}{
-				"duration_ms": time.Since(start).Milliseconds(),
-			}, err)
-			return "", err
+		// Filesystem key missing — try restoring from database
+		if m.restoreKeyFromDB(projectID) {
+			logGitEvent("git.ssh_key.restored_from_db", project, map[string]interface{}{})
+		} else {
+			// No DB backup — generate new key
+			if err := m.generateSSHKeyPair(privatePath); err != nil {
+				logGitError("git.ssh_key.ensure.error", project, map[string]interface{}{
+					"duration_ms": time.Since(start).Milliseconds(),
+				}, err)
+				return "", err
+			}
+			generated = true
 		}
 	}
 
@@ -687,10 +714,18 @@ func (m *Manager) EnsureProjectSSHKey(projectID string) (string, error) {
 		}, err)
 		return "", fmt.Errorf("failed to read public key: %w", err)
 	}
+
+	publicKey := strings.TrimSpace(string(keyBytes))
+
+	// Persist newly generated key to database
+	if generated {
+		m.storeKeyInDB(projectID, publicKey)
+	}
+
 	logGitEvent("git.ssh_key.ensure.success", project, map[string]interface{}{
 		"duration_ms": time.Since(start).Milliseconds(),
 	})
-	return strings.TrimSpace(string(keyBytes)), nil
+	return publicKey, nil
 }
 
 // GetProjectPublicKey returns the project's public SSH key, creating it if needed.
@@ -723,10 +758,17 @@ func (m *Manager) RotateProjectSSHKey(projectID string) (string, error) {
 		}, err)
 		return "", fmt.Errorf("failed to read public key: %w", err)
 	}
+
+	publicKey := strings.TrimSpace(string(keyBytes))
+
+	// Update database with rotated key
+	now := time.Now()
+	m.storeKeyInDBWithRotation(projectID, publicKey, &now)
+
 	logGitEvent("git.ssh_key.rotate.success", project, map[string]interface{}{
 		"duration_ms": time.Since(start).Milliseconds(),
 	})
-	return strings.TrimSpace(string(keyBytes)), nil
+	return publicKey, nil
 }
 
 func (m *Manager) generateSSHKeyPair(privatePath string) error {
@@ -751,6 +793,132 @@ func (m *Manager) writePublicKeyFromPrivate(privatePath, publicPath string) erro
 		return fmt.Errorf("failed to write public key: %w", err)
 	}
 	return nil
+}
+
+// restoreKeyFromDB attempts to restore an SSH key from the database to the filesystem.
+// Returns true if the key was successfully restored.
+func (m *Manager) restoreKeyFromDB(projectID string) bool {
+	if m.db == nil || m.keyManager == nil {
+		return false
+	}
+
+	cred, err := m.db.GetCredentialByProjectID(projectID)
+	if err != nil || cred == nil {
+		return false
+	}
+
+	// Decrypt private key from KeyManager
+	privateKeyData, err := m.keyManager.GetKey(cred.KeyID)
+	if err != nil {
+		log.Printf("[gitops] Failed to decrypt SSH key from DB for project %s: %v", projectID, err)
+		return false
+	}
+
+	// Write to filesystem
+	keyDir := m.projectKeyDirForProject(projectID)
+	if err := os.MkdirAll(keyDir, 0700); err != nil {
+		log.Printf("[gitops] Failed to create SSH key directory for project %s: %v", projectID, err)
+		return false
+	}
+
+	privatePath := m.projectPrivateKeyPath(projectID)
+	publicPath := m.projectPublicKeyPath(projectID)
+
+	if err := os.WriteFile(privatePath, []byte(privateKeyData), 0600); err != nil {
+		log.Printf("[gitops] Failed to write private key for project %s: %v", projectID, err)
+		return false
+	}
+	if err := os.WriteFile(publicPath, []byte(cred.PublicKey), 0644); err != nil {
+		log.Printf("[gitops] Failed to write public key for project %s: %v", projectID, err)
+		return false
+	}
+
+	return true
+}
+
+// storeKeyInDB persists the SSH key to the database via the KeyManager.
+func (m *Manager) storeKeyInDB(projectID, publicKey string) {
+	m.storeKeyInDBWithRotation(projectID, publicKey, nil)
+}
+
+// storeKeyInDBWithRotation persists the SSH key to DB, optionally recording a rotation timestamp.
+func (m *Manager) storeKeyInDBWithRotation(projectID, publicKey string, rotatedAt *time.Time) {
+	if m.db == nil || m.keyManager == nil {
+		return
+	}
+	if !m.keyManager.IsUnlocked() {
+		log.Printf("[gitops] Cannot store SSH key in DB: key manager is locked")
+		return
+	}
+
+	privatePath := m.projectPrivateKeyPath(projectID)
+	privateKeyBytes, err := os.ReadFile(privatePath)
+	if err != nil {
+		log.Printf("[gitops] Failed to read private key for DB storage (project %s): %v", projectID, err)
+		return
+	}
+
+	// Store encrypted private key via KeyManager
+	keyID := fmt.Sprintf("ssh-%s", projectID)
+	if err := m.keyManager.StoreKey(keyID, fmt.Sprintf("SSH key for %s", projectID), "Auto-generated project deploy key", string(privateKeyBytes)); err != nil {
+		log.Printf("[gitops] Failed to encrypt SSH key for project %s: %v", projectID, err)
+		return
+	}
+
+	// Store credential metadata in database
+	now := time.Now()
+	cred := &models.Credential{
+		ID:                  fmt.Sprintf("cred-%s", projectID),
+		ProjectID:           projectID,
+		Type:                "ssh_ed25519",
+		PrivateKeyEncrypted: "keymanager", // Actual key is in KeyManager
+		PublicKey:           publicKey,
+		KeyID:               keyID,
+		Description:         fmt.Sprintf("SSH deploy key for project %s", projectID),
+		CreatedAt:           now,
+		UpdatedAt:           now,
+		RotatedAt:           rotatedAt,
+	}
+
+	if err := m.db.UpsertCredential(cred); err != nil {
+		log.Printf("[gitops] Failed to store credential in DB for project %s: %v", projectID, err)
+		return
+	}
+
+	logGitEvent("git.ssh_key.stored_in_db", &models.Project{ID: projectID}, map[string]interface{}{
+		"key_id": keyID,
+	})
+}
+
+// BackfillSSHCredentials checks all projects for filesystem-only SSH keys and stores them in the DB.
+func (m *Manager) BackfillSSHCredentials(projects []*models.Project) {
+	if m.db == nil || m.keyManager == nil {
+		return
+	}
+
+	for _, p := range projects {
+		// Check if credential already exists in DB
+		existing, _ := m.db.GetCredentialByProjectID(p.ID)
+		if existing != nil {
+			continue
+		}
+
+		// Check if filesystem key exists
+		privatePath := m.projectPrivateKeyPath(p.ID)
+		if _, err := os.Stat(privatePath); os.IsNotExist(err) {
+			continue
+		}
+
+		// Read public key
+		publicKey, err := m.GetProjectPublicKey(p.ID)
+		if err != nil {
+			log.Printf("[gitops] Backfill: failed to read public key for project %s: %v", p.ID, err)
+			continue
+		}
+
+		m.storeKeyInDB(p.ID, publicKey)
+		log.Printf("[gitops] Backfill: stored SSH key for project %s in database", p.ID)
+	}
 }
 
 // CheckRemoteAccess verifies that the configured git auth can access the remote.

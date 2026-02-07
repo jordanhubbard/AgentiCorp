@@ -14,13 +14,15 @@ import (
 
 // GitService provides safe git operations for agents
 type GitService struct {
-	projectPath string
-	projectID   string
-	auditLogger *AuditLogger
+	projectPath   string
+	projectID     string
+	projectKeyDir string // Base directory for per-project SSH keys
+	auditLogger   *AuditLogger
 }
 
-// NewGitService creates a new git service instance
-func NewGitService(projectPath, projectID string) (*GitService, error) {
+// NewGitService creates a new git service instance.
+// projectKeyDir is optional — if empty, defaults to /app/data/projects.
+func NewGitService(projectPath, projectID string, projectKeyDir ...string) (*GitService, error) {
 	// Validate project path
 	if !isGitRepo(projectPath) {
 		return nil, fmt.Errorf("not a git repository: %s", projectPath)
@@ -32,10 +34,16 @@ func NewGitService(projectPath, projectID string) (*GitService, error) {
 		return nil, fmt.Errorf("failed to initialize audit logger: %w", err)
 	}
 
+	keyDir := filepath.Join("/app/data", "projects")
+	if len(projectKeyDir) > 0 && projectKeyDir[0] != "" {
+		keyDir = projectKeyDir[0]
+	}
+
 	return &GitService{
-		projectPath: projectPath,
-		projectID:   projectID,
-		auditLogger: auditLogger,
+		projectPath:   projectPath,
+		projectID:     projectID,
+		projectKeyDir: keyDir,
+		auditLogger:   auditLogger,
 	}, nil
 }
 
@@ -418,7 +426,7 @@ func (s *GitService) getCommitStats(ctx context.Context, commitSHA string) (*Com
 
 // configureSSH configures SSH for git operations
 func (s *GitService) configureSSH() error {
-	keyPath := filepath.Join(os.Getenv("HOME"), ".loom", "projects", s.projectID, "git_key")
+	keyPath := filepath.Join(s.projectKeyDir, s.projectID, "ssh", "id_ed25519")
 
 	// Check if key exists
 	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
@@ -426,7 +434,7 @@ func (s *GitService) configureSSH() error {
 	}
 
 	// Set GIT_SSH_COMMAND environment variable
-	os.Setenv("GIT_SSH_COMMAND", fmt.Sprintf("ssh -i %s -o StrictHostKeyChecking=accept-new", keyPath))
+	os.Setenv("GIT_SSH_COMMAND", fmt.Sprintf("ssh -i %s -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new", keyPath))
 
 	return nil
 }

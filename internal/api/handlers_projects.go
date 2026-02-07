@@ -298,6 +298,7 @@ func (s *Server) handleBootstrapProject(w http.ResponseWriter, r *http.Request) 
 		s.app.GetProjectManager(),
 		"./templates",
 		workspaceDir,
+		s.app.GetGitOpsManager(),
 	)
 
 	// Ensure workspace directory exists

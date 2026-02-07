@@ -68,19 +68,21 @@ Loom is a lightweight AI coding agent orchestration system that manages workflow
 
 ## Documentation
 
-**Start here**: [SETUP.md](SETUP.md) - Get Loom running in minutes
+**Start here**: [SETUP.md](SETUP.md) — Get Loom running in minutes
 
-Then explore:
-- [MANUAL.md](MANUAL.md) - Complete system manual
-- [User Guide](docs/USER_GUIDE.md) - Getting started and operational workflows
-- [Architecture](docs/ARCHITECTURE.md) - System design and components
-- [Entities Reference](docs/ENTITIES_REFERENCE.md) - All data structures explained
-- [Temporal DSL Guide](docs/TEMPORAL_DSL.md) - Workflow language for agents
-- [Analytics Guide](docs/ANALYTICS_GUIDE.md) - Usage monitoring and cost tracking
-- [Usage Pattern Analysis](docs/usage-pattern-analysis.md) - Pattern detection and optimization recommendations
-- [Activity Feed & Notifications](docs/activity-notifications-implementation.md) - Team activity tracking and notifications
-- [API Authentication](docs/AUTH.md) - JWT, API keys, and RBAC
-- [Developer Guide](AGENTS.md) - For contributors and custom agents
+**By persona:**
+- **User** — [User Guide](docs/USER_GUIDE.md) — Log in, create projects, monitor progress, work with decisions
+- **Administrator** — [Admin Guide](docs/ADMIN_GUIDE.md) — Providers, deploy keys, users, monitoring, backup
+- **Developer** — [Architecture](docs/ARCHITECTURE.md) — System design, mermaid diagrams, components
+
+**Reference:**
+- [Authentication & RBAC](docs/AUTH.md) — JWT, API keys, roles, permission matrix
+- [Entities Reference](docs/ENTITIES_REFERENCE.md) — All data structures explained
+- [Temporal DSL Guide](docs/TEMPORAL_DSL.md) — Workflow language for agents
+- [Analytics Guide](docs/ANALYTICS_GUIDE.md) — Usage monitoring and cost tracking
+- [Usage Pattern Analysis](docs/usage-pattern-analysis.md) — Pattern detection and optimization
+- [Activity Feed & Notifications](docs/activity-notifications-implementation.md) — Event tracking and alerts
+- [Developer Guide](AGENTS.md) — For contributors and custom agents
 
 ## Features
 

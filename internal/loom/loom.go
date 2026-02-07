@@ -25,6 +25,7 @@ import (
 	"github.com/jordanhubbard/loom/internal/executor"
 	"github.com/jordanhubbard/loom/internal/files"
 	"github.com/jordanhubbard/loom/internal/gitops"
+	"github.com/jordanhubbard/loom/internal/keymanager"
 	"github.com/jordanhubbard/loom/internal/logging"
 	"github.com/jordanhubbard/loom/internal/metrics"
 	"github.com/jordanhubbard/loom/internal/modelcatalog"
@@ -84,6 +85,7 @@ type Loom struct {
 	workflowEngine      *workflow.Engine
 	patternManager      *patterns.Manager
 	metrics             *metrics.Metrics
+	keyManager          *keymanager.KeyManager
 	readinessMu         sync.Mutex
 	readinessCache      map[string]projectReadinessState
 	readinessFailures   map[string]time.Time
@@ -152,7 +154,7 @@ func New(cfg *config.Config) (*Loom, error) {
 	if projectKeyDir == "" {
 		projectKeyDir = "/app/data/projects"
 	}
-	gitopsMgr, err := gitops.NewManager(gitWorkDir, projectKeyDir)
+	gitopsMgr, err := gitops.NewManager(gitWorkDir, projectKeyDir, db, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize gitops manager: %w", err)
 	}
@@ -924,6 +926,21 @@ func (a *Loom) GetActionRouter() *actions.Router {
 
 func (a *Loom) GetGitOpsManager() *gitops.Manager {
 	return a.gitopsManager
+}
+
+// SetKeyManager sets the key manager for encrypted credential storage.
+// This must be called after Loom is created (since KeyManager is initialized separately in main).
+func (a *Loom) SetKeyManager(km *keymanager.KeyManager) {
+	a.keyManager = km
+	// Also wire it into gitops manager for SSH key DB persistence
+	if a.gitopsManager != nil {
+		a.gitopsManager.SetKeyManager(km)
+	}
+}
+
+// GetKeyManager returns the key manager
+func (a *Loom) GetKeyManager() *keymanager.KeyManager {
+	return a.keyManager
 }
 
 func (a *Loom) GetDispatcher() *dispatch.Dispatcher {

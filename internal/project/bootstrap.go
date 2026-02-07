@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/jordanhubbard/loom/internal/gitops"
 )
 
 // BootstrapRequest contains the parameters for bootstrapping a new project
@@ -20,10 +22,12 @@ type BootstrapRequest struct {
 
 // BootstrapResult contains the result of a bootstrap operation
 type BootstrapResult struct {
-	ProjectID   string `json:"project_id"`
-	Status      string `json:"status"`
-	InitialBead string `json:"initial_bead_id,omitempty"` // PM's PRD expansion bead
-	Error       string `json:"error,omitempty"`
+	ProjectID            string `json:"project_id"`
+	Status               string `json:"status"`
+	InitialBead          string `json:"initial_bead_id,omitempty"`          // PM's PRD expansion bead
+	PublicKey            string `json:"public_key,omitempty"`               // SSH public key for deploy key setup
+	GitSetupInstructions string `json:"git_setup_instructions,omitempty"`   // Instructions for adding deploy key
+	Error                string `json:"error,omitempty"`
 }
 
 // BootstrapService handles project bootstrap operations
@@ -31,14 +35,17 @@ type BootstrapService struct {
 	projectManager *Manager
 	templateDir    string
 	workspaceDir   string
+	gitopsManager  *gitops.Manager
 }
 
-// NewBootstrapService creates a new bootstrap service
-func NewBootstrapService(pm *Manager, templateDir, workspaceDir string) *BootstrapService {
+// NewBootstrapService creates a new bootstrap service.
+// gitopsMgr is optional — pass nil to skip SSH key generation during bootstrap.
+func NewBootstrapService(pm *Manager, templateDir, workspaceDir string, gitopsMgr *gitops.Manager) *BootstrapService {
 	return &BootstrapService{
 		projectManager: pm,
 		templateDir:    templateDir,
 		workspaceDir:   workspaceDir,
+		gitopsManager:  gitopsMgr,
 	}
 }
 
@@ -97,6 +104,23 @@ func (bs *BootstrapService) Bootstrap(ctx context.Context, req BootstrapRequest)
 		return nil, fmt.Errorf("failed to register project: %w", err)
 	}
 
+	// Generate SSH keypair for the project so the admin can register the deploy key
+	var publicKey, setupInstructions string
+	if bs.gitopsManager != nil {
+		pubKey, keyErr := bs.gitopsManager.EnsureProjectSSHKey(project.ID)
+		if keyErr != nil {
+			fmt.Printf("Warning: Failed to generate SSH key for project %s: %v\n", project.ID, keyErr)
+		} else {
+			publicKey = pubKey
+			setupInstructions = fmt.Sprintf(
+				"Add this public key as a deploy key (with write access) to your repository:\n\n%s\n\n"+
+					"GitHub: Repository Settings > Deploy keys > Add deploy key\n"+
+					"GitLab: Repository Settings > Repository > Deploy Keys > Add key",
+				pubKey,
+			)
+		}
+	}
+
 	// Create PM bead for PRD expansion
 	initialBeadID, err := bs.createPMExpandPRDBead(ctx, projectPath, project.ID)
 	if err != nil {
@@ -105,9 +129,11 @@ func (bs *BootstrapService) Bootstrap(ctx context.Context, req BootstrapRequest)
 	}
 
 	return &BootstrapResult{
-		ProjectID:   project.ID,
-		Status:      "ready",
-		InitialBead: initialBeadID,
+		ProjectID:            project.ID,
+		Status:               "ready",
+		InitialBead:          initialBeadID,
+		PublicKey:            publicKey,
+		GitSetupInstructions: setupInstructions,
 	}, nil
 }
 

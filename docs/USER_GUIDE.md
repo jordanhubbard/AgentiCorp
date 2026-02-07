@@ -1,217 +1,276 @@
 # Loom User Guide
 
-This guide helps new users run Loom, register projects, and work with agents and beads.
+This guide is for **users** who log in to Loom and use it to manage projects and get work done. For system setup, see [SETUP.md](../SETUP.md). For administration tasks (providers, deploy keys, users), see [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 
-## Getting Started
+---
 
-### Prerequisites
+## Logging In
 
-- Docker 20.10+
-- Docker Compose 1.29+
-- Go 1.24+ (optional for local development)
+Open your browser to the Loom web UI (default: `http://localhost:8080`).
 
-### Start Loom
+Log in with the credentials provided by your administrator. The default credentials are:
 
-```bash
-docker compose up -d
-```
+- **Username:** `admin`
+- **Password:** `admin`
 
-For local development with the full container stack, you can also use:
+After login, you receive a JWT token that authenticates all subsequent requests. The web UI handles this automatically.
 
-```bash
-make run
-```
+---
 
-Once running, Loom serves the API on `:8080` and the Temporal UI on `:8088`.
+## Dashboard Overview
 
-## Project Registration
+The Loom dashboard has several tabs:
 
-Projects are registered in `config.yaml` under `projects:`. Required fields:
+| Tab | What It Shows |
+|---|---|
+| **Projects** | All registered projects with status, agents, and open work counts |
+| **Agents** | Active AI agents, their personas, assigned projects, and current status |
+| **Providers** | AI provider backends with health status and routing metrics |
+| **Personas** | Available agent personas (roles like PM, Engineer, QA) |
+| **Beads** | Work items across all projects with status and assignment |
+| **Decisions** | Pending decisions that need human approval |
+| **Activity** | Real-time feed of system events |
+| **Analytics** | Usage statistics, cost tracking, and performance metrics |
+| **CEO REPL** | Direct query interface for high-priority questions |
 
-- `id`
-- `name`
-- `git_repo`
-- `branch`
-- `beads_path`
+---
 
-Optional fields:
+## Creating a Project
 
-- `is_perpetual` (never closes)
-- `is_sticky` (auto-registered on startup)
-- `context` (build/test/lint commands and other agent guidance)
-- `git_auth_method` (e.g., `ssh`)
-- `git_credential_id` (if using managed credentials)
+There are two ways to get a project into Loom:
 
-Example:
+### Option 1: Add an Existing Project
 
-```yaml
-projects:
-  - id: loom
-    name: Loom
-    git_repo: git@github.com:jordanhubbard/loom.git
-    branch: main
-    beads_path: .beads
-    git_auth_method: ssh
-    is_perpetual: true
-    is_sticky: true
-    context:
-      build_command: "make build"
-      test_command: "make test"
-```
+Use this when you have a git repository that already has code and a `.beads/` directory.
 
-Loom loads beads from each project’s `beads_path` and uses them to build the work graph.
+1. Click **Add Project** in the Projects tab
+2. Fill in:
+   - **ID**: Short identifier (e.g., `my-app`)
+   - **Name**: Display name
+   - **Git Repo**: Repository URL (e.g., `git@github.com:org/repo.git`)
+   - **Branch**: Branch to track (e.g., `main`)
+   - **Beads Path**: Path to beads directory (usually `.beads`)
+   - **Git Auth Method**: `ssh` for private repos, `none` for public
+3. Optional flags:
+   - **Perpetual**: Project never auto-closes (good for long-lived repos)
+   - **Sticky**: Project auto-loads on Loom startup
+4. Click **Create**
 
-### Git Access (SSH Keys)
+Your administrator will need to set up the SSH deploy key — see [ADMIN_GUIDE.md](ADMIN_GUIDE.md#ssh-deploy-key-setup).
 
-For SSH-based repos, fetch the per-project public key and add it as a **write-enabled deploy key**:
+### Option 2: Bootstrap from a PRD
 
-```bash
-curl http://localhost:8080/api/v1/projects/<project-id>/git-key
-```
-
-Dispatch will pause until git access and the beads path are valid.
-
-## Personas and Agents
-
-Default personas live under `personas/default/`. The system persona(s) live under
-`personas/loom/`.
-
-Agents are created from personas and attached to projects. The Project Viewer UI
-shows agent assignments and bead progress in real time.
-
-## Beads
-
-Beads are JSONL work items stored in `.beads/issues.jsonl` for each project and
-managed by the `bd` CLI. They drive the work graph and include metadata such as
-priority, status, and dependencies.
-
-Key fields:
-
-- `id`, `type`, `title`, `description`
-- `status`, `priority`, `project_id`
-- `assigned_to`, `blocked_by`, `blocks`, `parent`, `children`
-
-## Operational Workflow
-
-1. Register projects in `config.yaml`.
-2. Start Loom (docker compose or binary).
-3. Confirm beads are loaded in the UI and API.
-4. Assign agents to projects and monitor progress.
-5. Use decisions/approvals for escalations (e.g., CEO workflow).
-
-## Testing
-
-Loom’s default `make test` runs the full Docker stack with Temporal:
+Use this to create a brand-new project from a Product Requirements Document. Loom will:
+- Create the project
+- Generate SSH keys for git access
+- Break the PRD into epics and stories
+- Create a Project Manager bead to start orchestration
+- Assign agents and begin work
 
 ```bash
-make test
+curl -X POST http://localhost:8080/api/v1/projects/bootstrap \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My New App",
+    "git_repo": "git@github.com:org/my-new-app.git",
+    "branch": "main",
+    "prd_content": "Build a REST API for user management..."
+  }'
 ```
 
-## Project Management UI
+The response includes a public SSH key. Hand this to your administrator to register as a deploy key on the repository.
 
-The Projects section and Project Viewer both support CRUD operations:
+---
 
-- **Add Project**: create a new project with repo, branch, and beads path.
-- **Edit Project**: update fields like branch, beads path, perpetual/sticky flags.
-- **Delete Project**: remove a project and its assignments.
+## The Project Lifecycle
 
-Changes are applied immediately and reflected across the UI.
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant L as Loom
+    participant A as Agents
+    participant G as Git Repo
+
+    U->>L: Create project / Bootstrap from PRD
+    L->>L: Generate SSH keys
+    L->>G: Clone repository
+    L->>L: Load beads (work items)
+    L->>A: Assign agents to project
+
+    loop Dispatch Cycle
+        L->>L: Find ready beads (no blockers)
+        L->>A: Match agent persona to bead type
+        A->>G: Clone, code, test, commit, push
+        A->>L: Report completion
+        L->>L: Update bead status, unblock dependents
+    end
+
+    A->>L: All beads complete
+    L->>U: Project ready for review
+```
+
+### Project States
+
+- **Open** — Active with ongoing work
+- **Closed** — All work complete
+- **Reopened** — Previously closed, new work added
+
+### Monitoring Progress
+
+The **Project Viewer** shows:
+- Project status and readiness
+- Assigned agents and their current state
+- A Kanban-style view of beads (open, in-progress, blocked, closed)
+- The activity feed for this project
+- Comments and decisions
+
+---
+
+## Working with Beads
+
+Beads are Loom's work items. They track tasks, bugs, features, and decisions.
+
+### Bead Statuses
+
+| Status | Meaning |
+|---|---|
+| `open` | Ready for work (no blockers) |
+| `in_progress` | Assigned to an agent, actively being worked |
+| `blocked` | Waiting on another bead to complete |
+| `closed` | Completed |
+
+### Viewing Beads
+
+```bash
+# All beads
+curl http://localhost:8080/api/v1/beads
+
+# Beads for a specific project
+curl http://localhost:8080/api/v1/beads?project_id=my-project
+
+# Single bead with full details
+curl http://localhost:8080/api/v1/beads/bead-123
+```
+
+### Bead Fields
+
+| Field | Description |
+|---|---|
+| `id` | Unique identifier |
+| `title` | Short description of the work |
+| `type` | `task`, `bug`, `feature`, `epic`, `decision` |
+| `status` | Current status |
+| `priority` | P0 (critical) through P4 (backlog) |
+| `assigned_to` | Agent currently working on it |
+| `blocked_by` | Bead IDs that must complete first |
+| `blocks` | Bead IDs waiting on this one |
+| `project_id` | Which project this belongs to |
+
+### Dependencies
+
+Beads can depend on other beads. A bead with unresolved `blocked_by` entries won't be dispatched until its blockers are closed. The work graph view shows these relationships visually.
+
+---
+
+## Working with Decisions
+
+Some situations require human judgment. When an agent encounters an ambiguous requirement, a conflict, or a high-impact choice, it creates a **decision bead**.
+
+### Reviewing Decisions
+
+1. Navigate to the **Decisions** tab
+2. Review the question, options, and context provided by the agent
+3. Select your choice and submit
+
+Or via API:
+
+```bash
+# List pending decisions
+curl http://localhost:8080/api/v1/decisions
+
+# Resolve a decision
+curl -X PUT http://localhost:8080/api/v1/decisions/decision-123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resolution": "yes",
+    "resolved_by": "admin",
+    "comment": "Approved — proceed with option A"
+  }'
+```
+
+Decisions have a 48-hour default timeout. Unresolved decisions block dependent work.
+
+---
 
 ## CEO REPL
 
-The CEO REPL lets you send high-priority questions directly to Loom. It uses
-Temporal to route the request through the best available provider (quality and
-latency weighted) with the Loom persona context.
+The CEO REPL is a direct query interface for high-priority questions. It routes your question through the best available provider using the Loom system persona.
 
-1. Navigate to the **CEO REPL** section.
-2. Enter your question and click **Send**.
-3. Review the response and provider/model metadata.
+1. Navigate to the **CEO REPL** tab
+2. Type your question and click **Send**
+3. Review the response, which includes the provider and model used
+
+Use this for quick system-level queries, architecture questions, or priority decisions.
+
+---
 
 ## Activity Feed and Notifications
 
-Loom provides a comprehensive activity tracking and notification system to keep teams informed about important events.
-
 ### Activity Feed
 
-The activity feed shows all important events across your projects, including bead creation, agent assignments, project updates, and more.
+The activity feed shows all events across your projects:
 
-**Access the activity feed:**
+- Bead creation, assignment, and completion
+- Agent spawning and status changes
+- Decision creation and resolution
+- Project state changes
+
+Access it in the **Activity** tab or via API:
 
 ```bash
-# Get recent activities (paginated)
+# Recent activity
 curl http://localhost:8080/api/v1/activity-feed
 
 # Filter by project
-curl http://localhost:8080/api/v1/activity-feed?project_id=loom
+curl http://localhost:8080/api/v1/activity-feed?project_id=my-project
 
-# Filter by event type
-curl http://localhost:8080/api/v1/activity-feed?event_type=bead.created
-
-# Get only aggregated activities
-curl http://localhost:8080/api/v1/activity-feed?aggregated=true
-
-# Stream activities in real-time (SSE)
+# Real-time stream
 curl -N http://localhost:8080/api/v1/activity-feed/stream
 ```
 
-**Activity aggregation**: Similar activities within a 5-minute window are automatically grouped. For example, if an agent creates 5 beads in 3 minutes, you'll see a single activity with `aggregation_count: 5` instead of 5 separate entries.
+Similar events within a 5-minute window are automatically aggregated (e.g., 5 beads created by one agent show as a single grouped entry).
 
 ### Notifications
 
-Notifications are user-specific alerts for important events that require your attention.
-
-**Get your notifications:**
+Notifications alert you to events that need your attention:
 
 ```bash
-# Login to get token
-TOKEN=$(curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}' | jq -r .token)
-
-# Get all notifications
+# Get notifications (requires auth)
 curl -H "Authorization: Bearer $TOKEN" \
   http://localhost:8080/api/v1/notifications
 
-# Get only unread notifications
+# Unread only
 curl -H "Authorization: Bearer $TOKEN" \
   http://localhost:8080/api/v1/notifications?status=unread
 
-# Stream notifications in real-time (SSE)
-curl -N -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/notifications/stream
-```
-
-**Mark notifications as read:**
-
-```bash
-# Mark single notification as read
+# Mark as read
 curl -X POST -H "Authorization: Bearer $TOKEN" \
   http://localhost:8080/api/v1/notifications/{id}/read
 
-# Mark all as read
+# Mark all read
 curl -X POST -H "Authorization: Bearer $TOKEN" \
   http://localhost:8080/api/v1/notifications/mark-all-read
 ```
 
-### Notification Rules
-
-You'll automatically receive notifications for:
-
-1. **Direct Assignments**: When a bead or decision is assigned to you
-2. **Critical Priority**: When a P0 (critical) bead is created
-3. **Decision Required**: When a decision requires your input
-4. **System Alerts**: Provider failures, workflow errors, and other critical system events
+You receive notifications for:
+- Direct assignments (beads or decisions assigned to you)
+- Critical priority (P0) bead creation
+- Decisions requiring your input
+- System alerts (provider failures, workflow errors)
 
 ### Notification Preferences
 
-Configure your notification preferences to control what you receive:
-
 ```bash
-# Get current preferences
-curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/notifications/preferences
-
-# Update preferences
 curl -X PATCH -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -219,50 +278,43 @@ curl -X PATCH -H "Authorization: Bearer $TOKEN" \
     "subscribed_events": ["bead.assigned", "decision.created"],
     "min_priority": "high",
     "quiet_hours_start": "22:00",
-    "quiet_hours_end": "08:00"
+    "quiet_hours_end": "08:00",
+    "digest_mode": "realtime"
   }' \
   http://localhost:8080/api/v1/notifications/preferences
 ```
 
-**Preference options:**
+---
 
-- `enable_in_app`: Enable/disable in-app notifications (default: true)
-- `subscribed_events`: List of event types to receive (empty = all events)
-- `min_priority`: Minimum priority level (low, normal, high, critical)
-- `quiet_hours_start/end`: Time range to suppress notifications (24-hour format)
-- `digest_mode`: Delivery mode (realtime, hourly, daily)
-- `project_filters`: Only receive notifications from specific projects
+## Getting Results
 
-For complete API documentation and technical details, see [docs/activity-notifications-implementation.md](activity-notifications-implementation.md).
+When agents complete work:
 
-## Configuration
+1. **Code** is committed and pushed to the project's git repository
+2. **Beads** are marked closed with completion notes
+3. **Artifacts** (test results, build output) are logged in the activity feed
+4. **The project state** updates to reflect progress
 
-Loom is configured via `config.yaml`. Key sections include:
+Check the Project Viewer to see overall completion. When all beads are closed, the project can be closed (or stays open if marked perpetual).
 
-### Dispatch Configuration
+---
 
-```yaml
-dispatch:
-  max_hops: 20  # Maximum times a bead can be redispatched before escalation
-```
+## FAQ
 
-**Dispatch Hop Limit**: When a bead is dispatched (assigned to an agent) more than `max_hops` times without being closed, it is automatically escalated to P0 priority and a CEO decision bead is created. This prevents infinite redispatch loops while allowing complex investigations to proceed (default: 20, previously 5). See [DISPATCH_CONFIG.md](DISPATCH_CONFIG.md) for detailed configuration guidance.
+**Q: Beads aren't being picked up. What's wrong?**
+A: Check that agents are assigned to the project, the project's git access is working (`readiness_ok: true`), and beads aren't blocked by unresolved dependencies.
 
-The system automatically enables redispatch for open and in-progress beads, allowing them to be picked up by idle agents. Dispatch history is tracked in the bead's context.
+**Q: How do I add more agents to a project?**
+A: Use the API: `POST /api/v1/projects/{id}/agents` with `{"agent_id": "...", "action": "assign"}`. Or ask your administrator.
 
-### Other Configuration Sections
+**Q: A decision has been waiting for days. What happens?**
+A: Decisions timeout after 48 hours by default. The system may escalate or auto-resolve depending on the decision type.
 
-- `agents`: Agent concurrency, personas, heartbeat intervals
-- `beads`: Bead CLI path, auto-sync settings
-- `security`: Authentication, CORS, PKI settings
-- `temporal`: Workflow orchestration connection
+**Q: Can I manually create beads?**
+A: Yes, via API: `POST /api/v1/beads` with the bead details. Or use the `bd` CLI in the project's git working directory.
 
-See `config.yaml` for full configuration options.
+**Q: How do I see what an agent is doing right now?**
+A: Check the agent's status in the Agents tab, or stream real-time events: `curl -N http://localhost:8080/api/v1/events/stream?type=agent.status_change`.
 
-## Troubleshooting
-
-- If beads fail to load, confirm `.beads/issues.jsonl` exists and `bd list` works.
-- If providers are missing, register them in the Providers UI and re-negotiate models.
-- If providers show as disabled, check heartbeat errors and verify the provider endpoint.
-- If no work is dispatched, check the Project Viewer for blocked beads, missing agents, or readiness gate failures.
-- If beads are repeatedly dispatched without progress, check the dispatch hop count in the bead's context. The system will escalate to P0 after `max_hops` dispatches.
+**Q: Dispatch keeps redispatching the same bead. Is something wrong?**
+A: If a bead is dispatched more than `max_hops` times (default 20), it's escalated to P0 and a CEO decision is created. This usually means the bead's requirements are unclear or the agent can't complete it. Review and clarify the bead description.
