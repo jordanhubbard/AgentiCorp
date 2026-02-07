@@ -92,6 +92,14 @@ const (
 	GitAuthGitHelper GitAuthMethod = "git-helper" // Use git credential helper
 )
 
+// GitStrategy represents the strategy for how commits reach the target branch
+type GitStrategy string
+
+const (
+	GitStrategyDirect GitStrategy = "direct"    // Commit+push directly to configured branch
+	GitStrategyBranch GitStrategy = "branch-pr" // Create feature branch, open PR
+)
+
 // ProjectMilestone represents a milestone within a project (embedded for simplicity)
 type ProjectMilestone struct {
 	ID          string     `json:"id"`
@@ -130,6 +138,7 @@ type Project struct {
 	Milestones []ProjectMilestone `json:"milestones,omitempty"` // Project milestones
 
 	// Git management fields
+	GitStrategy      GitStrategy       `json:"git_strategy"`                 // How commits reach the target branch
 	GitAuthMethod    GitAuthMethod     `json:"git_auth_method"`              // Authentication method
 	GitCredentialID  string            `json:"git_credential_id,omitempty"`  // Reference to stored credential
 	WorkDir          string            `json:"work_dir,omitempty"`           // Local path where repo is cloned

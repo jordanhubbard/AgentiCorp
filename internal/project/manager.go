@@ -122,6 +122,9 @@ func (m *Manager) UpdateProject(id string, updates map[string]interface{}) error
 	if status, ok := updates["status"].(string); ok {
 		project.Status = models.ProjectStatus(status)
 	}
+	if gitStrategy, ok := updates["git_strategy"].(string); ok {
+		project.GitStrategy = models.GitStrategy(gitStrategy)
+	}
 
 	project.UpdatedAt = time.Now()
 

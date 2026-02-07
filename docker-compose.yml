@@ -95,9 +95,8 @@ services:
       - loom-db:/app/data
       # Persist beads across container restarts
       - loom-beads:/app/src/.beads
-      # Mount SSH keys for git operations (read-only)
-      - ~/.ssh/id_ecdsa:/home/loom/.ssh/id_ecdsa:ro
-      - ~/.ssh/id_ecdsa.pub:/home/loom/.ssh/id_ecdsa.pub:ro
+      # Mount known_hosts for git SSH operations (read-only)
+      # Loom uses its own per-project SSH keys (stored encrypted in DB)
       - ~/.ssh/known_hosts:/home/loom/.ssh/known_hosts:ro
     healthcheck:
       test: ["CMD", "/app/loom", "-version"]

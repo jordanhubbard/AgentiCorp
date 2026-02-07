@@ -333,6 +333,7 @@ func (s *Server) handleProject(w http.ResponseWriter, r *http.Request) {
 			BeadsPath   string            `json:"beads_path"`
 			Context     map[string]string `json:"context"`
 			Status      string            `json:"status"`
+			GitStrategy *string           `json:"git_strategy"`
 			IsPerpetual *bool             `json:"is_perpetual"`
 			IsSticky    *bool             `json:"is_sticky"`
 		}
@@ -364,6 +365,9 @@ func (s *Server) handleProject(w http.ResponseWriter, r *http.Request) {
 		}
 		if req.IsSticky != nil {
 			updates["is_sticky"] = *req.IsSticky
+		}
+		if req.GitStrategy != nil {
+			updates["git_strategy"] = *req.GitStrategy
 		}
 
 		if err := s.app.GetProjectManager().UpdateProject(id, updates); err != nil {

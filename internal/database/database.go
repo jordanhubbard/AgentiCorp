@@ -161,6 +161,7 @@ func (d *Database) initSchema() error {
 		parent_id TEXT,
 		is_perpetual BOOLEAN NOT NULL DEFAULT 0,
 		is_sticky BOOLEAN NOT NULL DEFAULT 0,
+		git_strategy TEXT NOT NULL DEFAULT 'direct',
 		status TEXT NOT NULL DEFAULT 'open',
 		context_json TEXT,
 		schema_version TEXT NOT NULL DEFAULT '1.0',
@@ -283,6 +284,7 @@ func (d *Database) initSchema() error {
 	_, _ = d.db.Exec("ALTER TABLE projects ADD COLUMN schema_version TEXT DEFAULT '1.0'")
 	_, _ = d.db.Exec("ALTER TABLE projects ADD COLUMN attributes_json TEXT")
 	_, _ = d.db.Exec("UPDATE projects SET schema_version = '1.0' WHERE schema_version IS NULL")
+	_, _ = d.db.Exec("ALTER TABLE projects ADD COLUMN git_strategy TEXT NOT NULL DEFAULT 'direct'")
 
 	// Agent migrations
 	_, _ = d.db.Exec("ALTER TABLE agents ADD COLUMN provider_id TEXT")
@@ -354,14 +356,20 @@ func (d *Database) UpsertProject(project *models.Project) error {
 	}
 	project.UpdatedAt = time.Now()
 
+	gitStrategy := string(project.GitStrategy)
+	if gitStrategy == "" {
+		gitStrategy = "direct"
+	}
+
 	query := `
-		INSERT INTO projects (id, name, git_repo, branch, beads_path, is_perpetual, is_sticky, status, context_json, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO projects (id, name, git_repo, branch, beads_path, git_strategy, is_perpetual, is_sticky, status, context_json, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			name = excluded.name,
 			git_repo = excluded.git_repo,
 			branch = excluded.branch,
 			beads_path = excluded.beads_path,
+			git_strategy = excluded.git_strategy,
 			is_perpetual = excluded.is_perpetual,
 			is_sticky = excluded.is_sticky,
 			status = excluded.status,
@@ -375,6 +383,7 @@ func (d *Database) UpsertProject(project *models.Project) error {
 		project.GitRepo,
 		project.Branch,
 		project.BeadsPath,
+		gitStrategy,
 		project.IsPerpetual,
 		project.IsSticky,
 		string(project.Status),
@@ -391,7 +400,7 @@ func (d *Database) UpsertProject(project *models.Project) error {
 
 func (d *Database) ListProjects() ([]*models.Project, error) {
 	query := `
-		SELECT id, name, git_repo, branch, beads_path, is_perpetual, is_sticky, status, context_json, created_at, updated_at
+		SELECT id, name, git_repo, branch, beads_path, git_strategy, is_perpetual, is_sticky, status, context_json, created_at, updated_at
 		FROM projects
 		ORDER BY created_at DESC
 	`
@@ -406,6 +415,7 @@ func (d *Database) ListProjects() ([]*models.Project, error) {
 	for rows.Next() {
 		p := &models.Project{}
 		var status string
+		var gitStrategy sql.NullString
 		var contextJSON sql.NullString
 		var isSticky sql.NullBool
 		err := rows.Scan(
@@ -414,6 +424,7 @@ func (d *Database) ListProjects() ([]*models.Project, error) {
 			&p.GitRepo,
 			&p.Branch,
 			&p.BeadsPath,
+			&gitStrategy,
 			&p.IsPerpetual,
 			&isSticky,
 			&status,
@@ -426,6 +437,11 @@ func (d *Database) ListProjects() ([]*models.Project, error) {
 		}
 		if isSticky.Valid {
 			p.IsSticky = isSticky.Bool
+		}
+		if gitStrategy.Valid && gitStrategy.String != "" {
+			p.GitStrategy = models.GitStrategy(gitStrategy.String)
+		} else {
+			p.GitStrategy = models.GitStrategyDirect
 		}
 		p.Status = models.ProjectStatus(status)
 		if contextJSON.Valid && contextJSON.String != "" {

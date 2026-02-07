@@ -116,6 +116,16 @@ async function showEditProjectModal(projectId) {
                         { value: 'false', label: 'No' },
                         { value: 'true', label: 'Yes' }
                     ]
+                },
+                {
+                    id: 'git_strategy',
+                    label: 'Git Strategy',
+                    type: 'select',
+                    value: project.git_strategy || 'direct',
+                    options: [
+                        { value: 'direct', label: 'Direct to branch' },
+                        { value: 'branch-pr', label: 'Feature branch + PR' }
+                    ]
                 }
             ]
         });
@@ -131,7 +141,8 @@ async function showEditProjectModal(projectId) {
                 branch: res.branch,
                 beads_path: res.beads_path,
                 is_perpetual: res.is_perpetual === 'true',
-                is_sticky: res.is_sticky === 'true'
+                is_sticky: res.is_sticky === 'true',
+                git_strategy: res.git_strategy || 'direct'
             })
         });
 

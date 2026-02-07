@@ -1942,6 +1942,16 @@ function projectFormFields(project = {}) {
                 { value: 'false', label: 'No' },
                 { value: 'true', label: 'Yes' }
             ]
+        },
+        {
+            id: 'git_strategy',
+            label: 'Git strategy',
+            type: 'select',
+            value: project.git_strategy || 'direct',
+            options: [
+                { value: 'direct', label: 'Direct to branch' },
+                { value: 'branch-pr', label: 'Feature branch + PR' }
+            ]
         }
     ];
 }
@@ -1957,7 +1967,8 @@ function buildProjectPayload(data) {
         branch: (data.branch || '').trim(),
         beads_path: (data.beads_path || '').trim(),
         is_perpetual: parseBool(data.is_perpetual || 'false'),
-        is_sticky: parseBool(data.is_sticky || 'false')
+        is_sticky: parseBool(data.is_sticky || 'false'),
+        git_strategy: (data.git_strategy || 'direct').trim()
     };
 
     if (!payload.name) delete payload.name;
