@@ -130,6 +130,11 @@
     }
 
     function reloadPage(reason) {
+        // Defer reload while a modal is open to avoid losing user edits
+        if (window.modalState && window.modalState.activeId) {
+            console.log(`[HotReload] Deferring reload (modal open): ${reason}`);
+            return;
+        }
         console.log(`[HotReload] Reloading page: ${reason}`);
         showNotification(`Reloading: ${reason}`, 'info');
 

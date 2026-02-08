@@ -47,10 +47,12 @@ let uiState = {
 
 let busy = new Set();
 
-let modalState = {
+// Exposed on window so hotreload.js can check if a modal is open
+window.modalState = {
     activeId: null,
     lastFocused: null
 };
+const modalState = window.modalState;
 
 // Helper to get authentication headers for API calls
 function getAuthHeaders() {
@@ -348,7 +350,7 @@ function initViewTabs() {
 function startAutoRefresh() {
     // Event bus is preferred; this interval is a fallback.
     setInterval(() => {
-        if (!eventStreamConnected) loadAll();
+        if (!eventStreamConnected && !modalState.activeId) loadAll();
     }, REFRESH_INTERVAL);
 }
 
