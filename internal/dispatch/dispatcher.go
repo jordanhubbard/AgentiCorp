@@ -89,7 +89,7 @@ func NewDispatcher(beadsMgr *beads.Manager, projMgr *project.Manager, agentMgr *
 		personaMatcher: NewPersonaMatcher(),
 		autoBugRouter:  NewAutoBugRouter(),
 		loopDetector:   NewLoopDetector(),
-		readinessMode:  ReadinessBlock,
+		readinessMode:  ReadinessWarn,
 		status: SystemStatus{
 			State:     StatusParked,
 			Reason:    "not started",
@@ -142,8 +142,8 @@ func (d *Dispatcher) SetReadinessCheck(check func(context.Context, string) (bool
 func (d *Dispatcher) SetReadinessMode(mode ReadinessMode) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if mode != ReadinessWarn {
-		mode = ReadinessBlock
+	if mode != ReadinessBlock && mode != ReadinessWarn {
+		return // Keep current default if mode is unrecognized/empty
 	}
 	d.readinessMode = mode
 }
@@ -163,7 +163,6 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 		d.setStatus(StatusParked, "failed to list ready beads")
 		return nil, err
 	}
-
 	d.mu.RLock()
 	readinessCheck := d.readinessCheck
 	readinessMode := d.readinessMode
@@ -239,11 +238,25 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 		if candidateAgent == nil {
 			continue
 		}
-		if candidateAgent.ProviderID == "" {
-			continue
+		// If agent already has a provider, verify it's active.
+		// If agent has no provider, auto-assign one from the active pool.
+		if candidateAgent.ProviderID != "" {
+			if !d.providers.IsActive(candidateAgent.ProviderID) {
+				continue
+			}
+		} else {
+			activeProviders := d.providers.ListActive()
+			if len(activeProviders) > 0 {
+				candidateAgent.ProviderID = activeProviders[0].Config.ID
+				log.Printf("[Dispatcher] Auto-assigned provider %s to agent %s", candidateAgent.ProviderID, candidateAgent.Name)
+			} else {
+				continue
+			}
 		}
-		if !d.providers.IsActive(candidateAgent.ProviderID) {
-			continue
+		// Promote paused agents to idle now that they have a provider.
+		if candidateAgent.Status == "paused" {
+			candidateAgent.Status = "idle"
+			log.Printf("[Dispatcher] Promoted agent %s from paused to idle", candidateAgent.Name)
 		}
 		filteredAgents = append(filteredAgents, candidateAgent)
 	}
@@ -519,8 +532,14 @@ This bead needs human attention to unblock the investigation.`,
 		return &DispatchResult{Dispatched: false, ProjectID: selectedProjectID}, nil
 	}
 	if ag.ProviderID == "" {
-		d.setStatus(StatusParked, "agent has no provider")
-		return &DispatchResult{Dispatched: false, ProjectID: selectedProjectID, AgentID: ag.ID}, nil
+		// Auto-assign from active provider pool
+		activeProviders := d.providers.ListActive()
+		if len(activeProviders) > 0 {
+			ag.ProviderID = activeProviders[0].Config.ID
+		} else {
+			d.setStatus(StatusParked, "no active providers available")
+			return &DispatchResult{Dispatched: false, ProjectID: selectedProjectID, AgentID: ag.ID}, nil
+		}
 	}
 
 	// Ensure bead is claimed/assigned.

@@ -276,7 +276,9 @@ func (m *WorkerManager) GetIdleAgentsByProject(projectID string) []*models.Agent
 
 	agents := make([]*models.Agent, 0)
 	for _, a := range m.agents {
-		if a.Status != "idle" {
+		// Include both "idle" and "paused" agents — paused agents are idle
+		// but waiting for a provider, which the dispatcher can auto-assign.
+		if a.Status != "idle" && a.Status != "paused" {
 			continue
 		}
 		if projectID != "" && a.ProjectID != projectID {
@@ -339,6 +341,15 @@ func (m *WorkerManager) ExecuteTask(ctx context.Context, agentID string, task *w
 		}
 		_ = m.UpdateAgentStatus(agentID, "idle")
 	}()
+
+	// Ensure a worker exists for this agent; auto-spawn if the agent has a
+	// provider but no worker yet (e.g. agents created without a provider that
+	// were later auto-assigned one by the dispatcher).
+	if _, workerErr := m.workerPool.GetWorker(agentID); workerErr != nil && agent.ProviderID != "" {
+		if _, spawnErr := m.workerPool.SpawnWorker(agent, agent.ProviderID); spawnErr != nil {
+			log.Printf("[WorkerManager] Auto-spawn worker for %s failed: %v", agentID, spawnErr)
+		}
+	}
 
 	// Execute task through worker pool
 	result, err := m.workerPool.ExecuteTask(ctx, task, agentID)
