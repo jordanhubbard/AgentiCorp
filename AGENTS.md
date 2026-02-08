@@ -278,6 +278,206 @@ See [TEMPORAL_DSL.md](docs/TEMPORAL_DSL.md) for complete reference.
 - All intermediate object files go in `obj/` and are never committed to git.
 - All binaries go in `bin/` and are never committed to git.
 
+## Operating Procedures
+
+### Makefile Targets
+
+| Target | Description | When to Use |
+|--------|-------------|-------------|
+| `make start` | Build and start loom natively (no Docker), PID in `.loom.pid`, logs to `loom.log`, serves on `http://localhost:8081` | Local development |
+| `make stop` | Stop the locally-running loom process | End of dev session |
+| `make build` | Lint YAML + build Docker containers | Before deploying |
+| `make build-all` | Cross-compile for linux/darwin/windows | Release builds |
+| `make run` | Build + `docker compose up --build` | Full Docker dev |
+| `make restart` | `docker compose down` then build + up | Reset Docker state |
+| `make test` | Run unit tests in Docker | CI or pre-commit |
+| `make test-api` | Run post-flight API validation | After deployment |
+| `make coverage` | Run tests with coverage HTML report | Code review |
+| `make fmt` | `go fmt ./...` | Before committing |
+| `make vet` | `go vet ./...` | Before committing |
+| `make lint` | fmt + vet + lint-yaml + lint-docs | Full lint pass |
+| `make deps` | `go mod download && go mod tidy` | After dependency changes |
+| `make clean` | Remove binaries and coverage files | Quick cleanup |
+| `make distclean` | Stop containers, remove images, prune Docker, clear Go cache | Full reset |
+| `make release` | Create patch release (x.y.Z) | Versioned release |
+| `make release-minor` | Create minor release (x.Y.0) | Feature release |
+| `make release-major` | Create major release (X.0.0) | Breaking change release |
+
+**Build failures auto-file P0 beads** in `.beads/beads/` with full error output.
+
+### Local Development Workflow
+
+**Prerequisites:**
+```bash
+# Start Temporal infrastructure (required)
+docker compose up -d temporal-postgresql temporal temporal-ui
+
+# Start loom
+make start
+
+# Verify
+curl -s http://localhost:8081/health | jq .status
+```
+
+**Logs:** `tail -f loom.log`
+**PID file:** `.loom.pid`
+
+**Stop:** `make stop`
+
+### Telemetry & Observability APIs
+
+All endpoints are at `http://localhost:8081` (native) or `http://localhost:8080` (Docker).
+
+#### Analytics Endpoints
+
+```bash
+# Request logs — filter by provider, time range
+curl 'http://localhost:8081/api/v1/analytics/logs?provider_id=prov-1&start_time=2026-01-01T00:00:00Z'
+
+# Aggregated stats — total requests, tokens, costs
+curl 'http://localhost:8081/api/v1/analytics/stats'
+
+# Cost breakdown by provider and user
+curl 'http://localhost:8081/api/v1/analytics/costs'
+
+# Export logs as CSV
+curl 'http://localhost:8081/api/v1/analytics/export?format=csv'
+
+# Export stats as JSON
+curl 'http://localhost:8081/api/v1/analytics/export-stats?format=json'
+
+# Batching optimization recommendations
+curl 'http://localhost:8081/api/v1/analytics/batching?max_recommendations=5&window_minutes=60'
+```
+
+**Analytics log fields:** timestamp, user, method, path, provider, model, tokens (input/output), latency_ms, status, cost_usd
+
+#### Event Endpoints
+
+```bash
+# Recent events (with optional filters)
+curl 'http://localhost:8081/api/v1/events?project_id=myapp&type=bead.status_change&limit=50'
+
+# Event bus statistics
+curl 'http://localhost:8081/api/v1/events/stats'
+
+# Live SSE event stream (real-time)
+curl -N 'http://localhost:8081/api/v1/events/stream?project_id=myapp'
+```
+
+#### Health & Readiness
+
+```bash
+# Detailed health with dependency checks
+curl 'http://localhost:8081/health'
+
+# Kubernetes liveness probe
+curl 'http://localhost:8081/health/live'
+
+# Kubernetes readiness probe (checks DB, providers)
+curl 'http://localhost:8081/health/ready'
+
+# Prometheus metrics
+curl 'http://localhost:8081/metrics'
+```
+
+### Monitoring & Debugging
+
+**Check agent status:**
+```bash
+curl -s http://localhost:8081/api/v1/agents | jq '.[] | {name, status, provider_id, current_bead}'
+```
+
+**Check provider health:**
+```bash
+curl -s http://localhost:8081/api/v1/providers | jq '.[] | {id, status, model}'
+```
+Provider status must be `"healthy"` (set by heartbeat workflow), not `"active"`.
+
+**Check dispatch status:**
+```bash
+curl -s http://localhost:8081/api/v1/dispatch/status | jq .
+```
+
+**Loop detection:** When Ralph detects a stuck agent loop (dispatch_count exceeds max_hops with no progress), it auto-blocks the bead and records:
+- `ralph_blocked_reason` — why it was blocked
+- `loop_detection_reason` — specific loop pattern detected
+- `progress_summary` — files read/modified, tests run, commands executed
+- `revert_status` — recommended commit revert range
+
+### Git Workflow for Agents
+
+Agents use a **branch-per-bead** strategy with safety guardrails:
+
+**Branch naming:** `agent/{bead-id}/{description-slug}`
+- Configurable prefix (default: `agent/`)
+- Protected branches (`main`, `master`, `production`, `release/*`, `hotfix/*`) cannot be pushed to or deleted
+
+**Available git actions for agents:**
+
+| Action | Purpose |
+|--------|---------|
+| `git_status` | Check working tree state |
+| `git_diff` | View unstaged changes |
+| `git_commit` | Commit with bead/agent attribution |
+| `git_push` | Push to remote (agent branches only) |
+| `create_pr` | Create pull request via `gh` CLI |
+| `git_merge` | Merge branch with `--no-ff` (default) |
+| `git_revert` | Revert specific commit(s) |
+| `git_branch_delete` | Delete local + optional remote branch |
+| `git_checkout` | Switch branches (requires clean tree) |
+| `git_log` | View structured commit history |
+| `git_fetch` | Fetch remote refs with prune |
+| `git_list_branches` | List all local and remote branches |
+| `git_diff_branches` | Cross-branch diff (`branch1...branch2`) |
+| `git_bead_commits` | Find all commits for a bead ID |
+
+**Commit metadata trailers** (added automatically):
+```
+feat: Implement token caching
+
+Bead: loom-abc123
+Agent: agent-456-Engineering-Manager
+Project: myapp
+Dispatch: 5
+```
+
+**Merge practices:**
+- Always use `--no-ff` for audit trail (merge commits show what was merged)
+- Create PR for review before merging to main
+- Delete feature branches after merge
+
+**When to revert:**
+- Build fails after agent commits
+- Agent is stuck in a loop (Ralph auto-blocks and recommends revert range)
+- Tests regress after changes
+
+### Beads Workflow (bd CLI)
+
+```bash
+# Find available work
+bd ready
+
+# Claim and start work
+bd update <id> --status=in_progress
+
+# Create related issues
+bd create --title="Fix X" --type=bug --priority=2
+
+# Add dependencies
+bd dep add <issue> <depends-on>
+
+# Close completed work
+bd close <id1> <id2> ...
+
+# Sync with remote
+bd sync
+
+# Project health check
+bd stats
+bd doctor
+```
+
 ## Building & Testing
 
 ```bash
@@ -286,6 +486,9 @@ make build
 
 # Run tests
 make test
+
+# Run specific package tests
+go test ./internal/git/... ./internal/actions/... ./internal/dispatch/...
 
 # Format code
 make fmt
@@ -300,6 +503,7 @@ make distclean
 - Check provider endpoint is accessible
 - Verify `/v1/models` returns models
 - Check Docker network configuration (if containerized)
+- Provider status is set to `"healthy"` by heartbeat workflow — check Temporal is running
 
 ### Beads not loading
 - Verify YAML syntax
@@ -307,14 +511,25 @@ make distclean
 - Verify `project_id` matches
 
 ### Agents paused
-- Check provider status is `active`
+- Check provider status is `healthy` (not just `active`)
 - Verify agent assigned to project
-- Check for errors in logs
+- Agent lifecycle: `CreateAgent()` -> `"paused"`, `SpawnAgentWorker()` -> `"idle"`
+- Check for errors in `loom.log`
 
 ### Temporal issues
 - Verify Temporal running: `docker ps | grep temporal`
 - Check logs: `docker logs temporal`
 - Restart: `docker compose restart temporal`
+- Prerequisites: `docker compose up -d temporal-postgresql temporal temporal-ui`
+
+### Dispatch not working
+- Readiness mode `"block"` + failed `git ls-remote` = no beads dispatched
+- Check readiness mode in config (default: `"warn"`)
+- Verify idle agents exist: `curl http://localhost:8081/api/v1/agents | jq '.[] | select(.status=="idle")'`
+
+### Auth errors in development
+- `AUTH_ENABLED=false` skips auth for all endpoints
+- `loadUsers()`/`loadAPIKeys()` have early-return guards when auth is disabled
 
 ## Common Use Cases
 

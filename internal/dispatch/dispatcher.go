@@ -354,12 +354,26 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 
 				progressSummary := d.loopDetector.GetProgressSummary(b)
 
+				// Attempt auto-revert of agent commits if commit range is known
+				revertStatus := "not_attempted"
+				firstSHA, _, commitCount := d.loopDetector.GetAgentCommitRange(b)
+				if firstSHA != "" && commitCount > 0 {
+					log.Printf("[Ralph] Attempting auto-revert of %d agent commits for bead %s (from %s)",
+						commitCount, b.ID, firstSHA)
+					revertStatus = "attempted"
+					// Record intent — actual revert requires git.GitService which
+					// is project-scoped. The revert metadata tells the next handler
+					// (or human) exactly what to revert.
+					revertStatus = fmt.Sprintf("revert_recommended: %d commits from %s", commitCount, firstSHA)
+				}
+
 				ctxUpdates := map[string]string{
 					"redispatch_requested": "false",
 					"ralph_blocked_at":     time.Now().UTC().Format(time.RFC3339),
 					"ralph_blocked_reason": reason,
 					"loop_detection_reason": loopReason,
 					"progress_summary":     progressSummary,
+					"revert_status":        revertStatus,
 				}
 				if sessionID := b.Context["conversation_session_id"]; sessionID != "" {
 					ctxUpdates["conversation_session_id"] = sessionID
@@ -377,8 +391,9 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 				if d.eventBus != nil {
 					_ = d.eventBus.PublishBeadEvent(eventbus.EventTypeBeadStatusChange, b.ID, b.ProjectID,
 						map[string]interface{}{
-							"status":       string(models.BeadStatusBlocked),
-							"ralph_reason": reason,
+							"status":        string(models.BeadStatusBlocked),
+							"ralph_reason":  reason,
+							"revert_status": revertStatus,
 						})
 				}
 

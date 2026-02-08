@@ -59,6 +59,16 @@ type GitOperator interface {
 	GetStatus(ctx context.Context) (map[string]interface{}, error)
 	GetDiff(ctx context.Context, staged bool) (map[string]interface{}, error)
 	CreatePR(ctx context.Context, beadID, title, body, base, branch string, reviewers []string, draft bool) (map[string]interface{}, error)
+	// Extended git operations
+	Merge(ctx context.Context, beadID, sourceBranch, message string, noFF bool) (map[string]interface{}, error)
+	Revert(ctx context.Context, beadID string, commitSHAs []string, reason string) (map[string]interface{}, error)
+	DeleteBranch(ctx context.Context, branch string, deleteRemote bool) (map[string]interface{}, error)
+	Checkout(ctx context.Context, branch string) (map[string]interface{}, error)
+	Log(ctx context.Context, branch string, maxCount int) (map[string]interface{}, error)
+	Fetch(ctx context.Context) (map[string]interface{}, error)
+	ListBranches(ctx context.Context) (map[string]interface{}, error)
+	DiffBranches(ctx context.Context, branch1, branch2 string) (map[string]interface{}, error)
+	GetBeadCommits(ctx context.Context, beadID string) (map[string]interface{}, error)
 }
 
 type ActionLogger interface {
@@ -382,6 +392,109 @@ func (r *Router) executeAction(ctx context.Context, action Action, actx ActionCo
 			Message:    fmt.Sprintf("PR created: %v", result["pr_url"]),
 			Metadata:   result,
 		}
+	// Extended git operations
+	case ActionGitMerge:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		noFF := action.NoFF
+		if !noFF {
+			noFF = true // Default to --no-ff for audit trail
+		}
+		result, err := r.Git.Merge(ctx, actx.BeadID, action.SourceBranch, action.CommitMessage, noFF)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "branch merged", Metadata: result}
+
+	case ActionGitRevert:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		shas := action.CommitSHAs
+		if len(shas) == 0 && action.CommitSHA != "" {
+			shas = []string{action.CommitSHA}
+		}
+		result, err := r.Git.Revert(ctx, actx.BeadID, shas, action.Reason)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "commits reverted", Metadata: result}
+
+	case ActionGitBranchDelete:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.DeleteBranch(ctx, action.Branch, action.DeleteRemote)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "branch deleted", Metadata: result}
+
+	case ActionGitCheckout:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.Checkout(ctx, action.Branch)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: fmt.Sprintf("switched to %s", action.Branch), Metadata: result}
+
+	case ActionGitLog:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.Log(ctx, action.Branch, action.MaxCount)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "log retrieved", Metadata: result}
+
+	case ActionGitFetch:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.Fetch(ctx)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "fetch completed", Metadata: result}
+
+	case ActionGitListBranches:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.ListBranches(ctx)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "branches listed", Metadata: result}
+
+	case ActionGitDiffBranches:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		result, err := r.Git.DiffBranches(ctx, action.SourceBranch, action.TargetBranch)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "branch diff retrieved", Metadata: result}
+
+	case ActionGitBeadCommits:
+		if r.Git == nil {
+			return Result{ActionType: action.Type, Status: "error", Message: "git operator not configured"}
+		}
+		beadID := action.BeadID
+		if beadID == "" {
+			beadID = actx.BeadID
+		}
+		result, err := r.Git.GetBeadCommits(ctx, beadID)
+		if err != nil {
+			return Result{ActionType: action.Type, Status: "error", Message: err.Error()}
+		}
+		return Result{ActionType: action.Type, Status: "executed", Message: "bead commits retrieved", Metadata: result}
+
 	case ActionRunCommand:
 		if r.Commands == nil {
 			return r.createBeadFromAction("Run command", action.Command, actx)

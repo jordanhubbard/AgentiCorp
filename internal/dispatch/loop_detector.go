@@ -298,6 +298,25 @@ func (ld *LoopDetector) ResetProgress(bead *models.Bead) {
 	}
 }
 
+// GetAgentCommitRange returns the first and last commit SHAs for the current
+// agent's dispatch cycle by reading the dispatch_count and commit metadata
+// from bead context.
+func (ld *LoopDetector) GetAgentCommitRange(bead *models.Bead) (firstSHA, lastSHA string, count int) {
+	if bead == nil || bead.Context == nil {
+		return "", "", 0
+	}
+
+	// Try to get commit range from context (set by dispatch pipeline)
+	firstSHA = bead.Context["agent_first_commit_sha"]
+	lastSHA = bead.Context["agent_last_commit_sha"]
+
+	if countStr := bead.Context["agent_commit_count"]; countStr != "" {
+		_, _ = fmt.Sscanf(countStr, "%d", &count)
+	}
+
+	return firstSHA, lastSHA, count
+}
+
 // GetActionHistoryJSON returns the action history as JSON string
 func (ld *LoopDetector) GetActionHistoryJSON(bead *models.Bead) string {
 	history, err := ld.getActionHistory(bead)

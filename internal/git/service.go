@@ -17,6 +17,7 @@ type GitService struct {
 	projectPath   string
 	projectID     string
 	projectKeyDir string // Base directory for per-project SSH keys
+	branchPrefix  string // Configurable branch prefix (default: "agent/")
 	auditLogger   *AuditLogger
 }
 
@@ -43,8 +44,16 @@ func NewGitService(projectPath, projectID string, projectKeyDir ...string) (*Git
 		projectPath:   projectPath,
 		projectID:     projectID,
 		projectKeyDir: keyDir,
+		branchPrefix:  "agent/",
 		auditLogger:   auditLogger,
 	}, nil
+}
+
+// SetBranchPrefix configures the branch prefix (default: "agent/").
+func (s *GitService) SetBranchPrefix(prefix string) {
+	if prefix != "" {
+		s.branchPrefix = prefix
+	}
 }
 
 // CreateBranchRequest defines parameters for branch creation
@@ -69,7 +78,7 @@ func (s *GitService) CreateBranch(ctx context.Context, req CreateBranchRequest) 
 	branchName := s.generateBranchName(req.BeadID, req.Description)
 
 	// Validate branch name
-	if err := validateBranchName(branchName); err != nil {
+	if err := validateBranchNameWithPrefix(branchName, s.branchPrefix); err != nil {
 		s.auditLogger.LogOperation("create_branch", req.BeadID, "", false, err)
 		return nil, fmt.Errorf("invalid branch name: %w", err)
 	}
@@ -207,9 +216,9 @@ func (s *GitService) Push(ctx context.Context, req PushRequest) (*PushResult, er
 		}
 	}
 
-	// Validate branch name (must be agent branch)
-	if !strings.HasPrefix(branch, "agent/") {
-		err := fmt.Errorf("can only push to agent/* branches, got: %s", branch)
+	// Validate branch name (must match configured prefix)
+	if !strings.HasPrefix(branch, s.branchPrefix) {
+		err := fmt.Errorf("can only push to %s* branches, got: %s", s.branchPrefix, branch)
 		s.auditLogger.LogOperation("push", req.BeadID, branch, false, err)
 		return nil, err
 	}
@@ -287,7 +296,7 @@ func (s *GitService) GetDiff(ctx context.Context, staged bool) (string, error) {
 
 // Helper functions
 
-// generateBranchName creates a branch name following the agent/{bead-id}/{description} pattern
+// generateBranchName creates a branch name following the {prefix}{bead-id}/{description} pattern
 func (s *GitService) generateBranchName(beadID, description string) string {
 	// Slugify description
 	slug := slugify(description)
@@ -297,7 +306,7 @@ func (s *GitService) generateBranchName(beadID, description string) string {
 		slug = slug[:40]
 	}
 
-	return fmt.Sprintf("agent/%s/%s", beadID, slug)
+	return fmt.Sprintf("%s%s/%s", s.branchPrefix, beadID, slug)
 }
 
 // branchExists checks if a branch exists locally
@@ -472,10 +481,15 @@ var (
 	}
 )
 
-// validateBranchName validates that a branch name follows the agent/* pattern
+// validateBranchName validates that a branch name follows the expected prefix pattern
 func validateBranchName(branchName string) error {
-	if !strings.HasPrefix(branchName, "agent/") {
-		return fmt.Errorf("branch name must start with 'agent/', got: %s", branchName)
+	return validateBranchNameWithPrefix(branchName, "agent/")
+}
+
+// validateBranchNameWithPrefix validates branch name with a configurable prefix
+func validateBranchNameWithPrefix(branchName, prefix string) error {
+	if !strings.HasPrefix(branchName, prefix) {
+		return fmt.Errorf("branch name must start with '%s', got: %s", prefix, branchName)
 	}
 
 	if len(branchName) > 72 {
@@ -737,6 +751,417 @@ func (s *GitService) CreatePR(ctx context.Context, req CreatePRRequest) (*Create
 	}
 
 	return result, nil
+}
+
+// MergeRequest defines parameters for merging branches
+type MergeRequest struct {
+	SourceBranch string // Branch to merge from
+	Message      string // Merge commit message
+	NoFF         bool   // Force merge commit (--no-ff), default true
+	BeadID       string // Bead ID for audit trail
+}
+
+// MergeResult contains merge operation results
+type MergeResult struct {
+	MergedBranch string `json:"merged_branch"`
+	CommitSHA    string `json:"commit_sha"`
+	Success      bool   `json:"success"`
+}
+
+// Merge merges a branch into the current branch
+func (s *GitService) Merge(ctx context.Context, req MergeRequest) (*MergeResult, error) {
+	startTime := time.Now()
+
+	// Validate source branch exists
+	exists, err := s.branchExists(ctx, req.SourceBranch)
+	if err != nil {
+		s.auditLogger.LogOperation("merge", req.BeadID, req.SourceBranch, false, err)
+		return nil, fmt.Errorf("failed to check branch: %w", err)
+	}
+	if !exists {
+		err := fmt.Errorf("source branch does not exist: %s", req.SourceBranch)
+		s.auditLogger.LogOperation("merge", req.BeadID, req.SourceBranch, false, err)
+		return nil, err
+	}
+
+	// Check current branch is not protected (unless we're merging INTO a non-protected branch)
+	currentBranch, err := s.getCurrentBranch(ctx)
+	if err != nil {
+		s.auditLogger.LogOperation("merge", req.BeadID, "", false, err)
+		return nil, fmt.Errorf("failed to get current branch: %w", err)
+	}
+	if isProtectedBranch(currentBranch) {
+		err := fmt.Errorf("cannot merge into protected branch: %s", currentBranch)
+		s.auditLogger.LogOperation("merge", req.BeadID, currentBranch, false, err)
+		return nil, err
+	}
+
+	// Build merge command
+	args := []string{"merge"}
+	if req.NoFF {
+		args = append(args, "--no-ff")
+	}
+	if req.Message != "" {
+		args = append(args, "-m", req.Message)
+	}
+	args = append(args, req.SourceBranch)
+
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		// Check for merge conflicts
+		if strings.Contains(string(output), "CONFLICT") {
+			// Abort the merge to leave working tree clean
+			abortCmd := exec.CommandContext(ctx, "git", "merge", "--abort")
+			abortCmd.Dir = s.projectPath
+			_ = abortCmd.Run()
+			err = fmt.Errorf("merge conflict detected, merge aborted: %s", string(output))
+		}
+		s.auditLogger.LogOperation("merge", req.BeadID, req.SourceBranch, false, err)
+		return nil, fmt.Errorf("git merge failed: %w\nOutput: %s", err, output)
+	}
+
+	commitSHA, _ := s.getLastCommitSHA(ctx)
+	s.auditLogger.LogOperationWithDuration("merge", req.BeadID, req.SourceBranch, true, nil, time.Since(startTime))
+
+	return &MergeResult{
+		MergedBranch: req.SourceBranch,
+		CommitSHA:    commitSHA,
+		Success:      true,
+	}, nil
+}
+
+// RevertRequest defines parameters for reverting commits
+type RevertRequest struct {
+	CommitSHAs []string // Commit SHAs to revert
+	BeadID     string   // Bead ID for audit trail
+	Reason     string   // Reason for revert
+}
+
+// RevertResult contains revert operation results
+type RevertResult struct {
+	RevertedSHAs []string `json:"reverted_shas"`
+	NewCommitSHA string   `json:"new_commit_sha"`
+	Success      bool     `json:"success"`
+}
+
+// Revert reverts specific commit(s)
+func (s *GitService) Revert(ctx context.Context, req RevertRequest) (*RevertResult, error) {
+	startTime := time.Now()
+
+	if len(req.CommitSHAs) == 0 {
+		err := fmt.Errorf("no commit SHAs provided for revert")
+		s.auditLogger.LogOperation("revert", req.BeadID, "", false, err)
+		return nil, err
+	}
+
+	revertedSHAs := make([]string, 0, len(req.CommitSHAs))
+	for _, sha := range req.CommitSHAs {
+		args := []string{"revert", "--no-edit", sha}
+		cmd := exec.CommandContext(ctx, "git", args...)
+		cmd.Dir = s.projectPath
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			// Abort revert on conflict
+			abortCmd := exec.CommandContext(ctx, "git", "revert", "--abort")
+			abortCmd.Dir = s.projectPath
+			_ = abortCmd.Run()
+			s.auditLogger.LogOperation("revert", req.BeadID, sha, false, err)
+			return nil, fmt.Errorf("git revert failed for %s: %w\nOutput: %s", sha, err, output)
+		}
+		revertedSHAs = append(revertedSHAs, sha)
+	}
+
+	commitSHA, _ := s.getLastCommitSHA(ctx)
+	s.auditLogger.LogOperationWithDuration("revert", req.BeadID, strings.Join(revertedSHAs, ","), true, nil, time.Since(startTime))
+
+	return &RevertResult{
+		RevertedSHAs: revertedSHAs,
+		NewCommitSHA: commitSHA,
+		Success:      true,
+	}, nil
+}
+
+// DeleteBranchRequest defines parameters for deleting a branch
+type DeleteBranchRequest struct {
+	Branch       string // Branch to delete
+	DeleteRemote bool   // Also delete remote branch
+}
+
+// DeleteBranchResult contains branch deletion results
+type DeleteBranchResult struct {
+	Branch       string `json:"branch"`
+	DeletedLocal bool   `json:"deleted_local"`
+	DeletedRemote bool  `json:"deleted_remote"`
+}
+
+// DeleteBranch deletes a local (and optionally remote) branch
+func (s *GitService) DeleteBranch(ctx context.Context, req DeleteBranchRequest) (*DeleteBranchResult, error) {
+	startTime := time.Now()
+
+	// Cannot delete protected branches
+	if isProtectedBranch(req.Branch) {
+		err := fmt.Errorf("cannot delete protected branch: %s", req.Branch)
+		s.auditLogger.LogOperation("delete_branch", "", req.Branch, false, err)
+		return nil, err
+	}
+
+	// Cannot delete current branch
+	currentBranch, err := s.getCurrentBranch(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current branch: %w", err)
+	}
+	if currentBranch == req.Branch {
+		err := fmt.Errorf("cannot delete current branch: %s", req.Branch)
+		s.auditLogger.LogOperation("delete_branch", "", req.Branch, false, err)
+		return nil, err
+	}
+
+	result := &DeleteBranchResult{Branch: req.Branch}
+
+	// Delete local branch
+	cmd := exec.CommandContext(ctx, "git", "branch", "-d", req.Branch)
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		// Try force delete if not merged
+		cmd = exec.CommandContext(ctx, "git", "branch", "-D", req.Branch)
+		cmd.Dir = s.projectPath
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			s.auditLogger.LogOperation("delete_branch", "", req.Branch, false, err)
+			return nil, fmt.Errorf("git branch delete failed: %w\nOutput: %s", err, output)
+		}
+	}
+	result.DeletedLocal = true
+
+	// Delete remote branch if requested
+	if req.DeleteRemote {
+		cmd = exec.CommandContext(ctx, "git", "push", "origin", "--delete", req.Branch)
+		cmd.Dir = s.projectPath
+		cmd.Env = s.buildEnv()
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			// Remote delete failure is non-fatal (branch may not exist remotely)
+			s.auditLogger.LogOperation("delete_branch_remote", "", req.Branch, false, err)
+		} else {
+			result.DeletedRemote = true
+		}
+	}
+
+	s.auditLogger.LogOperationWithDuration("delete_branch", "", req.Branch, true, nil, time.Since(startTime))
+	return result, nil
+}
+
+// CheckoutRequest defines parameters for switching branches
+type CheckoutRequest struct {
+	Branch string // Branch to switch to
+}
+
+// CheckoutResult contains checkout operation results
+type CheckoutResult struct {
+	Branch         string `json:"branch"`
+	PreviousBranch string `json:"previous_branch"`
+}
+
+// Checkout switches to a different branch
+func (s *GitService) Checkout(ctx context.Context, req CheckoutRequest) (*CheckoutResult, error) {
+	startTime := time.Now()
+
+	previousBranch, _ := s.getCurrentBranch(ctx)
+
+	// Check for dirty working tree
+	statusCmd := exec.CommandContext(ctx, "git", "status", "--porcelain")
+	statusCmd.Dir = s.projectPath
+	statusOutput, err := statusCmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("failed to check working tree: %w", err)
+	}
+	if strings.TrimSpace(string(statusOutput)) != "" {
+		err := fmt.Errorf("working tree is dirty, commit or stash changes before switching branches")
+		s.auditLogger.LogOperation("checkout", "", req.Branch, false, err)
+		return nil, err
+	}
+
+	cmd := exec.CommandContext(ctx, "git", "checkout", req.Branch)
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		s.auditLogger.LogOperation("checkout", "", req.Branch, false, err)
+		return nil, fmt.Errorf("git checkout failed: %w\nOutput: %s", err, output)
+	}
+
+	s.auditLogger.LogOperationWithDuration("checkout", "", req.Branch, true, nil, time.Since(startTime))
+	return &CheckoutResult{
+		Branch:         req.Branch,
+		PreviousBranch: previousBranch,
+	}, nil
+}
+
+// LogRequest defines parameters for viewing commit history
+type LogRequest struct {
+	Branch   string // Branch to show log for (default: current)
+	MaxCount int    // Maximum entries (default: 20)
+}
+
+// LogEntry represents a single commit log entry
+type LogEntry struct {
+	SHA     string `json:"sha"`
+	Author  string `json:"author"`
+	Date    string `json:"date"`
+	Subject string `json:"subject"`
+}
+
+// Log returns structured commit history
+func (s *GitService) Log(ctx context.Context, req LogRequest) ([]LogEntry, error) {
+	maxCount := req.MaxCount
+	if maxCount <= 0 {
+		maxCount = 20
+	}
+	if maxCount > 100 {
+		maxCount = 100
+	}
+
+	args := []string{"log", fmt.Sprintf("--max-count=%d", maxCount),
+		"--format=%H|%an|%aI|%s"}
+	if req.Branch != "" {
+		args = append(args, req.Branch)
+	}
+
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("git log failed: %w\nOutput: %s", err, output)
+	}
+
+	var entries []LogEntry
+	for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+		if line == "" {
+			continue
+		}
+		parts := strings.SplitN(line, "|", 4)
+		if len(parts) < 4 {
+			continue
+		}
+		entries = append(entries, LogEntry{
+			SHA:     parts[0],
+			Author:  parts[1],
+			Date:    parts[2],
+			Subject: parts[3],
+		})
+	}
+
+	s.auditLogger.LogOperation("log", "", req.Branch, true, nil)
+	return entries, nil
+}
+
+// Fetch fetches remote refs
+func (s *GitService) Fetch(ctx context.Context) error {
+	startTime := time.Now()
+
+	cmd := exec.CommandContext(ctx, "git", "fetch", "--prune")
+	cmd.Dir = s.projectPath
+	cmd.Env = s.buildEnv()
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		s.auditLogger.LogOperation("fetch", "", "", false, err)
+		return fmt.Errorf("git fetch failed: %w\nOutput: %s", err, output)
+	}
+
+	s.auditLogger.LogOperationWithDuration("fetch", "", "", true, nil, time.Since(startTime))
+	return nil
+}
+
+// BranchInfo represents a branch with metadata
+type BranchInfo struct {
+	Name      string `json:"name"`
+	IsCurrent bool   `json:"is_current"`
+	IsRemote  bool   `json:"is_remote"`
+	LastCommit string `json:"last_commit"`
+}
+
+// ListBranches lists local and remote branches
+func (s *GitService) ListBranches(ctx context.Context) ([]BranchInfo, error) {
+	// List local branches
+	cmd := exec.CommandContext(ctx, "git", "branch", "-a", "--format=%(refname:short)|%(objectname:short)|%(HEAD)")
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("git branch failed: %w\nOutput: %s", err, output)
+	}
+
+	var branches []BranchInfo
+	for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+		if line == "" {
+			continue
+		}
+		parts := strings.SplitN(line, "|", 3)
+		if len(parts) < 3 {
+			continue
+		}
+		name := strings.TrimSpace(parts[0])
+		branches = append(branches, BranchInfo{
+			Name:       name,
+			IsCurrent:  strings.TrimSpace(parts[2]) == "*",
+			IsRemote:   strings.HasPrefix(name, "origin/"),
+			LastCommit: strings.TrimSpace(parts[1]),
+		})
+	}
+
+	s.auditLogger.LogOperation("list_branches", "", "", true, nil)
+	return branches, nil
+}
+
+// DiffBranchesRequest defines parameters for cross-branch diff
+type DiffBranchesRequest struct {
+	Branch1 string // First branch
+	Branch2 string // Second branch
+}
+
+// DiffBranches returns diff between two branches
+func (s *GitService) DiffBranches(ctx context.Context, req DiffBranchesRequest) (string, error) {
+	cmd := exec.CommandContext(ctx, "git", "diff", fmt.Sprintf("%s...%s", req.Branch1, req.Branch2))
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("git diff branches failed: %w\nOutput: %s", err, output)
+	}
+
+	s.auditLogger.LogOperation("diff_branches", "", fmt.Sprintf("%s...%s", req.Branch1, req.Branch2), true, nil)
+	return string(output), nil
+}
+
+// StashSave saves the current working state to the stash
+func (s *GitService) StashSave(ctx context.Context, message string) error {
+	args := []string{"stash", "push"}
+	if message != "" {
+		args = append(args, "-m", message)
+	}
+
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("git stash save failed: %w\nOutput: %s", err, output)
+	}
+
+	s.auditLogger.LogOperation("stash_save", "", message, true, nil)
+	return nil
+}
+
+// StashPop restores the most recent stash
+func (s *GitService) StashPop(ctx context.Context) error {
+	cmd := exec.CommandContext(ctx, "git", "stash", "pop")
+	cmd.Dir = s.projectPath
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("git stash pop failed: %w\nOutput: %s", err, output)
+	}
+
+	s.auditLogger.LogOperation("stash_pop", "", "", true, nil)
+	return nil
 }
 
 // isGhCLIAvailable checks if gh CLI is installed and authenticated

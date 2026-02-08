@@ -241,7 +241,7 @@ func New(cfg *config.Config) (*Loom, error) {
 		Escalator: arb,
 		Commands:  arb,
 		Files:     files.NewManager(gitopsMgr),
-		Git:       gitopsMgr,
+		Git:       actions.NewProjectGitRouter(gitopsMgr),
 		Logger:    arb,
 		Workflow:  arb,
 		BeadType:  "task",

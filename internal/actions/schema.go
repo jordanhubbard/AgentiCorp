@@ -66,6 +66,17 @@ const (
 	ActionSubmitReview    = "submit_review"
 	ActionRequestReview   = "request_review"
 
+	// Extended git operations
+	ActionGitMerge        = "git_merge"
+	ActionGitRevert       = "git_revert"
+	ActionGitBranchDelete = "git_branch_delete"
+	ActionGitCheckout     = "git_checkout"
+	ActionGitLog          = "git_log"
+	ActionGitFetch        = "git_fetch"
+	ActionGitListBranches = "git_list_branches"
+	ActionGitDiffBranches = "git_diff_branches"
+	ActionGitBeadCommits  = "git_bead_commits"
+
 	// Agent communication actions
 	ActionSendAgentMessage = "send_agent_message"
 	ActionDelegateTask     = "delegate_task"
@@ -111,6 +122,15 @@ type Action struct {
 	PRBody        string   `json:"pr_body,omitempty"`        // Pull request body
 	PRBase        string   `json:"pr_base,omitempty"`        // PR base branch (default: main)
 	PRReviewers   []string `json:"pr_reviewers,omitempty"`   // PR reviewers
+
+	// Extended git fields
+	SourceBranch string   `json:"source_branch,omitempty"` // Branch to merge from or diff against
+	TargetBranch string   `json:"target_branch,omitempty"` // Target branch for diff
+	CommitSHA    string   `json:"commit_sha,omitempty"`    // Single commit SHA
+	CommitSHAs   []string `json:"commit_shas,omitempty"`   // Multiple commit SHAs (for revert)
+	MaxCount     int      `json:"max_count,omitempty"`     // Max entries for log
+	NoFF         bool     `json:"no_ff,omitempty"`         // No fast-forward merge
+	DeleteRemote bool     `json:"delete_remote,omitempty"` // Delete remote branch too
 
 	// Workflow management fields
 	Workflow       string `json:"workflow,omitempty"`        // Workflow type (epcc, tdd, waterfall, etc.)
@@ -378,6 +398,34 @@ func validateAction(action Action) error {
 	case ActionCreatePR:
 		// pr_title and pr_body optional (auto-generated from bead)
 		// pr_base optional (defaults to main)
+	case ActionGitMerge:
+		if action.SourceBranch == "" {
+			return errors.New("git_merge requires source_branch")
+		}
+	case ActionGitRevert:
+		if action.CommitSHA == "" && len(action.CommitSHAs) == 0 {
+			return errors.New("git_revert requires commit_sha or commit_shas")
+		}
+	case ActionGitBranchDelete:
+		if action.Branch == "" {
+			return errors.New("git_branch_delete requires branch")
+		}
+	case ActionGitCheckout:
+		if action.Branch == "" {
+			return errors.New("git_checkout requires branch")
+		}
+	case ActionGitLog:
+		// All fields optional (branch defaults to current, max_count defaults to 20)
+	case ActionGitFetch:
+		// No required fields
+	case ActionGitListBranches:
+		// No required fields
+	case ActionGitDiffBranches:
+		if action.SourceBranch == "" || action.TargetBranch == "" {
+			return errors.New("git_diff_branches requires source_branch and target_branch")
+		}
+	case ActionGitBeadCommits:
+		// bead_id comes from action context
 	case ActionRunCommand:
 		if action.Command == "" {
 			return errors.New("run_command requires command")
