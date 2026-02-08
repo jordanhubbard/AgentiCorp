@@ -21,19 +21,20 @@
 }
 
 .modal-content {
-    background-color: var(--panel-bg, #1e1e1e);
+    background-color: var(--card-bg, #ffffff);
+    color: var(--text-color, #1e293b);
     padding: 0;
     border-radius: 8px;
     width: 90%;
     max-width: 700px;
     max-height: 90vh;
     overflow: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
     padding: 20px;
-    border-bottom: 1px solid var(--border-color, #333);
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -42,13 +43,14 @@
 .modal-header h2 {
     margin: 0;
     font-size: 1.5em;
+    color: var(--text-color, #1e293b);
 }
 
 .modal-close {
     background: none;
     border: none;
     font-size: 2em;
-    color: var(--text-secondary, #888);
+    color: var(--text-muted, #475569);
     cursor: pointer;
     padding: 0;
     width: 32px;
@@ -57,7 +59,7 @@
 }
 
 .modal-close:hover {
-    color: var(--text-primary, #fff);
+    color: var(--text-color, #1e293b);
 }
 
 .modal-body {
@@ -72,17 +74,17 @@
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-color, #1e293b);
 }
 
 .form-group input[type="text"],
 .form-group textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--border-color, #333);
+    border: 1px solid var(--border-color, #cbd5e1);
     border-radius: 4px;
-    background-color: var(--input-bg, #2a2a2a);
-    color: var(--text-primary, #fff);
+    background-color: var(--card-bg, #ffffff);
+    color: var(--text-color, #1e293b);
     font-family: inherit;
     font-size: 14px;
 }
@@ -96,7 +98,7 @@
 .form-group small {
     display: block;
     margin-top: 5px;
-    color: var(--text-secondary, #888);
+    color: var(--text-muted, #475569);
     font-size: 0.85em;
 }
 
@@ -108,17 +110,17 @@
 
 .prd-tab {
     padding: 8px 16px;
-    background-color: var(--button-secondary-bg, #333);
+    background-color: var(--light-bg, #f1f5f9);
     border: none;
     border-radius: 4px 4px 0 0;
-    color: var(--text-secondary, #888);
+    color: var(--text-muted, #475569);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .prd-tab.active {
-    background-color: var(--button-primary-bg, #007bff);
-    color: var(--text-primary, #fff);
+    background-color: var(--primary-color, #2563eb);
+    color: #ffffff;
 }
 
 .prd-input-panel {
@@ -135,7 +137,7 @@
     gap: 10px;
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color, #333);
+    border-top: 1px solid var(--border-color, #cbd5e1);
 }
 
 .bootstrap-status {
@@ -152,12 +154,12 @@
     font-size: 1.2em;
     font-weight: 600;
     margin-bottom: 20px;
-    color: var(--text-primary, #fff);
+    color: var(--text-color, #1e293b);
 }
 
 .status-details {
     text-align: left;
-    background-color: var(--code-bg, #2a2a2a);
+    background-color: var(--light-bg, #f1f5f9);
     padding: 15px;
     border-radius: 4px;
     margin-top: 20px;
@@ -165,23 +167,23 @@
 
 .status-details p {
     margin: 8px 0;
-    color: var(--text-secondary, #aaa);
+    color: var(--text-muted, #475569);
 }
 
 .status-details strong {
-    color: var(--text-primary, #fff);
+    color: var(--text-color, #1e293b);
 }
 
 .status-details .error {
-    color: var(--error-color, #ff6b6b);
+    color: var(--danger-color, #dc2626);
 }
 
 /* Context Menu for Project Options */
 .context-menu {
-    background-color: var(--panel-bg, #1e1e1e);
-    border: 1px solid var(--border-color, #333);
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #cbd5e1);
     border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     min-width: 200px;
     z-index: 10000;
 }
@@ -196,7 +198,7 @@
 }
 
 .context-menu-item:hover {
-    background-color: var(--hover-bg, #333);
+    background-color: var(--light-bg, #f1f5f9);
 }
 
 .context-menu-item span {
