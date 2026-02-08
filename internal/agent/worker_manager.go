@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jordanhubbard/loom/internal/actions"
+	"github.com/jordanhubbard/loom/internal/analytics"
 	"github.com/jordanhubbard/loom/internal/observability"
 	"github.com/jordanhubbard/loom/internal/provider"
 	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
@@ -24,6 +25,7 @@ type WorkerManager struct {
 	eventBus         *eventbus.EventBus
 	agentPersister   interface{ UpsertAgent(*models.Agent) error }
 	actionRouter     *actions.Router
+	analyticsLogger  *analytics.Logger
 	mu               sync.RWMutex
 	maxAgents        int
 }
@@ -49,6 +51,12 @@ func (m *WorkerManager) SetActionRouter(r *actions.Router) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.actionRouter = r
+}
+
+func (m *WorkerManager) SetAnalyticsLogger(l *analytics.Logger) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.analyticsLogger = l
 }
 
 func (m *WorkerManager) persistAgent(agent *models.Agent) {
@@ -354,15 +362,32 @@ func (m *WorkerManager) ExecuteTask(ctx context.Context, agentID string, task *w
 	// Execute task through worker pool
 	result, err := m.workerPool.ExecuteTask(ctx, task, agentID)
 	if err != nil {
+		elapsed := time.Since(startTime)
 		observability.Error("agent.task_complete", map[string]interface{}{
 			"agent_id":    agent.ID,
 			"project_id":  projectID,
 			"provider_id": agent.ProviderID,
 			"task_id":     taskID,
 			"bead_id":     beadID,
-			"duration_ms": time.Since(startTime).Milliseconds(),
+			"duration_ms": elapsed.Milliseconds(),
 			"success":     false,
 		}, err)
+		if al := m.analyticsLogger; al != nil {
+			_ = al.LogRequest(ctx, &analytics.RequestLog{
+				UserID:     "agent:" + agent.Name,
+				Method:     "POST",
+				Path:       "/internal/worker/execute",
+				ProviderID: agent.ProviderID,
+				LatencyMs:  elapsed.Milliseconds(),
+				StatusCode: 500,
+				ErrorMessage: err.Error(),
+				Metadata: map[string]string{
+					"agent_id": agent.ID,
+					"bead_id":  beadID,
+					"task_id":  taskID,
+				},
+			})
+		}
 		return nil, fmt.Errorf("task execution failed: %w", err)
 	}
 
@@ -403,6 +428,7 @@ func (m *WorkerManager) ExecuteTask(ctx context.Context, agentID string, task *w
 	// Update last active time
 	_ = m.UpdateHeartbeat(agentID)
 
+	elapsed := time.Since(startTime)
 	if task != nil {
 		observability.Info("agent.task_complete", map[string]interface{}{
 			"agent_id":    agent.ID,
@@ -410,12 +436,42 @@ func (m *WorkerManager) ExecuteTask(ctx context.Context, agentID string, task *w
 			"provider_id": agent.ProviderID,
 			"task_id":     taskID,
 			"bead_id":     beadID,
-			"duration_ms": time.Since(startTime).Milliseconds(),
+			"duration_ms": elapsed.Milliseconds(),
 			"success":     result.Success,
 			"error":       result.Error,
 		})
 	}
 	log.Printf("Agent %s completed task %s", agent.Name, task.ID)
+
+	// Log to analytics for the observability dashboard
+	if al := m.analyticsLogger; al != nil && result != nil {
+		statusCode := 200
+		if !result.Success {
+			statusCode = 500
+		}
+		// Get model name from worker if available
+		modelName := ""
+		if w, wErr := m.workerPool.GetWorker(agentID); wErr == nil {
+			info := w.GetInfo()
+			modelName = info.ProviderID // Best available; provider config has the model
+		}
+		_ = al.LogRequest(ctx, &analytics.RequestLog{
+			UserID:           "agent:" + agent.Name,
+			Method:           "POST",
+			Path:             "/internal/worker/execute",
+			ProviderID:       agent.ProviderID,
+			ModelName:        modelName,
+			TotalTokens:      int64(result.TokensUsed),
+			LatencyMs:        elapsed.Milliseconds(),
+			StatusCode:       statusCode,
+			ErrorMessage:     result.Error,
+			Metadata: map[string]string{
+				"agent_id": agent.ID,
+				"bead_id":  beadID,
+				"task_id":  taskID,
+			},
+		})
+	}
 
 	return result, nil
 }

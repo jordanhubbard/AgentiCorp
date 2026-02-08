@@ -72,6 +72,11 @@ type EventBus struct {
 	ctx         context.Context
 	cancel      context.CancelFunc
 	buffer      chan *Event
+
+	// Ring buffer for recent event history (ephemeral, lost on restart)
+	recentEvents []*Event
+	recentIdx    int
+	recentCount  int
 }
 
 // NewEventBus creates a new event bus
@@ -84,12 +89,13 @@ func NewEventBus(client *temporalclient.Client, cfg *config.TemporalConfig) *Eve
 	}
 
 	eb := &EventBus{
-		client:      client,
-		subscribers: make(map[string]*Subscriber),
-		config:      cfg,
-		ctx:         ctx,
-		cancel:      cancel,
-		buffer:      make(chan *Event, bufferSize),
+		client:       client,
+		subscribers:  make(map[string]*Subscriber),
+		config:       cfg,
+		ctx:          ctx,
+		cancel:       cancel,
+		buffer:       make(chan *Event, bufferSize),
+		recentEvents: make([]*Event, 1000),
 	}
 
 	// Start event processing goroutine
@@ -172,6 +178,15 @@ func (eb *EventBus) processEvents() {
 
 // distributeEvent sends event to all matching subscribers
 func (eb *EventBus) distributeEvent(event *Event) {
+	// Store in ring buffer for history queries
+	eb.mu.Lock()
+	eb.recentEvents[eb.recentIdx] = event
+	eb.recentIdx = (eb.recentIdx + 1) % len(eb.recentEvents)
+	if eb.recentCount < len(eb.recentEvents) {
+		eb.recentCount++
+	}
+	eb.mu.Unlock()
+
 	eb.mu.RLock()
 	subs := make([]*Subscriber, 0, len(eb.subscribers))
 	for _, sub := range eb.subscribers {
@@ -207,6 +222,42 @@ func (eb *EventBus) distributeEvent(event *Event) {
 		"event_id":   event.ID,
 		"project_id": event.ProjectID,
 	})
+}
+
+// SubscriberCount returns the number of active subscribers.
+func (eb *EventBus) SubscriberCount() int {
+	eb.mu.RLock()
+	defer eb.mu.RUnlock()
+	return len(eb.subscribers)
+}
+
+// GetRecentEvents returns recent events from the ring buffer, filtered by optional projectID and eventType.
+// Results are returned newest-first, up to limit.
+func (eb *EventBus) GetRecentEvents(limit int, projectID, eventType string) []*Event {
+	eb.mu.RLock()
+	defer eb.mu.RUnlock()
+
+	if limit <= 0 || limit > eb.recentCount {
+		limit = eb.recentCount
+	}
+
+	result := make([]*Event, 0, limit)
+	// Walk backwards from most recent
+	for i := 0; i < eb.recentCount && len(result) < limit; i++ {
+		idx := (eb.recentIdx - 1 - i + len(eb.recentEvents)) % len(eb.recentEvents)
+		ev := eb.recentEvents[idx]
+		if ev == nil {
+			continue
+		}
+		if projectID != "" && ev.ProjectID != projectID {
+			continue
+		}
+		if eventType != "" && string(ev.Type) != eventType {
+			continue
+		}
+		result = append(result, ev)
+	}
+	return result
 }
 
 // Close shuts down the event bus

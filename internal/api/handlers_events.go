@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/jordanhubbard/loom/internal/temporal/eventbus"
@@ -98,11 +99,28 @@ func (s *Server) handleGetEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For now, return empty array since we need to implement event storage
-	// In a real implementation, you'd query Temporal workflows or a separate event store
+	eventBus := s.app.GetEventBus()
+	if eventBus == nil {
+		s.respondError(w, http.StatusServiceUnavailable, "Event bus not available")
+		return
+	}
+
+	projectID := r.URL.Query().Get("project_id")
+	eventType := r.URL.Query().Get("type")
+	limit := 100
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
+			limit = parsed
+			if limit > 1000 {
+				limit = 1000
+			}
+		}
+	}
+
+	events := eventBus.GetRecentEvents(limit, projectID, eventType)
 	s.respondJSON(w, http.StatusOK, map[string]interface{}{
-		"events":  []interface{}{},
-		"message": "Event history not yet implemented - use /api/v1/events/stream for real-time events",
+		"events": events,
+		"count":  len(events),
 	})
 }
 
@@ -120,10 +138,8 @@ func (s *Server) handleGetEventStats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return basic stats (in a real implementation, track these in the event bus)
 	s.respondJSON(w, http.StatusOK, map[string]interface{}{
 		"status":      "active",
-		"subscribers": 0, // Would need to expose this from EventBus
-		"message":     "Event bus is operational",
+		"subscribers": eventBus.SubscriberCount(),
 	})
 }

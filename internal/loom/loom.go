@@ -197,12 +197,14 @@ func New(cfg *config.Config) (*Loom, error) {
 		commentsMgr = comments.NewManager(db, notificationMgr, eb)
 	}
 
-	// Initialize pattern manager if database is available
+	// Initialize pattern manager and analytics logger if database is available
 	var patternMgr *patterns.Manager
 	if db != nil {
 		analyticsStorage, err := analytics.NewDatabaseStorage(db.DB())
 		if err == nil && analyticsStorage != nil {
 			patternMgr = patterns.NewManager(analyticsStorage, nil)
+			// Wire analytics logger to WorkerManager so LLM completions are logged
+			agentMgr.SetAnalyticsLogger(analytics.NewLogger(analyticsStorage, analytics.DefaultPrivacyConfig()))
 		}
 	}
 
