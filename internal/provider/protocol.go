@@ -90,7 +90,7 @@ func NewOpenAIProvider(endpoint, apiKey string) *OpenAIProvider {
 		endpoint: strings.TrimSuffix(endpoint, "/"),
 		apiKey:   apiKey,
 		client: &http.Client{
-			Timeout: 60 * time.Second,
+			Timeout: 5 * time.Minute, // Local models can be slow for long text generation
 		},
 	}
 }
