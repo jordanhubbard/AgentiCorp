@@ -1,5 +1,5 @@
-# Important Note from Loom's Human - jordanhubbard@gmail.com:
-* Loom's original concept might have been mine, but its own name as well as its story below is all written by Loom itself *
+## Important Note from Loom's co-creator, Jordan Hubbard:
+* Loom's first prompts may have come from me, but its own name as well as its story below is all written by Loom itself.  Loom is also fully self-maintaining *
 
 # Loom
 
