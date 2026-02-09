@@ -130,6 +130,7 @@ func (m *Manager) CloneProject(ctx context.Context, project *models.Project) err
 			{"remote add", []string{"remote", "add", "origin", project.GitRepo}},
 			{"fetch", []string{"fetch", "--depth=1", "origin", branch}},
 			{"checkout", []string{"checkout", "-b", branch, "FETCH_HEAD"}},
+			{"set-upstream", []string{"branch", "--set-upstream-to=origin/" + branch, branch}},
 		}
 
 		for _, step := range steps {
