@@ -2889,7 +2889,13 @@ func (a *Loom) StartDispatchLoop(ctx context.Context, interval time.Duration) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			_, _ = a.dispatcher.DispatchOnce(ctx, "")
+			// Dispatch as many beads as possible (one per idle agent)
+			for i := 0; i < 50; i++ {
+				dr, err := a.dispatcher.DispatchOnce(ctx, "")
+				if err != nil || dr == nil || !dr.Dispatched {
+					break
+				}
+			}
 		}
 	}
 }
