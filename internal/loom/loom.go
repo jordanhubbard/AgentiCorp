@@ -2898,12 +2898,17 @@ func (a *Loom) StartMaintenanceLoop(ctx context.Context) {
 	}
 }
 
-// StartDispatchLoop runs a best-effort periodic dispatcher loop when Temporal is not configured.
+// StartDispatchLoop runs a periodic dispatcher that fills all idle agents with work.
 func (a *Loom) StartDispatchLoop(ctx context.Context, interval time.Duration) {
+	if a.dispatcher == nil {
+		log.Printf("[DispatchLoop] No dispatcher configured, skipping")
+		return
+	}
 	if interval <= 0 {
 		interval = 10 * time.Second
 	}
 
+	log.Printf("[DispatchLoop] Starting with %s interval", interval)
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
