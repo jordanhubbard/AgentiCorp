@@ -33,7 +33,7 @@ This is the craft of software, elevated by the ancient wisdom of the loom.
 
 ## Quick Start
 
-Want to get Loom running? See **[SETUP.md](SETUP.md)** for installation, connecting to the UI, and bootstrapping your first project.
+New to Loom? See **[QUICKSTART.md](QUICKSTART.md)** to get running in 10 minutes: start the server, connect a GPU or cloud provider, add your first project, and file beads from the CEO dashboard.
 
 ---
 

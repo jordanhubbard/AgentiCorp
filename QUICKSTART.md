@@ -1,366 +1,199 @@
 # Quick Start Guide
 
-Get Loom up and running in 5 minutes.
+Get Loom running and your first agents working in under 10 minutes.
 
 ## Prerequisites
 
-- Go 1.24+ installed
-- Git
-- (Optional) [bd (beads)](https://github.com/steveyegge/beads) for full task tracking
+- Docker and Docker Compose
+- A GPU with vLLM **or** an API key for a cloud LLM provider
 
-## Installation
-
-### Option 1: Build from Source
+## 1. Start Loom
 
 ```bash
-# Clone the repository
 git clone https://github.com/jordanhubbard/loom.git
 cd loom
-
-# Set up development environment
-make dev-setup
-
-# Build and run
-make run
+make start
 ```
 
-### Option 2: Pre-built Binary
+This builds the container and starts the full stack (Loom, Temporal, PostgreSQL).
+Wait about 30 seconds for everything to initialize, then open:
 
-Download the latest release from [GitHub Releases](https://github.com/jordanhubbard/loom/releases).
+- **Loom UI**: http://localhost:8080
+- **Temporal UI**: http://localhost:8088
+
+## 2. Set Up a Provider
+
+Loom needs at least one LLM provider to power its agents. You have two options:
+
+### Option A: Run Your Own vLLM Server (GPU Required)
+
+On any machine with an NVIDIA GPU (24GB+ VRAM recommended):
 
 ```bash
-# Extract and run
-./loom -config config.yaml
+docker run -it --gpus all -p 8000:8000 \
+    --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+    -v ~/.cache/huggingface:/root/.cache/huggingface \
+    nvcr.io/nvidia/vllm:25.12.post1-py3 \
+    --model Qwen/Qwen2.5-Coder-32B-Instruct \
+    --max-model-len 32768 \
+    --tensor-parallel-size 1
 ```
 
-## First Steps
-
-### 1. Start the Server
+Wait for the model to download and load (first run takes a while). Once you see
+`Uvicorn running on http://0.0.0.0:8000`, register it with Loom:
 
 ```bash
-# With default configuration
-./loom
-
-# With custom config
-./loom -config /path/to/config.yaml
+curl -X POST http://localhost:8080/api/v1/providers \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "id": "my-gpu",
+        "name": "My vLLM Server",
+        "type": "openai",
+        "endpoint": "http://<your-gpu-host>:8000/v1",
+        "model": "Qwen/Qwen2.5-Coder-32B-Instruct"
+    }'
 ```
 
-The server will start on:
-- HTTP: http://localhost:8080
-- Web UI: http://localhost:8080
+Replace `<your-gpu-host>` with the hostname or IP of the machine running vLLM.
+If it's the same machine as Loom, use `host.docker.internal` (macOS/Windows) or
+the machine's LAN IP (Linux).
 
-### 2. Access the Web UI
+### Option B: Use a Cloud Provider (API Key)
 
-Open your browser to http://localhost:8080
+Register any OpenAI-compatible endpoint:
 
-You'll see:
-- **Kanban Board**: Work items organized by status
-- **Agents**: Currently running agents
-- **Decisions**: Decision beads requiring resolution
-- **Projects**: Configured projects
-- **Personas**: Available agent personalities
+```bash
+curl -X POST http://localhost:8080/api/v1/providers \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "id": "cloud-llm",
+        "name": "My Cloud Provider",
+        "type": "openai",
+        "endpoint": "https://api.example.com/v1",
+        "model": "model-name",
+        "api_key": "your-api-key-here"
+    }'
+```
 
-### 3. Create a Project
+### Verify the Provider
 
-**Via Web UI**: Coming soon in next release
+Within 30 seconds, the heartbeat will check your provider. Verify it's healthy:
 
-**Via API**:
+```bash
+curl -s http://localhost:8080/api/v1/providers | jq '.[].status'
+```
+
+You should see `"healthy"`. If you see `"failed"`, check the error:
+
+```bash
+curl -s http://localhost:8080/api/v1/providers | jq '.[].last_heartbeat_error'
+```
+
+## 3. Add a Project
+
+Navigate to **Projects** in the Loom UI and click **Add Project**, or use the API:
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/projects \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "My Project",
-    "git_repo": "/path/to/repo",
-    "branch": "main",
-    "beads_path": ".beads",
-    "context": {
-      "build_command": "make build",
-      "test_command": "make test"
-    }
-  }'
+    -H 'Content-Type: application/json' \
+    -d '{
+        "name": "My App",
+        "git_repo": "git@github.com:youruser/yourrepo.git",
+        "branch": "main",
+        "beads_path": ".beads"
+    }'
 ```
 
-**Via Config File**:
-```yaml
-# config.yaml
-projects:
-  - id: my-project
-    name: My Project
-    git_repo: /path/to/repo
-    branch: main
-    beads_path: .beads
-    context:
-      build_command: "make build"
-      test_command: "make test"
-```
+### Add the Deploy Key
 
-### 4. Spawn Your First Agent
+Loom generates a unique SSH keypair for each project. Retrieve the public key:
 
-**Via Web UI**:
-1. Click "Spawn New Agent" button
-2. Select a persona (e.g., code-reviewer)
-3. Select a project
-4. Click "Spawn Agent"
-
-**Via API**:
 ```bash
-curl -X POST http://localhost:8080/api/v1/agents \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "my-reviewer",
-    "persona_name": "examples/code-reviewer",
-    "project_id": "my-project"
-  }'
+curl -s http://localhost:8080/api/v1/projects/<project-id>/git-key | jq -r '.public_key'
 ```
 
-### 5. Create a Bead (Work Item)
+Add this key as a **deploy key with write access** in your git hosting service:
 
-**Via bd CLI** (if installed):
-```bash
-cd /path/to/repo
-bd init  # Initialize beads
-bd create "Review authentication logic" -p 1
-```
+- **GitHub**: Repository Settings > Deploy keys > Add deploy key
+- **GitLab**: Settings > Repository > Deploy keys
 
-**Via API**:
+Loom will clone the repository on the next dispatch cycle.
+
+## 4. Use the CEO Dashboard
+
+Open http://localhost:8080 and click **CEO Dashboard**. This is your command center.
+
+The CEO Dashboard shows:
+- Provider health and agent status
+- Open beads across all projects
+- The **Ask Loom** prompt for directing agents
+
+### File Your First Beads
+
+Use the **Ask Loom** prompt to give instructions, or create beads directly:
+
 ```bash
+# Install the beads CLI (optional but recommended)
+# See: https://github.com/steveyegge/beads
+
+# Or create beads via the API:
 curl -X POST http://localhost:8080/api/v1/beads \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Review authentication logic",
-    "description": "Check for security vulnerabilities",
-    "priority": 1,
-    "project_id": "my-project",
-    "type": "task"
-  }'
+    -H 'Content-Type: application/json' \
+    -d '{
+        "title": "Set up CI/CD pipeline",
+        "description": "Create GitHub Actions workflow for build and test",
+        "priority": 2,
+        "type": "task",
+        "project_id": "<project-id>"
+    }'
 ```
 
-### 6. Watch Agents Work
+### Priority Levels
 
-Agents will:
-1. Query available beads
-2. Claim beads that match their capabilities
-3. Request file locks before editing
-4. Make autonomous decisions (within their authority)
-5. File decision beads when they need help
-6. Update bead status as they work
+| Priority | Meaning | Agent Behavior |
+|----------|---------|----------------|
+| P0 | Critical | Dispatched immediately to any available agent |
+| P1 | High | Dispatched next after P0 work |
+| P2 | Normal | Standard work queue (default) |
+| P3 | Low | Backlog, picked up when nothing higher exists |
 
-Monitor in real-time via the Web UI!
+## 5. Watch Agents Work
 
-## Example Workflows
+Once you have a healthy provider and open beads, Loom's agents automatically:
 
-### Autonomous Code Review
+1. **Claim** beads matching their expertise
+2. **Read** your codebase to understand context
+3. **Execute** actions (read files, search code, write changes, run tests)
+4. **Iterate** through a multi-turn action loop (up to 15 turns per dispatch)
+5. **Complete** or **escalate** when done
 
-1. **Spawn a code-reviewer agent**
-2. **Create review beads** for files/modules
-3. **Agent automatically**:
-   - Claims beads
-   - Reviews code
-   - Fixes obvious bugs
-   - Files decision beads for API changes
-   - Escalates security issues to P0
+Monitor progress:
 
-### Continuous Maintenance
-
-1. **Spawn a housekeeping-bot agent**
-2. **It runs continuously**:
-   - Checks dependencies daily
-   - Updates patch versions automatically
-   - Files decision beads for major upgrades
-   - Keeps documentation up to date
-
-### Multi-Agent Feature Development
-
-1. **Spawn multiple agents** on different branches
-2. **Or same branch** with file coordination
-3. **Loom coordinates** file locks
-4. **Decision maker agent** resolves conflicts
-5. **Work flows autonomously**
-
-## Configuration
-
-### Basic Configuration
-
-Create `config.yaml`:
-
-```yaml
-server:
-  http_port: 8080
-  enable_http: true
-
-beads:
-  bd_path: bd  # Path to bd executable
-  auto_sync: true
-
-agents:
-  max_concurrent: 10
-  default_persona_path: ./personas
-
-projects:
-  - id: my-project
-    name: My Project
-    git_repo: /path/to/repo
-    branch: main
-```
-
-### Enable HTTPS
-
-```yaml
-server:
-  enable_https: true
-  https_port: 8443
-  tls_cert_file: /path/to/cert.pem
-  tls_key_file: /path/to/key.pem
-```
-
-### Enable Authentication
-
-```yaml
-security:
-  enable_auth: true
-  api_keys:
-    - "your-secret-api-key-here"
-```
-
-Then use API key in requests:
 ```bash
-curl -H "X-API-Key: your-secret-api-key-here" \
-  http://localhost:8080/api/v1/agents
+# See which agents are working
+curl -s http://localhost:8080/api/v1/agents | jq '.[] | {name, status, current_bead}'
+
+# Follow container logs
+make logs
 ```
 
-## Available Personas
+The agents work autonomously. Each agent has a persona (Engineering Manager,
+Code Reviewer, DevOps Engineer, etc.) that determines what beads it picks up
+and how it approaches the work.
 
-### code-reviewer
-- **Autonomy**: Semi-autonomous
-- **Focus**: Security, correctness, maintainability
-- **Best for**: Code review automation
+## What's Next
 
-### decision-maker
-- **Autonomy**: Full (for non-P0)
-- **Focus**: Resolving decision points
-- **Best for**: Unblocking other agents
-
-### housekeeping-bot
-- **Autonomy**: Full (for maintenance)
-- **Focus**: Dependencies, docs, cleanup
-- **Best for**: Continuous maintenance
-
-## API Examples
-
-### List All Beads
-```bash
-curl http://localhost:8080/api/v1/beads
-```
-
-### Get Work Graph
-```bash
-curl http://localhost:8080/api/v1/work-graph?project_id=my-project
-```
-
-### Claim a Bead
-```bash
-curl -X POST http://localhost:8080/api/v1/beads/bd-abc123/claim \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id": "agent-123"}'
-```
-
-### Make a Decision (as user)
-```bash
-curl -X POST http://localhost:8080/api/v1/decisions/bd-dec-456/decide \
-  -H "Content-Type: application/json" \
-  -d '{
-    "decider_id": "user-jordan",
-    "decision": "APPROVE",
-    "rationale": "Change is well-tested and documented"
-  }'
-```
-
-### Request File Lock
-```bash
-curl -X POST http://localhost:8080/api/v1/file-locks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "file_path": "src/auth.go",
-    "project_id": "my-project",
-    "agent_id": "agent-123",
-    "bead_id": "bd-abc123"
-  }'
-```
-
-## Troubleshooting
-
-### Port Already in Use
-
-Change the port in config.yaml:
-```yaml
-server:
-  http_port: 8081
-```
-
-### Beads CLI Not Found
-
-Either:
-1. Install bd: https://github.com/steveyegge/beads
-2. Or specify path in config:
-```yaml
-beads:
-  bd_path: /path/to/bd
-```
-
-### Agent Not Working
-
-Check:
-1. Persona files exist
-2. Project is configured correctly
-3. Git repo path is correct
-4. Agent has access to files
-
-View logs in terminal where loom is running.
-
-### Web UI Not Loading
-
-1. Check web/static directory exists
-2. Verify config:
-```yaml
-web_ui:
-  enabled: true
-  static_path: ./web/static
-```
-
-## Next Steps
-
-- **Read the [README](README.md)** for architecture details
-- **Check [CONTRIBUTING.md](CONTRIBUTING.md)** to contribute
-- **Explore the [API docs](api/openapi.yaml)** for full API reference
-- **Create custom personas** for your use case
-- **Set up HTTPS** for production deployment
-
-## Getting Help
-
-- **Issues**: https://github.com/jordanhubbard/loom/issues
-- **Discussions**: https://github.com/jordanhubbard/loom/discussions
-- **Documentation**: https://github.com/jordanhubbard/loom/wiki
+- **[AGENTS.md](AGENTS.md)** - Full developer guide, API reference, and troubleshooting
+- **[MANUAL.md](MANUAL.md)** - Complete system manual
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design and data flow
 
 ## Quick Reference
 
 ```bash
-# Build
-make build
-
-# Run
-make run
-
-# Test
-make test
-
-# Clean
-make clean
-
-# Format code
-make fmt
-
-# See all commands
-make help
+make start      # Start Loom (Docker)
+make stop       # Stop Loom
+make restart    # Rebuild and restart
+make logs       # Follow container logs
+make test       # Run tests locally
+make help       # All available commands
 ```
-
-Happy orchestrating! 🤖
