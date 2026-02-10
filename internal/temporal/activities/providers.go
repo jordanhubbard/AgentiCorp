@@ -213,11 +213,19 @@ func (a *ProviderActivities) syncRegistry(record *internalmodels.Provider) {
 	if selected == "" {
 		selected = record.ConfiguredModel
 	}
+
+	// Retrieve API key so the Protocol gets constructed with auth
+	var apiKey string
+	if record.KeyID != "" && a.keys != nil {
+		apiKey, _ = a.keys.GetKey(record.KeyID)
+	}
+
 	_ = a.registry.Upsert(&provider.ProviderConfig{
 		ID:                     record.ID,
 		Name:                   record.Name,
 		Type:                   record.Type,
 		Endpoint:               record.Endpoint,
+		APIKey:                 apiKey,
 		Model:                  selected,
 		ConfiguredModel:        record.ConfiguredModel,
 		SelectedModel:          selected,
