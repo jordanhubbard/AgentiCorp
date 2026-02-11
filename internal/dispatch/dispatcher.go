@@ -1009,19 +1009,23 @@ func buildBeadContext(b *models.Bead, p *models.Project) string {
 	sb.WriteString(`
 ## Instructions
 
-You are an autonomous coding agent. Your job is to MAKE CHANGES, not analyze.
+You are an autonomous coding agent. Your job is to MAKE CHANGES and COMMIT them.
 
-Workflow:
-1. Read the relevant files (1-3 files max, not the whole codebase)
-2. Make the change (edit, write)
-3. Build to verify (build)
-4. Test to verify (test)
-5. Commit and push (git_commit, git_push)
-6. Close the bead (close_bead)
+STRICT WORKFLOW — follow this order:
+1. scope "." then read 1-2 relevant files (iterations 1-2)
+2. edit or write files to implement the change (iterations 3-5)
+3. build (iteration 6)
+4. git_commit with a descriptive message (iteration 7)
+5. git_push (iteration 8)
+6. done (iteration 9)
 
-DO NOT spend more than 2-3 iterations reading. Start editing by iteration 3-4.
-If unsure where to make changes, search for the most relevant keyword, read that file, and edit it.
-Every bead should result in at least one commit.
+CRITICAL RULES:
+- You have 15 iterations MAX. Budget them carefully.
+- NEVER spend more than 3 iterations reading. Start editing by iteration 3.
+- ALWAYS git_commit after making changes, even if the build fails.
+- ALWAYS git_push after committing.
+- Uncommitted work is LOST work. Commit early, commit often.
+- If you edited files, you MUST commit before signaling done.
 `)
 
 	return sb.String()
