@@ -2275,21 +2275,27 @@ async function sendCeoReplQuery() {
     // Get or create a REPL session bead
     if (!ceoReplBeadId) {
         try {
-            const selectedProjectId = uiState.project.selectedId || ((state.projects || [])[0] || {}).id || '';
+            const selectedProjectId = uiState.project.selectedId
+                || ceoAgent.project_id
+                || ((state.projects || [])[0] || {}).id
+                || '';
+            if (!selectedProjectId) {
+                return sendCeoReplFallback(message);
+            }
             const bead = await apiCall('/beads', {
                 method: 'POST',
+                skipAutoFile: true,
                 body: JSON.stringify({
                     title: 'CEO REPL Session',
                     description: 'Interactive CEO command session',
                     type: 'task',
                     priority: 1,
-                    project_id: selectedProjectId,
-                    assigned_to: ceoAgent.id
+                    project_id: selectedProjectId
                 })
             });
             ceoReplBeadId = bead.id;
         } catch (e) {
-            showToast('Failed to create REPL session: ' + e.message, 'error');
+            console.warn('[CEO REPL] Bead creation failed, using fallback:', e.message);
             return sendCeoReplFallback(message);
         }
     }
@@ -2321,6 +2327,7 @@ async function sendCeoReplQuery() {
         let buffer = '';
         let streamedText = '';
         let actionResults = [];
+        let currentEvent = '';
 
         while (true) {
             const { done, value } = await reader.read();
@@ -2330,7 +2337,6 @@ async function sendCeoReplQuery() {
             const lines = buffer.split('\n');
             buffer = lines.pop() || '';
 
-            let currentEvent = '';
             for (const line of lines) {
                 if (line.startsWith('event: ')) {
                     currentEvent = line.substring(7).trim();
