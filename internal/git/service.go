@@ -214,8 +214,12 @@ func (s *GitService) Push(ctx context.Context, req PushRequest) (*PushResult, er
 		}
 	}
 
-	// Agents can push to any branch. Protected branch enforcement
-	// is left to the remote (GitHub branch protection rules).
+	// Pre-push gate: run tests before allowing push.
+	// This prevents agents from pushing code that breaks CI/CD.
+	if err := s.runPrePushTests(ctx); err != nil {
+		s.auditLogger.LogOperation("push", req.BeadID, branch, false, err)
+		return nil, fmt.Errorf("pre-push tests failed: %w", err)
+	}
 
 	// Block force push unless explicitly allowed
 	if req.Force {
@@ -439,6 +443,52 @@ func (s *GitService) configureSSH() error {
 
 	// Set GIT_SSH_COMMAND environment variable
 	os.Setenv("GIT_SSH_COMMAND", fmt.Sprintf("ssh -i %s -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new", keyPath))
+
+	return nil
+}
+
+// runPrePushTests runs the project's build and test commands before allowing a push.
+// Looks for a Makefile, go.mod, or package.json to determine how to test.
+func (s *GitService) runPrePushTests(ctx context.Context) error {
+	// Try common build commands in order of preference
+	type check struct {
+		indicator string // file that indicates this project type
+		command   string
+		args      []string
+	}
+
+	checks := []check{
+		{"go.mod", "go", []string{"build", "./..."}},
+		{"go.mod", "go", []string{"test", "./..."}},
+		{"package.json", "npm", []string{"test"}},
+		{"Makefile", "make", []string{"test"}},
+	}
+
+	ranSomething := false
+	for _, c := range checks {
+		indicator := filepath.Join(s.projectPath, c.indicator)
+		if _, err := os.Stat(indicator); os.IsNotExist(err) {
+			continue
+		}
+
+		cmd := exec.CommandContext(ctx, c.command, c.args...)
+		cmd.Dir = s.projectPath
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			// Truncate output for error message
+			out := string(output)
+			if len(out) > 500 {
+				out = out[len(out)-500:]
+			}
+			return fmt.Errorf("%s %s failed:\n%s", c.command, strings.Join(c.args, " "), out)
+		}
+		ranSomething = true
+	}
+
+	if !ranSomething {
+		// No test infrastructure found — allow push (don't block projects without tests)
+		return nil
+	}
 
 	return nil
 }
