@@ -88,8 +88,10 @@ RUN chown -R loom:loom /app
 # Switch to non-root user
 USER loom
 
-# Configure git to use SSH
-RUN git config --global core.sshCommand "ssh -o UserKnownHostsFile=/home/loom/.ssh/known_hosts -o StrictHostKeyChecking=accept-new"
+# Configure git identity and SSH
+RUN git config --global user.name "Loom Agent" && \
+    git config --global user.email "loom@localhost" && \
+    git config --global core.sshCommand "ssh -o UserKnownHostsFile=/home/loom/.ssh/known_hosts -o StrictHostKeyChecking=accept-new"
 
 # Expose port (if needed in future)
 EXPOSE 8080
