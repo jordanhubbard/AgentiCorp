@@ -424,6 +424,14 @@ func (s *GitService) getCommitStats(ctx context.Context, commitSHA string) (*Com
 func (s *GitService) configureSSH() error {
 	keyPath := filepath.Join(s.projectKeyDir, s.projectID, "ssh", "id_ed25519")
 
+	// Resolve to absolute path (git runs from projectPath, not cwd)
+	if !filepath.IsAbs(keyPath) {
+		abs, err := filepath.Abs(keyPath)
+		if err == nil {
+			keyPath = abs
+		}
+	}
+
 	// Check if key exists
 	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
 		return fmt.Errorf("SSH key not found: %s", keyPath)
