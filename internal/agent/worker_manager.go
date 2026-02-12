@@ -111,13 +111,13 @@ func (m *WorkerManager) CreateAgent(ctx context.Context, name, personaName, proj
 
 	// No artificial agent limit — every project can have as many agents as it needs
 
+	// Derive a friendly display name from persona path if not provided
+	if name == "" {
+		name = deriveDisplayName(personaName)
+	}
+
 	// Generate agent ID
 	agentID := fmt.Sprintf("agent-%d-%s", time.Now().Unix(), name)
-
-	// Use persona name as agent name if custom name not provided
-	if name == "" {
-		name = personaName
-	}
 
 	// Derive role if not provided
 	if role == "" {
@@ -160,13 +160,13 @@ func (m *WorkerManager) SpawnAgentWorker(ctx context.Context, name, personaName,
 
 	// No artificial agent limit — every project can have as many agents as it needs
 
+	// Derive a friendly display name from persona path if not provided
+	if name == "" {
+		name = deriveDisplayName(personaName)
+	}
+
 	// Generate agent ID
 	agentID := fmt.Sprintf("agent-%d-%s", time.Now().Unix(), name)
-
-	// Use persona name as agent name if custom name not provided
-	if name == "" {
-		name = personaName
-	}
 
 	agent := &models.Agent{
 		ID:          agentID,
@@ -235,6 +235,33 @@ func deriveRoleFromPersonaName(personaName string) string {
 		return parts[len(parts)-1]
 	}
 	return personaName
+}
+
+// deriveDisplayName converts a persona path like "default/web-designer" into
+// a friendly display name like "Web Designer (Default)".
+func deriveDisplayName(personaName string) string {
+	role := deriveRoleFromPersonaName(personaName)
+	// Title-case the role: "web-designer" → "Web Designer"
+	parts := strings.Split(role, "-")
+	for i, p := range parts {
+		if len(p) > 0 {
+			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		}
+	}
+	display := strings.Join(parts, " ")
+
+	// Add namespace suffix
+	namespace := "Default"
+	if strings.HasPrefix(personaName, "projects/") {
+		segs := strings.Split(personaName, "/")
+		if len(segs) >= 2 {
+			namespace = segs[1]
+		}
+	} else if strings.Contains(personaName, "/") {
+		namespace = strings.Split(personaName, "/")[0]
+		namespace = strings.ToUpper(namespace[:1]) + namespace[1:]
+	}
+	return display + " (" + namespace + ")"
 }
 
 // RestoreAgentWorker restores an already-persisted agent and ensures it has a worker attached.

@@ -35,7 +35,8 @@ let uiState = {
         priority: 'all',
         type: 'all',
         assigned: '',
-        tag: ''
+        tag: '',
+        project: 'all'
     },
     agent: {
         search: ''
@@ -93,6 +94,7 @@ function initUI() {
     const beadSort = document.getElementById('bead-sort');
     const beadPriority = document.getElementById('bead-priority');
     const beadType = document.getElementById('bead-type');
+    const beadProject = document.getElementById('bead-project');
     const beadAssigned = document.getElementById('bead-assigned');
     const beadTag = document.getElementById('bead-tag');
     const beadClear = document.getElementById('bead-clear-filters');
@@ -178,6 +180,10 @@ function initUI() {
         uiState.bead.type = e.target.value;
         render();
     });
+    beadProject?.addEventListener('change', (e) => {
+        uiState.bead.project = e.target.value;
+        render();
+    });
     beadAssigned?.addEventListener('input', (e) => {
         uiState.bead.assigned = e.target.value || '';
         render();
@@ -194,13 +200,15 @@ function initUI() {
             priority: 'all',
             type: 'all',
             assigned: '',
-            tag: ''
+            tag: '',
+            project: 'all'
         };
 
         if (beadSearch) beadSearch.value = '';
         if (beadSort) beadSort.value = 'priority';
         if (beadPriority) beadPriority.value = 'all';
         if (beadType) beadType.value = 'all';
+        if (beadProject) beadProject.value = 'all';
         if (beadAssigned) beadAssigned.value = '';
         if (beadTag) beadTag.value = '';
 
@@ -1332,6 +1340,17 @@ function renderSystemStatus() {
 }
 
 function renderKanban() {
+    // Populate project filter dropdown
+    const projectSelect = document.getElementById('bead-project');
+    if (projectSelect) {
+        const projects = state.projects || [];
+        const currentVal = uiState.bead.project || 'all';
+        const opts = '<option value="all">All Projects</option>' +
+            projects.map(p => `<option value="${escapeHtml(p.id)}"${p.id === currentVal ? ' selected' : ''}>${escapeHtml(p.name)}</option>`).join('');
+        if (projectSelect.innerHTML !== opts) projectSelect.innerHTML = opts;
+        projectSelect.value = currentVal;
+    }
+
     const filtered = getFilteredBeads();
     const openBeads = filtered.filter((b) => b.status === 'open');
     const inProgressBeads = filtered.filter((b) => b.status === 'in_progress');
@@ -1635,8 +1654,10 @@ function getFilteredBeads() {
     const type = (uiState.bead.type || '').trim();
     const assigned = (uiState.bead.assigned || '').trim().toLowerCase();
     const tag = (uiState.bead.tag || '').trim().toLowerCase();
+    const projectFilter = (uiState.bead.project || 'all').trim();
 
     const filtered = state.beads.filter((b) => {
+        if (projectFilter !== 'all' && (b.project_id || '') !== projectFilter) return false;
         if (priority !== 'all' && String(b.priority) !== priority) return false;
         if (type !== 'all' && (b.type || '') !== type) return false;
         if (assigned && !(b.assigned_to || '').toLowerCase().includes(assigned)) return false;
@@ -1674,9 +1695,24 @@ function renderEmptyState(title, description, actionsHtml = '') {
     `;
 }
 
+function resolveAgentName(agentId) {
+    if (!agentId) return '';
+    const agent = (state.agents || []).find(a => a.id === agentId);
+    return agent ? (agent.name || agent.role || agentId) : agentId;
+}
+
+function resolveProjectName(projectId) {
+    if (!projectId) return '';
+    const project = (state.projects || []).find(p => p.id === projectId);
+    return project ? project.name : projectId;
+}
+
 function renderBeadCard(bead) {
     const priorityClass = `priority-${bead.priority}`;
     const typeClass = bead.type === 'decision' ? 'decision' : '';
+    const assigneeName = bead.assigned_to ? resolveAgentName(bead.assigned_to) : '';
+    const showAllProjects = !uiState.bead.project || uiState.bead.project === 'all';
+    const projectLabel = showAllProjects && bead.project_id ? resolveProjectName(bead.project_id) : '';
 
     return `
         <button type="button" class="bead-card ${priorityClass} ${typeClass}" draggable="true" data-bead-id="${escapeHtml(bead.id)}" ondragstart="handleBeadDragStart(event)" ondragend="handleBeadDragEnd(event)" onclick="viewBead('${bead.id}')" ondblclick="openBeadDetails('${bead.id}')" aria-label="View bead: ${escapeHtml(bead.title)}">
@@ -1684,8 +1720,9 @@ function renderBeadCard(bead) {
             <div class="bead-meta">
                 <span class="badge priority-${bead.priority}">P${bead.priority}</span>
                 <span class="badge">${escapeHtml(bead.type)}</span>
-                ${bead.assigned_to ? `<span class="badge">👤 ${escapeHtml(bead.assigned_to.substring(0, 8))}</span>` : '<span class="badge">unassigned</span>'}
+                ${assigneeName ? `<span class="badge">👤 ${escapeHtml(assigneeName)}</span>` : '<span class="badge">unassigned</span>'}
             </div>
+            ${projectLabel ? `<div class="bead-meta"><span class="badge" style="font-size:0.75rem;">📁 ${escapeHtml(projectLabel)}</span></div>` : ''}
         </button>
     `;
 }
@@ -1919,8 +1956,13 @@ function renderProjects() {
 
 function viewProject(projectId) {
     uiState.project.selectedId = projectId;
-    location.hash = '#project-viewer';
-    render();
+    if (location.hash === '#project-viewer') {
+        // Already on the project viewer tab — just re-render
+        render();
+    } else {
+        // Navigate to project viewer (hashchange will trigger tab switch + render)
+        location.hash = '#project-viewer';
+    }
 }
 
 function projectFormFields(project = {}) {
@@ -2943,7 +2985,10 @@ function viewBead(beadId) {
 
     const availableAgents = (state.agents || []).filter(a => a.status !== 'terminated');
     const agentOptions = '<option value="">-- select agent --</option>' +
-        availableAgents.map(a => `<option value="${escapeHtml(a.id)}"${bead.assigned_to === a.id ? ' selected' : ''}>${escapeHtml(a.id)}</option>`).join('');
+        availableAgents.map(a => {
+            const display = a.name || a.role || a.id;
+            return `<option value="${escapeHtml(a.id)}"${bead.assigned_to === a.id ? ' selected' : ''}>${escapeHtml(a.id)}-${escapeHtml(display)}</option>`;
+        }).join('');
 
     const body = `
         <div class="bead-modal-viewer bead-condensed ${statusClass}">
@@ -2952,6 +2997,14 @@ function viewBead(beadId) {
                 <span class="badge priority-${bead.priority}">P${bead.priority}</span>
                 <span class="badge">${escapeHtml(bead.type)}</span>
                 <span class="badge">${escapeHtml(bead.status)}</span>
+            </div>
+
+            <div class="bead-modal-assign">
+                <strong>Agent Assignment</strong>
+                <div class="bead-modal-assign-row">
+                    <select id="bead-modal-agent">${agentOptions}</select>
+                    <button type="button" id="bead-modal-dispatch-btn" class="secondary">Assign &amp; Dispatch</button>
+                </div>
             </div>
 
             <div class="bead-modal-fields">
@@ -3002,14 +3055,6 @@ function viewBead(beadId) {
 
                 <label for="bead-modal-context">Context (JSON)</label>
                 <textarea id="bead-modal-context" rows="3">${escapeHtml(contextJson)}</textarea>
-            </div>
-
-            <div class="bead-modal-assign">
-                <strong>Agent Assignment</strong>
-                <div class="bead-modal-assign-row">
-                    <select id="bead-modal-agent">${agentOptions}</select>
-                    <button type="button" id="bead-modal-dispatch-btn" class="secondary">Assign &amp; Dispatch</button>
-                </div>
             </div>
 
             <details class="bead-modal-meta">
