@@ -140,6 +140,9 @@ func (w *Worker) ExecuteTask(ctx context.Context, task *Task) (*TaskResult, erro
 				task.ProjectID,
 				24*time.Hour, // Default 24h expiration
 			)
+			if w.agent != nil && w.agent.Name != "" {
+				conversationCtx.Metadata["agent_name"] = w.agent.Name
+			}
 
 			// Save new session to database
 			if err := w.db.CreateConversationContext(conversationCtx); err != nil {
@@ -155,6 +158,9 @@ func (w *Worker) ExecuteTask(ctx context.Context, task *Task) (*TaskResult, erro
 				task.ProjectID,
 				24*time.Hour,
 			)
+			if w.agent != nil && w.agent.Name != "" {
+				conversationCtx.Metadata["agent_name"] = w.agent.Name
+			}
 
 			if err := w.db.CreateConversationContext(conversationCtx); err != nil {
 				log.Printf("Warning: Failed to create conversation context: %v", err)
@@ -619,6 +625,9 @@ func (w *Worker) ExecuteTaskWithLoop(ctx context.Context, task *Task, config *Lo
 			conversationCtx = models.NewConversationContext(
 				uuid.New().String(), task.BeadID, task.ProjectID, 24*time.Hour,
 			)
+			if w.agent != nil && w.agent.Name != "" {
+				conversationCtx.Metadata["agent_name"] = w.agent.Name
+			}
 			if createErr := config.DB.CreateConversationContext(conversationCtx); createErr != nil {
 				log.Printf("[ActionLoop] Warning: Failed to create conversation context: %v", createErr)
 				conversationCtx = nil
@@ -627,6 +636,9 @@ func (w *Worker) ExecuteTaskWithLoop(ctx context.Context, task *Task, config *Lo
 			conversationCtx = models.NewConversationContext(
 				uuid.New().String(), task.BeadID, task.ProjectID, 24*time.Hour,
 			)
+			if w.agent != nil && w.agent.Name != "" {
+				conversationCtx.Metadata["agent_name"] = w.agent.Name
+			}
 			if createErr := config.DB.CreateConversationContext(conversationCtx); createErr != nil {
 				conversationCtx = nil
 			}

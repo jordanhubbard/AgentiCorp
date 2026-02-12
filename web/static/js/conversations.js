@@ -44,7 +44,7 @@ async function renderConversationsView() {
 
         // Auto-select first conversation
         if (conversations[0]) {
-            loadConversationDetail(conversations[0].id);
+            loadConversationDetail(conversations[0].session_id);
         }
     } catch (error) {
         container.innerHTML = `<div class="error">Failed to load conversations: ${error.message}</div>`;
@@ -52,14 +52,15 @@ async function renderConversationsView() {
 }
 
 function renderConversationListItem(conv) {
-    const lastMessage = conv.last_message_at ? new Date(conv.last_message_at).toLocaleString() : 'No messages';
-    const messageCount = conv.message_count || 0;
+    const agentName = (conv.metadata && conv.metadata.agent_name) || conv.bead_id || conv.session_id;
+    const messageCount = conv.messages ? conv.messages.length : 0;
+    const lastMessage = conv.updated_at ? new Date(conv.updated_at).toLocaleString() : 'No messages';
 
     return `
-        <div class="conversation-item" onclick="loadConversationDetail('${conv.id}')"
-             data-conversation-id="${conv.id}">
+        <div class="conversation-item" onclick="loadConversationDetail('${conv.session_id}')"
+             data-conversation-id="${conv.session_id}">
             <div class="conversation-header">
-                <strong>${escapeHtml(conv.agent_name || 'Unknown Agent')}</strong>
+                <strong>${escapeHtml(agentName)}</strong>
                 <span class="badge">${messageCount} msgs</span>
             </div>
             <div class="conversation-meta">
@@ -89,11 +90,14 @@ async function loadConversationDetail(conversationId) {
             return;
         }
 
+        const detailAgentName = (conversation.metadata && conversation.metadata.agent_name)
+            || conversation.bead_id || 'Agent Conversation';
+
         detailContainer.innerHTML = `
             <div class="conversation-header-detail">
-                <h3>${escapeHtml(conversation.agent_name || 'Agent Conversation')}</h3>
+                <h3>${escapeHtml(detailAgentName)}</h3>
                 <div class="conversation-info">
-                    <span class="badge">ID: ${conversation.id}</span>
+                    <span class="badge">ID: ${conversation.session_id}</span>
                     ${conversation.bead_id ? `<span class="badge">Bead: ${conversation.bead_id}</span>` : ''}
                     <span class="badge">${conversation.messages.length} messages</span>
                 </div>

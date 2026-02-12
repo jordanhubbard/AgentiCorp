@@ -101,6 +101,9 @@ func (s *Server) handlePairChat(w http.ResponseWriter, r *http.Request) {
 			projectID,
 			7*24*time.Hour, // 7 day expiration for pair sessions
 		)
+		if agent.Name != "" {
+			conversationCtx.Metadata["agent_name"] = agent.Name
+		}
 		if createErr := db.CreateConversationContext(conversationCtx); createErr != nil {
 			s.respondError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to create conversation: %v", createErr))
 			return

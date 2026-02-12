@@ -936,6 +936,9 @@ func (d *Dispatcher) getOrCreateConversationSession(bead *models.Bead, projectID
 		if agentID := bead.Context["agent_id"]; agentID != "" {
 			session.Metadata["agent_id"] = agentID
 		}
+		if agentName := bead.Context["agent_name"]; agentName != "" {
+			session.Metadata["agent_name"] = agentName
+		}
 		if providerID := bead.Context["provider_id"]; providerID != "" {
 			session.Metadata["provider_id"] = providerID
 		}

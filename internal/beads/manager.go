@@ -140,18 +140,19 @@ func (m *Manager) CreateBead(title, description string, priority models.BeadPrio
 		}
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("bd create failed: %w: %s", err, strings.TrimSpace(string(output)))
+			log.Printf("[Beads] bd create failed, falling back to filesystem: %v: %s", err, strings.TrimSpace(string(output)))
+		} else {
+			outputStr := string(output)
+			beadID = m.extractBeadIDWithPrefix(outputStr, prefix)
+			if beadID == "" {
+				beadID = m.extractBeadID(outputStr)
+			}
+			if beadID == "" {
+				log.Printf("[Beads] bd create did not return bead id, falling back to filesystem: %s", strings.TrimSpace(outputStr))
+			} else {
+				usedBD = true
+			}
 		}
-
-		outputStr := string(output)
-		beadID = m.extractBeadIDWithPrefix(outputStr, prefix)
-		if beadID == "" {
-			beadID = m.extractBeadID(outputStr)
-		}
-		if beadID == "" {
-			return nil, fmt.Errorf("bd create did not return bead id: %s", strings.TrimSpace(outputStr))
-		}
-		usedBD = true
 	}
 
 	// Fallback to filesystem-based bead creation
