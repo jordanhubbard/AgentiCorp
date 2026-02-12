@@ -100,7 +100,7 @@ func (bs *BootstrapService) Bootstrap(ctx context.Context, req BootstrapRequest)
 	project, err := bs.projectManager.CreateProject(req.Name, projectPath, req.Branch, ".beads", map[string]string{
 		"bootstrap":    "true",
 		"github_url":   req.GitHubURL,
-		"description": fmt.Sprintf("Bootstrapped project from PRD"),
+		"description": "Bootstrapped project from PRD",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to register project: %w", err)

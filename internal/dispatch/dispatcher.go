@@ -365,7 +365,6 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 				if firstSHA != "" && commitCount > 0 {
 					log.Printf("[Ralph] Attempting auto-revert of %d agent commits for bead %s (from %s)",
 						commitCount, b.ID, firstSHA)
-					revertStatus = "attempted"
 					// Record intent — actual revert requires git.GitService which
 					// is project-scoped. The revert metadata tells the next handler
 					// (or human) exactly what to revert.

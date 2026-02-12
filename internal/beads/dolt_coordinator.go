@@ -275,7 +275,7 @@ func (dc *DoltCoordinator) stopDoltServer(inst *DoltInstance) error {
 // setupFederation adds a Dolt remote between a project instance and the master.
 // This allows the master to pull beads from the project and vice versa.
 func (dc *DoltCoordinator) setupFederation(projectID string, projectInst, masterInst *DoltInstance) {
-	remoteName := fmt.Sprintf("loom-master")
+	remoteName := "loom-master"
 	remoteURL := fmt.Sprintf("http://127.0.0.1:%d/beads", masterInst.Port)
 
 	// Add the master as a remote in the project's Dolt instance

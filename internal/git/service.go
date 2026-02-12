@@ -971,13 +971,11 @@ func (s *GitService) DeleteBranch(ctx context.Context, req DeleteBranchRequest) 
 	// Delete local branch
 	cmd := exec.CommandContext(ctx, "git", "branch", "-d", req.Branch)
 	cmd.Dir = s.projectPath
-	output, err := cmd.CombinedOutput()
-	if err != nil {
+	if output, err := cmd.CombinedOutput(); err != nil {
 		// Try force delete if not merged
 		cmd = exec.CommandContext(ctx, "git", "branch", "-D", req.Branch)
 		cmd.Dir = s.projectPath
-		output, err = cmd.CombinedOutput()
-		if err != nil {
+		if output, err = cmd.CombinedOutput(); err != nil {
 			s.auditLogger.LogOperation("delete_branch", "", req.Branch, false, err)
 			return nil, fmt.Errorf("git branch delete failed: %w\nOutput: %s", err, output)
 		}
@@ -989,8 +987,7 @@ func (s *GitService) DeleteBranch(ctx context.Context, req DeleteBranchRequest) 
 		cmd = exec.CommandContext(ctx, "git", "push", "origin", "--delete", req.Branch)
 		cmd.Dir = s.projectPath
 		cmd.Env = s.buildEnv()
-		output, err = cmd.CombinedOutput()
-		if err != nil {
+		if _, err := cmd.CombinedOutput(); err != nil {
 			// Remote delete failure is non-fatal (branch may not exist remotely)
 			s.auditLogger.LogOperation("delete_branch_remote", "", req.Branch, false, err)
 		} else {
