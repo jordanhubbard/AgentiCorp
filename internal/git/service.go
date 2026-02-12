@@ -971,11 +971,11 @@ func (s *GitService) DeleteBranch(ctx context.Context, req DeleteBranchRequest) 
 	// Delete local branch
 	cmd := exec.CommandContext(ctx, "git", "branch", "-d", req.Branch)
 	cmd.Dir = s.projectPath
-	if output, err := cmd.CombinedOutput(); err != nil {
+	if _, err := cmd.CombinedOutput(); err != nil {
 		// Try force delete if not merged
 		cmd = exec.CommandContext(ctx, "git", "branch", "-D", req.Branch)
 		cmd.Dir = s.projectPath
-		if output, err = cmd.CombinedOutput(); err != nil {
+		if output, err := cmd.CombinedOutput(); err != nil {
 			s.auditLogger.LogOperation("delete_branch", "", req.Branch, false, err)
 			return nil, fmt.Errorf("git branch delete failed: %w\nOutput: %s", err, output)
 		}
