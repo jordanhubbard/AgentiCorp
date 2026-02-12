@@ -2152,15 +2152,29 @@ function createStreamingRequest(endpoint, body, options = {}) {
                     processText(decoder.decode(value, { stream: true }));
                     pump();
                 }).catch(error => {
-                    if (onError) onError(error.message);
-                    reject(error);
+                    // Better error message for mid-stream failures
+                    let errorMsg = error.message || 'Stream interrupted';
+                    if (errorMsg.includes('network') || errorMsg.includes('NetworkError')) {
+                        errorMsg = fullContent 
+                            ? 'Connection lost during response (partial content received)' 
+                            : 'Network error - check provider connection';
+                    }
+                    if (onError) onError(errorMsg);
+                    reject(new Error(errorMsg));
                 });
             }
 
             pump();
         }).catch(error => {
-            if (onError) onError(error.message);
-            reject(error);
+            // Provide more helpful error messages for common failures
+            let errorMsg = error.message || 'Unknown error';
+            if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+                errorMsg = 'network error';
+            } else if (errorMsg.includes('aborted')) {
+                errorMsg = 'request was cancelled';
+            }
+            if (onError) onError(errorMsg);
+            reject(new Error(errorMsg));
         });
     });
 }

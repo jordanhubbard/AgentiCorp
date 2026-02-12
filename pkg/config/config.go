@@ -38,6 +38,7 @@ type Config struct {
 	Readiness ReadinessConfig `yaml:"readiness" json:"readiness,omitempty"`
 	Dispatch  DispatchConfig  `yaml:"dispatch" json:"dispatch,omitempty"`
 	Git       GitConfig       `yaml:"git" json:"git,omitempty"`
+	Models    ModelsConfig    `yaml:"models" json:"models,omitempty"`
 	Projects  []ProjectConfig `yaml:"projects" json:"projects,omitempty"`
 	WebUI     WebUIConfig     `yaml:"web_ui" json:"web_ui,omitempty"`
 	Temporal  TemporalConfig  `yaml:"temporal" json:"temporal,omitempty"`
@@ -120,6 +121,21 @@ type DispatchConfig struct {
 // GitConfig controls git-related settings
 type GitConfig struct {
 	ProjectKeyDir string `yaml:"project_key_dir" json:"project_key_dir,omitempty"`
+}
+
+// ModelsConfig configures model preferences for provider negotiation
+type ModelsConfig struct {
+	PreferredModels []PreferredModel `yaml:"preferred_models" json:"preferred_models,omitempty"`
+}
+
+// PreferredModel represents a model preference for negotiation with providers.
+// When a provider returns multiple models, Loom selects the best match from this list.
+type PreferredModel struct {
+	Name      string `yaml:"name" json:"name"`                               // Full model name (e.g., "Qwen/Qwen2.5-Coder-32B-Instruct")
+	Rank      int    `yaml:"rank" json:"rank"`                               // Priority rank (1 = most preferred)
+	Tier      string `yaml:"tier" json:"tier,omitempty"`                     // Complexity tier: "extended", "complex", "medium", "simple"
+	MinVRAMGB int    `yaml:"min_vram_gb" json:"min_vram_gb,omitempty"`       // Minimum VRAM required (0 = cloud/unknown)
+	Notes     string `yaml:"notes" json:"notes,omitempty"`                   // Human-readable notes about the model
 }
 
 // SecurityConfig configures authentication and authorization

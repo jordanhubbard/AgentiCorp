@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jordanhubbard/loom/internal/actions"
 	"github.com/jordanhubbard/loom/internal/database"
+	"github.com/jordanhubbard/loom/internal/memory"
 	"github.com/jordanhubbard/loom/internal/provider"
 	"github.com/jordanhubbard/loom/pkg/models"
 )
@@ -548,6 +549,7 @@ type WorkerInfo struct {
 // LessonsProvider supplies and records project-specific lessons.
 type LessonsProvider interface {
 	GetLessonsForPrompt(projectID string) string
+	GetRelevantLessons(projectID, taskContext string, topK int) string
 	RecordLesson(projectID, category, title, detail, beadID, agentID string) error
 }
 
@@ -885,6 +887,15 @@ func (w *Worker) ExecuteTaskWithLoop(ctx context.Context, task *Task, config *Lo
 		loopResult.CompletedAt = time.Now()
 	}
 
+	// Extract lessons from the completed loop
+	if config.DB != nil && task.ProjectID != "" {
+		entries := flattenActionLog(loopResult.ActionLog)
+		if len(entries) > 0 {
+			extractor := memory.NewExtractor(config.DB, memory.NewHashEmbedder())
+			extractor.ExtractFromLoop(task.ProjectID, task.BeadID, entries, loopResult.TerminalReason)
+		}
+	}
+
 	// Final persist
 	if conversationCtx != nil && config.DB != nil {
 		if err := config.DB.UpdateConversationContext(conversationCtx); err != nil {
@@ -898,14 +909,20 @@ func (w *Worker) ExecuteTaskWithLoop(ctx context.Context, task *Task, config *Lo
 // buildEnhancedSystemPrompt builds the system prompt with ReAct operating model first,
 // brief persona role second, and action format last.
 func (w *Worker) buildEnhancedSystemPrompt(lp LessonsProvider, projectID, progressCtx string) string {
-	// Get lessons — try file-based LESSONS.md first, fall back to DB
+	// Get lessons — try file-based LESSONS.md first, then semantic search, then recency
 	var lessons string
 	if projectID != "" {
 		lessonsFile := actions.NewLessonsFile(".")
 		lessons = lessonsFile.GetLessonsForPrompt()
 	}
 	if lessons == "" && lp != nil && projectID != "" {
-		lessons = lp.GetLessonsForPrompt(projectID)
+		// Use semantic retrieval if we have task context
+		if progressCtx != "" {
+			lessons = lp.GetRelevantLessons(projectID, progressCtx, 5)
+		}
+		if lessons == "" {
+			lessons = lp.GetLessonsForPrompt(projectID)
+		}
 	}
 
 	// 1. Action format with ReAct pattern FIRST — this is the operating model
@@ -1015,6 +1032,30 @@ func truncateForLesson(s string) string {
 		return s
 	}
 	return s[:500]
+}
+
+// flattenActionLog converts worker ActionLogEntries into memory.ActionEntry
+// for extraction analysis.
+func flattenActionLog(log []ActionLogEntry) []memory.ActionEntry {
+	var entries []memory.ActionEntry
+	for _, entry := range log {
+		for _, r := range entry.Results {
+			path := ""
+			if r.Metadata != nil {
+				if p, ok := r.Metadata["path"].(string); ok {
+					path = p
+				}
+			}
+			entries = append(entries, memory.ActionEntry{
+				Iteration:  entry.Iteration,
+				ActionType: string(r.ActionType),
+				Status:     r.Status,
+				Message:    r.Message,
+				Path:       path,
+			})
+		}
+	}
+	return entries
 }
 
 // hashActions computes a deterministic hash of action types and key fields.

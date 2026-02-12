@@ -83,6 +83,11 @@ func (s *Server) handlePairChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Disable write timeout for streaming - the server's WriteTimeout (30s default)
+	// would kill long-running streams.
+	rc := http.NewResponseController(w)
+	_ = rc.SetWriteDeadline(time.Time{})
+
 	conversationCtx, err := db.GetConversationContextByBeadID(req.BeadID)
 	if err != nil {
 		// No existing conversation, create new one

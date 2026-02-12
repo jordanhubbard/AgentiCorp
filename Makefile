@@ -1,4 +1,4 @@
-.PHONY: all build build-all start stop restart test test-docker test-api coverage fmt vet lint lint-yaml lint-docs deps clean distclean install config dev-setup help release release-major release-minor release-patch
+.PHONY: all build build-all start stop restart bootstrap test test-docker test-api coverage fmt vet lint lint-yaml lint-docs deps clean distclean install config dev-setup help release release-major release-minor release-patch
 
 # Build variables
 BINARY_NAME=loom
@@ -22,6 +22,7 @@ build-all: lint-yaml
 # Start loom (build container + start full stack in background)
 start:
 	docker compose up -d --build
+	@$(MAKE) -s bootstrap
 
 # Stop loom
 stop:
@@ -31,6 +32,27 @@ stop:
 restart:
 	docker compose down
 	docker compose up -d --build
+	@$(MAKE) -s bootstrap
+
+# Run bootstrap.local if present (registers local providers)
+bootstrap:
+	@if [ -f bootstrap.local ]; then \
+		echo "Waiting for loom to be healthy..."; \
+		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do \
+			status=$$(curl -s --connect-timeout 2 --max-time 5 http://localhost:8080/health 2>/dev/null | grep -o '"status":"[^"]*"' | cut -d'"' -f4); \
+			if [ "$$status" = "healthy" ]; then \
+				echo "Loom is healthy, running bootstrap.local..."; \
+				chmod +x bootstrap.local && ./bootstrap.local; \
+				exit 0; \
+			fi; \
+			echo "  Attempt $$i/20: waiting (status=$$status)..."; \
+			sleep 5; \
+		done; \
+		echo "WARNING: Loom did not become healthy in 100s, skipping bootstrap.local"; \
+		echo "         Run 'make bootstrap' manually once loom is ready."; \
+	else \
+		echo "No bootstrap.local found (copy bootstrap.local.example to create one)"; \
+	fi
 
 # View loom container logs (follow)
 logs:
@@ -123,9 +145,10 @@ help:
 	@echo "Loom - Makefile Commands"
 	@echo ""
 	@echo "Service:"
-	@echo "  make start        - Build and start loom (Docker, background)"
+	@echo "  make start        - Build and start loom (Docker, background) + bootstrap"
 	@echo "  make stop         - Stop loom"
-	@echo "  make restart      - Rebuild and restart loom"
+	@echo "  make restart      - Rebuild and restart loom + bootstrap"
+	@echo "  make bootstrap    - Run bootstrap.local if present (registers providers)"
 	@echo "  make logs         - Follow loom container logs"
 	@echo ""
 	@echo "Development:"

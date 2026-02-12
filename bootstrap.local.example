@@ -2,10 +2,11 @@
 # Local provider bootstrap — copy to bootstrap.local and fill in your values.
 # bootstrap.local is gitignored and will not be committed.
 #
-# Run once after starting Loom:
-#   ./bootstrap.local
+# Runs automatically after: make start, make restart
+# Or manually via: make bootstrap, ./bootstrap.local
 #
-# Or automatically via: make bootstrap
+# NOTE: Providers with the same ID will be replaced (upsert behavior).
+# This makes bootstrap.local safe to run multiple times.
 
 LOOM_URL="${LOOM_URL:-http://localhost:8081}"
 

@@ -76,6 +76,90 @@ cache:
   max_memory_mb: 500          # Maximum memory usage (approximate)
   cleanup_period: 5m          # How often to clean expired entries
 
+# Model preferences for provider negotiation.
+# When a provider returns multiple models, Loom selects the best match from this list.
+# When a provider returns only one model (single-model servers like Ollama), it uses that directly.
+# Models are ranked from most preferred (rank 1) to adequate fallbacks.
+models:
+  preferred_models:
+    # Tier 1: Extended thinking / Complex reasoning (70B+ or advanced MoE)
+    - name: "anthropic/claude-opus-4"
+      rank: 1
+      tier: extended
+      min_vram_gb: 0  # Cloud-only
+      notes: "Best for complex reasoning, architecture decisions"
+    - name: "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+      rank: 2
+      tier: extended
+      min_vram_gb: 320
+      notes: "MoE with 35B active params, exceptional code quality"
+    
+    # Tier 2: Complex tasks (30-70B)
+    - name: "anthropic/claude-sonnet-4"
+      rank: 10
+      tier: complex
+      min_vram_gb: 0
+      notes: "Excellent balance of capability and speed"
+    - name: "Qwen/Qwen2.5-Coder-32B-Instruct"
+      rank: 11
+      tier: complex
+      min_vram_gb: 64
+      notes: "Strong code generation, fits on single high-end GPU"
+    - name: "deepseek-ai/DeepSeek-Coder-V2-Instruct"
+      rank: 12
+      tier: complex
+      min_vram_gb: 48
+      notes: "MoE architecture, excellent for code"
+    - name: "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      rank: 13
+      tier: complex
+      min_vram_gb: 48
+      notes: "MoE with 3B active, fast for size"
+    - name: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
+      rank: 14
+      tier: complex
+      min_vram_gb: 24
+      notes: "NVIDIA optimized, good throughput"
+    
+    # Tier 3: Medium tasks (14-30B)
+    - name: "Qwen/Qwen2.5-Coder-14B-Instruct"
+      rank: 20
+      tier: medium
+      min_vram_gb: 28
+      notes: "Good balance for everyday coding tasks"
+    - name: "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct"
+      rank: 21
+      tier: medium
+      min_vram_gb: 10
+      notes: "16B MoE with only 2.4B active, very efficient"
+    - name: "meta-llama/Llama-3.1-70B-Instruct"
+      rank: 22
+      tier: medium
+      min_vram_gb: 140
+      notes: "Strong general reasoning"
+    
+    # Tier 4: Simple tasks (7-14B) - fast response for reviews, checks
+    - name: "Qwen/Qwen2.5-Coder-7B-Instruct"
+      rank: 30
+      tier: simple
+      min_vram_gb: 14
+      notes: "Fast, good for simple code tasks"
+    - name: "mistralai/Mistral-7B-Instruct-v0.3"
+      rank: 31
+      tier: simple
+      min_vram_gb: 14
+      notes: "Fast general-purpose chat"
+    - name: "meta-llama/Llama-3.1-8B-Instruct"
+      rank: 32
+      tier: simple
+      min_vram_gb: 16
+      notes: "Meta's compact instruct model"
+    - name: "Qwen/Qwen2.5-3B-Instruct"
+      rank: 33
+      tier: simple
+      min_vram_gb: 6
+      notes: "Ultra-fast for trivial tasks"
+
 providers: []
   # Providers are registered via API, not in this file.
   # Create a bootstrap.local file (gitignored) with curl commands:

@@ -125,9 +125,11 @@ func TestStreamingContextCancellation(t *testing.T) {
 		return nil
 	})
 
-	// Should get context canceled error
-	if err != context.Canceled {
-		t.Errorf("Expected context.Canceled error, got %v", err)
+	// Should get context canceled error (may be wrapped with additional context)
+	if err == nil {
+		t.Errorf("Expected context canceled error, got nil")
+	} else if !strings.Contains(err.Error(), "context canceled") && err != context.Canceled {
+		t.Errorf("Expected error to contain 'context canceled', got %v", err)
 	}
 
 	if chunkCount != 1 {

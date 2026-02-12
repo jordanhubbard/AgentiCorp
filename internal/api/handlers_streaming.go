@@ -32,6 +32,14 @@ func (s *Server) handleStreamChatCompletion(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Disable write timeout for streaming - the server's WriteTimeout (30s default)
+	// would kill long-running streams. We use a 5-minute context timeout instead.
+	rc := http.NewResponseController(w)
+	if err := rc.SetWriteDeadline(time.Time{}); err != nil {
+		// Log but continue - some ResponseWriters may not support this
+		// (e.g., in tests or behind certain proxies)
+	}
+
 	// Parse request
 	var req StreamChatCompletionRequest
 	if err := s.parseJSON(r, &req); err != nil {

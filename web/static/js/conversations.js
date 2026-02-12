@@ -5,10 +5,23 @@ async function renderConversationsView() {
     if (!container) return;
 
     try {
-        const projectId = (state.projects && state.projects[0]) ? state.projects[0].id : '';
-        const conversations = await apiCall(`/conversations${projectId ? '?project_id=' + encodeURIComponent(projectId) : ''}`);
+        const projectId = uiState.project.selectedId
+            || ((state.projects && state.projects[0]) ? state.projects[0].id : '');
 
-        if (!conversations || conversations.length === 0) {
+        if (!projectId) {
+            container.innerHTML = renderEmptyState(
+                'No project selected',
+                'Register a project first to see agent conversations'
+            );
+            return;
+        }
+
+        const result = await apiCall(`/conversations?project_id=${encodeURIComponent(projectId)}`);
+
+        // API returns {project_id, limit, conversations: [...]}
+        const conversations = Array.isArray(result) ? result : (result && result.conversations) || [];
+
+        if (conversations.length === 0) {
             container.innerHTML = renderEmptyState(
                 'No conversations yet',
                 'Agent conversations will appear here as they work on beads'

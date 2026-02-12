@@ -24,8 +24,15 @@ type ProviderConfig struct {
 	Status                 string    `json:"status,omitempty"`
 	LastHeartbeatAt        time.Time `json:"last_heartbeat_at,omitempty"`
 	LastHeartbeatLatencyMs int64     `json:"last_heartbeat_latency_ms,omitempty"`
-	CapabilityScore        float64   `json:"capability_score,omitempty"` // Composite score: 60% quality + 20% throughput + 20% latency
+	CapabilityScore        float64   `json:"capability_score,omitempty"` // Dynamic composite score from Scorer
 	ContextWindow          int       `json:"context_window,omitempty"`
+
+	// Model metadata for scoring
+	ModelParamsB    float64 `json:"model_params_b,omitempty"`     // Total model parameters in billions
+	CostPerMToken   float64 `json:"cost_per_mtoken,omitempty"`    // Cost per million tokens ($)
+	AvgLatencyMs    float64 `json:"avg_latency_ms,omitempty"`     // Rolling average request latency
+	TotalRequests   int64   `json:"total_requests,omitempty"`     // Total requests served
+	SuccessRequests int64   `json:"success_requests,omitempty"`   // Successful requests
 }
 
 // MetricsCallback is called after each provider request to record metrics
@@ -36,7 +43,8 @@ type Registry struct {
 	mu              sync.RWMutex
 	providers       map[string]*RegisteredProvider
 	metricsCallback MetricsCallback
-	rrCounter       uint64 // Round-robin counter for equal-priority providers
+	rrCounter       uint64  // Round-robin counter for equal-priority providers
+	scorer          *Scorer // Dynamic provider scoring
 }
 
 // RegisteredProvider wraps a provider with its configuration and protocol
@@ -49,6 +57,7 @@ type RegisteredProvider struct {
 func NewRegistry() *Registry {
 	return &Registry{
 		providers: make(map[string]*RegisteredProvider),
+		scorer:    NewScorer(),
 	}
 }
 
@@ -159,8 +168,12 @@ func (r *Registry) List() []*RegisteredProvider {
 }
 
 // ListActive returns registered providers with active status, sorted by
-// capability score (highest first). Providers with equal scores are
-// round-robined so all get work.
+// dynamic capability score (highest first). Scoring prioritizes:
+// 1. Model size (larger models preferred)
+// 2. Round-trip time (lower heartbeat latency preferred)
+// 3. Request latency (lower average response time preferred)
+// 4. Cost (lower cost preferred, currently $0 for all)
+// Providers with equal scores are round-robined so all get work.
 func (r *Registry) ListActive() []*RegisteredProvider {
 	r.mu.RLock()
 	counter := r.rrCounter
@@ -170,6 +183,12 @@ func (r *Registry) ListActive() []*RegisteredProvider {
 	providers := make([]*RegisteredProvider, 0, len(r.providers))
 	for _, provider := range r.providers {
 		if provider != nil && provider.Config != nil && isProviderHealthy(provider.Config.Status) {
+			// Update dynamic score from scorer
+			if r.scorer != nil {
+				if score, ok := r.scorer.GetScore(provider.Config.ID); ok {
+					provider.Config.CapabilityScore = score.CompositeScore
+				}
+			}
 			providers = append(providers, provider)
 		}
 	}
@@ -189,8 +208,9 @@ func (r *Registry) ListActive() []*RegisteredProvider {
 	// Find the group of providers with equal top score and rotate them
 	topScore := providers[0].Config.CapabilityScore
 	equalCount := 0
+	const scoreTolerance = 0.01 // Consider scores within 0.01 as equal
 	for _, p := range providers {
-		if p.Config.CapabilityScore == topScore {
+		if p.Config.CapabilityScore >= topScore-scoreTolerance {
 			equalCount++
 		} else {
 			break
@@ -309,6 +329,9 @@ func (r *Registry) SendChatCompletion(ctx context.Context, providerID string, re
 		totalTokens = int64(resp.Usage.TotalTokens)
 	}
 
+	// Update dynamic scoring metrics
+	r.RecordRequestMetrics(providerID, latencyMs, success)
+
 	// Call metrics callback if registered
 	r.mu.RLock()
 	callback := r.metricsCallback
@@ -329,6 +352,179 @@ func (r *Registry) GetModels(ctx context.Context, providerID string) ([]Model, e
 	}
 
 	return provider.Protocol.GetModels(ctx)
+}
+
+// GetScorer returns the registry's dynamic scorer.
+func (r *Registry) GetScorer() *Scorer {
+	return r.scorer
+}
+
+// UpdateProviderScore updates the dynamic score for a provider.
+// This should be called after heartbeat or when metrics change.
+func (r *Registry) UpdateProviderScore(providerID string, modelParamsB float64, costPerMToken float64) {
+	r.mu.RLock()
+	provider, exists := r.providers[providerID]
+	r.mu.RUnlock()
+
+	if !exists || provider == nil || provider.Config == nil {
+		return
+	}
+
+	cfg := provider.Config
+	cfg.ModelParamsB = modelParamsB
+	cfg.CostPerMToken = costPerMToken
+
+	if r.scorer != nil {
+		score := r.scorer.UpdateProviderMetrics(
+			providerID,
+			modelParamsB,
+			cfg.LastHeartbeatLatencyMs,
+			cfg.AvgLatencyMs,
+			costPerMToken,
+		)
+		cfg.CapabilityScore = score.CompositeScore
+	}
+}
+
+// RecordRequestMetrics records request latency and updates the provider's rolling average.
+// Called by SendChatCompletion via the metrics callback.
+func (r *Registry) RecordRequestMetrics(providerID string, latencyMs int64, success bool) {
+	r.mu.Lock()
+	provider, exists := r.providers[providerID]
+	if !exists || provider == nil || provider.Config == nil {
+		r.mu.Unlock()
+		return
+	}
+
+	cfg := provider.Config
+	cfg.TotalRequests++
+	if success {
+		cfg.SuccessRequests++
+	}
+
+	// Update rolling average latency (exponential moving average, alpha=0.2)
+	if cfg.AvgLatencyMs == 0 {
+		cfg.AvgLatencyMs = float64(latencyMs)
+	} else {
+		cfg.AvgLatencyMs = 0.8*cfg.AvgLatencyMs + 0.2*float64(latencyMs)
+	}
+	r.mu.Unlock()
+
+	// Update the scorer with new metrics
+	if r.scorer != nil {
+		score := r.scorer.UpdateProviderMetrics(
+			providerID,
+			cfg.ModelParamsB,
+			cfg.LastHeartbeatLatencyMs,
+			cfg.AvgLatencyMs,
+			cfg.CostPerMToken,
+		)
+
+		r.mu.Lock()
+		cfg.CapabilityScore = score.CompositeScore
+		r.mu.Unlock()
+	}
+}
+
+// UpdateHeartbeatLatency updates the heartbeat latency for a provider and recalculates score.
+func (r *Registry) UpdateHeartbeatLatency(providerID string, latencyMs int64) {
+	r.mu.Lock()
+	provider, exists := r.providers[providerID]
+	if !exists || provider == nil || provider.Config == nil {
+		r.mu.Unlock()
+		return
+	}
+
+	cfg := provider.Config
+	cfg.LastHeartbeatLatencyMs = latencyMs
+	cfg.LastHeartbeatAt = time.Now()
+	r.mu.Unlock()
+
+	// Update the scorer with new metrics
+	if r.scorer != nil {
+		score := r.scorer.UpdateProviderMetrics(
+			providerID,
+			cfg.ModelParamsB,
+			latencyMs,
+			cfg.AvgLatencyMs,
+			cfg.CostPerMToken,
+		)
+
+		r.mu.Lock()
+		cfg.CapabilityScore = score.CompositeScore
+		r.mu.Unlock()
+	}
+}
+
+// SetScoringWeights updates the scoring weights used for provider prioritization.
+func (r *Registry) SetScoringWeights(weights ScoringWeights) {
+	if r.scorer != nil {
+		r.scorer.SetWeights(weights)
+	}
+}
+
+// GetScoringWeights returns the current scoring weights.
+func (r *Registry) GetScoringWeights() ScoringWeights {
+	if r.scorer != nil {
+		return r.scorer.GetWeights()
+	}
+	return DefaultWeights()
+}
+
+// ListActiveForComplexity returns registered providers sorted by suitability for a complexity level.
+// Providers that match the required model tier for the complexity are ranked first.
+func (r *Registry) ListActiveForComplexity(complexity ComplexityLevel) []*RegisteredProvider {
+	r.mu.RLock()
+	providers := make([]*RegisteredProvider, 0, len(r.providers))
+	providerIDs := make([]string, 0, len(r.providers))
+	providerMap := make(map[string]*RegisteredProvider)
+
+	for _, provider := range r.providers {
+		if provider != nil && provider.Config != nil && isProviderHealthy(provider.Config.Status) {
+			providers = append(providers, provider)
+			providerIDs = append(providerIDs, provider.Config.ID)
+			providerMap[provider.Config.ID] = provider
+		}
+	}
+	r.mu.RUnlock()
+
+	if len(providers) <= 1 {
+		return providers
+	}
+
+	// Use the scorer to rank providers for this complexity
+	if r.scorer != nil {
+		rankedIDs := r.scorer.RankProvidersForComplexity(providerIDs, complexity)
+		result := make([]*RegisteredProvider, 0, len(rankedIDs))
+		for _, id := range rankedIDs {
+			if p, ok := providerMap[id]; ok {
+				// Update dynamic score from scorer
+				if score, ok := r.scorer.GetScore(id); ok {
+					p.Config.CapabilityScore = score.CompositeScore
+				}
+				result = append(result, p)
+			}
+		}
+		return result
+	}
+
+	return providers
+}
+
+// SelectProviderForComplexity selects the best provider for a given complexity level.
+// Returns the provider, its score, and whether a suitable provider was found.
+func (r *Registry) SelectProviderForComplexity(complexity ComplexityLevel) (*RegisteredProvider, float64, bool) {
+	providers := r.ListActiveForComplexity(complexity)
+	if len(providers) == 0 {
+		return nil, 0, false
+	}
+	best := providers[0]
+	return best, best.Config.CapabilityScore, true
+}
+
+// GetComplexityEstimator returns a complexity estimator for analyzing tasks.
+func (r *Registry) GetComplexityEstimator() *ComplexityEstimator {
+	return NewComplexityEstimator()
 }
 
 func isProviderHealthy(status string) bool {

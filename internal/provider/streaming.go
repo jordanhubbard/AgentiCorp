@@ -55,9 +55,19 @@ func (p *OpenAIProvider) CreateChatCompletionStream(ctx context.Context, req *Ch
 		httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", p.apiKey))
 	}
 
+	// Use streaming client (no timeout) for streaming requests.
+	// The context controls cancellation; this prevents mid-stream timeouts.
+	client := p.streamingClient
+	if client == nil {
+		client = p.client // fallback for tests
+	}
+
 	// Send request
-	resp, err := p.client.Do(httpReq)
+	resp, err := client.Do(httpReq)
 	if err != nil {
+		if ctx.Err() != nil {
+			return fmt.Errorf("request cancelled: %w", ctx.Err())
+		}
 		return fmt.Errorf("failed to send request: %w", err)
 	}
 	defer resp.Body.Close()
@@ -79,10 +89,17 @@ func (p *OpenAIProvider) CreateChatCompletionStream(ctx context.Context, req *Ch
 // readStreamingResponse reads and processes SSE streaming response
 func (p *OpenAIProvider) readStreamingResponse(ctx context.Context, reader io.Reader, handler StreamHandler) error {
 	scanner := bufio.NewScanner(reader)
+	// Increase buffer size for potentially large JSON chunks
+	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
+
+	chunksReceived := 0
 
 	for scanner.Scan() {
 		select {
 		case <-ctx.Done():
+			if chunksReceived > 0 {
+				return fmt.Errorf("stream interrupted after %d chunks: %w", chunksReceived, ctx.Err())
+			}
 			return ctx.Err()
 		default:
 		}
@@ -113,14 +130,24 @@ func (p *OpenAIProvider) readStreamingResponse(ctx context.Context, reader io.Re
 			continue
 		}
 
+		chunksReceived++
+
 		// Call handler with chunk
 		if err := handler(&chunk); err != nil {
-			return fmt.Errorf("handler error: %w", err)
+			return fmt.Errorf("handler error after %d chunks: %w", chunksReceived, err)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("scanner error: %w", err)
+		if chunksReceived > 0 {
+			return fmt.Errorf("stream connection lost after %d chunks: %w", chunksReceived, err)
+		}
+		return fmt.Errorf("stream read error: %w", err)
+	}
+
+	// Stream ended without [DONE] marker — connection may have been closed
+	if chunksReceived == 0 {
+		return fmt.Errorf("stream ended without receiving any data")
 	}
 
 	return nil

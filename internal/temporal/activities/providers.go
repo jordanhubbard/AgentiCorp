@@ -220,7 +220,19 @@ func (a *ProviderActivities) syncRegistry(record *internalmodels.Provider) {
 		apiKey, _ = a.keys.GetKey(record.KeyID)
 	}
 
-	_ = a.registry.Upsert(&provider.ProviderConfig{
+	// Parse model name to get parameters for dynamic scoring
+	var modelParamsB float64
+	if selected != "" {
+		parsed := modelcatalog.ParseModelName(selected)
+		// Use active params if available (MoE models), otherwise total params
+		if parsed.ActiveParamsB > 0 {
+			modelParamsB = parsed.ActiveParamsB
+		} else {
+			modelParamsB = parsed.TotalParamsB
+		}
+	}
+
+	cfg := &provider.ProviderConfig{
 		ID:                     record.ID,
 		Name:                   record.Name,
 		Type:                   record.Type,
@@ -235,7 +247,15 @@ func (a *ProviderActivities) syncRegistry(record *internalmodels.Provider) {
 		LastHeartbeatLatencyMs: record.LastHeartbeatLatencyMs,
 		CapabilityScore:        record.Metrics.OverallScore,
 		ContextWindow:          record.ContextWindow,
-	})
+		ModelParamsB:           modelParamsB,
+		CostPerMToken:          record.CostPerMToken,
+	}
+
+	_ = a.registry.Upsert(cfg)
+
+	// Update dynamic scoring with model parameters and heartbeat latency
+	a.registry.UpdateProviderScore(record.ID, modelParamsB, record.CostPerMToken)
+	a.registry.UpdateHeartbeatLatency(record.ID, record.LastHeartbeatLatencyMs)
 }
 
 func (a *ProviderActivities) publishProviderUpdate(record *internalmodels.Provider) {
@@ -270,31 +290,46 @@ func (a *ProviderActivities) selectModel(record *internalmodels.Provider, availa
 	if record == nil {
 		return "", "", 0
 	}
+
+	// Single-model provider: use the model directly, no negotiation needed.
+	// This handles local vLLM instances, Ollama single-model setups, etc.
+	if len(available) == 1 {
+		return available[0], "single-model provider (no negotiation)", 0
+	}
+
 	configured := strings.TrimSpace(record.ConfiguredModel)
 	if configured == "" {
 		configured = strings.TrimSpace(record.Model)
 	}
-	if configured == "" {
-		configured = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
-	}
 	record.ConfiguredModel = configured
 
-	for _, name := range available {
-		if strings.EqualFold(name, configured) {
-			return configured, "configured model available", 0
+	// Multi-model provider: negotiate based on preference list
+	// 1. If user explicitly configured a model and it's available, honor that
+	if configured != "" {
+		for _, name := range available {
+			if strings.EqualFold(name, configured) {
+				return configured, "configured model available", 0
+			}
 		}
 	}
 
+	// 2. Use catalog to find best match from preferred_models list
 	if a.catalog != nil {
 		if best, bestScore, ok := a.catalog.SelectBest(available); ok {
-			return best.Name, "matched recommended catalog", bestScore
+			return best.Name, "negotiated from preferred_models catalog", bestScore
 		}
 	}
 
+	// 3. Fall back to first available model
 	if len(available) > 0 {
-		return available[0], "fallback to first discovered model", 0
+		return available[0], "fallback to first discovered model (not in catalog)", 0
 	}
-	return configured, "fallback to configured model", 0
+
+	// 4. Last resort: use configured model even if not discovered
+	if configured != "" {
+		return configured, "fallback to configured model (not discovered)", 0
+	}
+	return "", "no model available", 0
 }
 
 func (a *ProviderActivities) discoverAndListModels(ctx context.Context, providerID string) (*internalmodels.Provider, []provider.Model, string, string, error) {

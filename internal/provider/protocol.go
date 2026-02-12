@@ -114,9 +114,10 @@ type Model struct {
 
 // OpenAIProvider implements the Protocol interface for OpenAI-compatible APIs
 type OpenAIProvider struct {
-	endpoint string
-	apiKey   string
-	client   *http.Client
+	endpoint        string
+	apiKey          string
+	client          *http.Client
+	streamingClient *http.Client // Separate client for streaming (no timeout)
 }
 
 // NewOpenAIProvider creates a new OpenAI-compatible provider
@@ -126,6 +127,15 @@ func NewOpenAIProvider(endpoint, apiKey string) *OpenAIProvider {
 		apiKey:   apiKey,
 		client: &http.Client{
 			Timeout: 5 * time.Minute, // Local models can be slow for long text generation
+		},
+		// Streaming client has no timeout — relies on context cancellation.
+		// This prevents mid-stream timeouts for slow models.
+		streamingClient: &http.Client{
+			Timeout: 0,
+			Transport: &http.Transport{
+				ResponseHeaderTimeout: 2 * time.Minute, // Wait up to 2 min for first byte
+				IdleConnTimeout:       10 * time.Minute,
+			},
 		},
 	}
 }

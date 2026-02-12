@@ -57,20 +57,21 @@ type DispatchResult struct {
 // Dispatcher is responsible for selecting ready work and executing it using agents/providers.
 // For now it focuses on turning beads into LLM tasks and storing the output back into bead context.
 type Dispatcher struct {
-	beads           *beads.Manager
-	projects        *project.Manager
-	agents          *agent.WorkerManager
-	providers       *provider.Registry
-	db              *database.Database
-	eventBus        *eventbus.EventBus
-	workflowEngine  *workflow.Engine
-	personaMatcher  *PersonaMatcher
-	autoBugRouter   *AutoBugRouter
-	readinessCheck  func(context.Context, string) (bool, []string)
-	readinessMode   ReadinessMode
-	escalator       Escalator
-	maxDispatchHops int
-	loopDetector    *LoopDetector
+	beads               *beads.Manager
+	projects            *project.Manager
+	agents              *agent.WorkerManager
+	providers           *provider.Registry
+	db                  *database.Database
+	eventBus            *eventbus.EventBus
+	workflowEngine      *workflow.Engine
+	personaMatcher      *PersonaMatcher
+	autoBugRouter       *AutoBugRouter
+	complexityEstimator *provider.ComplexityEstimator
+	readinessCheck      func(context.Context, string) (bool, []string)
+	readinessMode       ReadinessMode
+	escalator           Escalator
+	maxDispatchHops     int
+	loopDetector        *LoopDetector
 
 	mu     sync.RWMutex
 	status SystemStatus
@@ -83,15 +84,16 @@ type Escalator interface {
 
 func NewDispatcher(beadsMgr *beads.Manager, projMgr *project.Manager, agentMgr *agent.WorkerManager, registry *provider.Registry, eb *eventbus.EventBus) *Dispatcher {
 	d := &Dispatcher{
-		beads:          beadsMgr,
-		projects:       projMgr,
-		agents:         agentMgr,
-		providers:      registry,
-		eventBus:       eb,
-		personaMatcher: NewPersonaMatcher(),
-		autoBugRouter:  NewAutoBugRouter(),
-		loopDetector:   NewLoopDetector(),
-		readinessMode:  ReadinessWarn,
+		beads:               beadsMgr,
+		projects:            projMgr,
+		agents:              agentMgr,
+		providers:           registry,
+		eventBus:            eb,
+		personaMatcher:      NewPersonaMatcher(),
+		autoBugRouter:       NewAutoBugRouter(),
+		complexityEstimator: provider.NewComplexityEstimator(),
+		loopDetector:        NewLoopDetector(),
+		readinessMode:       ReadinessWarn,
 		status: SystemStatus{
 			State:     StatusParked,
 			Reason:    "not started",
@@ -242,16 +244,18 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 		}
 		// If agent already has a provider, verify it's active.
 		// If agent has no provider, auto-assign one from the active pool.
+		// Note: Final provider selection happens per-bead based on complexity.
 		if candidateAgent.ProviderID != "" {
 			if !d.providers.IsActive(candidateAgent.ProviderID) {
 				continue
 			}
 		} else {
+			// Assign a default provider; actual routing happens per-bead
 			activeProviders := d.providers.ListActive() // sorted by capability score
 			if len(activeProviders) > 0 {
 				best := activeProviders[0]
 				candidateAgent.ProviderID = best.Config.ID
-				log.Printf("[Dispatcher] Auto-assigned provider %s (score=%.0f, latency=%dms) to agent %s",
+				log.Printf("[Dispatcher] Auto-assigned default provider %s (score=%.0f, latency=%dms) to agent %s",
 					best.Config.ID, best.Config.CapabilityScore, best.Config.LastHeartbeatLatencyMs, candidateAgent.Name)
 			} else {
 				continue
@@ -530,12 +534,22 @@ func (d *Dispatcher) DispatchOnce(ctx context.Context, projectID string) (*Dispa
 		d.setStatus(StatusParked, "no idle agents with active providers")
 		return &DispatchResult{Dispatched: false, ProjectID: selectedProjectID}, nil
 	}
-	if ag.ProviderID == "" {
-		// Auto-assign from active provider pool
-		activeProviders := d.providers.ListActive()
+
+	// Estimate task complexity for smart provider routing
+	complexity := d.estimateBeadComplexity(candidate)
+
+	// Select provider based on complexity - match model size to task difficulty
+	if ag.ProviderID == "" || complexity != provider.ComplexityMedium {
+		// Use complexity-aware selection for all tasks (not just unassigned agents)
+		activeProviders := d.providers.ListActiveForComplexity(complexity)
 		if len(activeProviders) > 0 {
-			ag.ProviderID = activeProviders[0].Config.ID
-		} else {
+			best := activeProviders[0]
+			prevProvider := ag.ProviderID
+			ag.ProviderID = best.Config.ID
+			log.Printf("[Dispatcher] Selected provider %s (params=%.0fB, score=%.0f) for %s complexity task %s (prev=%s)",
+				best.Config.ID, best.Config.ModelParamsB, best.Config.CapabilityScore,
+				complexity.String(), candidate.ID, prevProvider)
+		} else if ag.ProviderID == "" {
 			d.setStatus(StatusParked, "no active providers available")
 			return &DispatchResult{Dispatched: false, ProjectID: selectedProjectID, AgentID: ag.ID}, nil
 		}
@@ -1247,6 +1261,45 @@ func (d *Dispatcher) getWorkflowRoleRequirement(execution *workflow.WorkflowExec
 	}
 
 	return node.RoleRequired
+}
+
+// estimateBeadComplexity analyzes a bead to estimate task complexity for smart provider routing.
+// Simple tasks (review, check) go to small models; complex tasks (design, architect) go to large models.
+func (d *Dispatcher) estimateBeadComplexity(bead *models.Bead) provider.ComplexityLevel {
+	if d.complexityEstimator == nil {
+		return provider.ComplexityMedium // Default fallback
+	}
+
+	// Start with type-based estimation
+	typeComplexity := d.complexityEstimator.EstimateFromBeadType(string(bead.Type))
+
+	// Analyze content for more specific estimation
+	description := bead.Description
+	if bead.Context != nil {
+		// Include any agent output or error messages in complexity analysis
+		if agentOutput, ok := bead.Context["agent_output"]; ok {
+			description += " " + agentOutput
+		}
+		if errorMsg, ok := bead.Context["error_message"]; ok {
+			description += " " + errorMsg
+		}
+	}
+	contentComplexity := d.complexityEstimator.EstimateComplexity(bead.Title, description)
+
+	// Combine estimates (take the higher one)
+	result := d.complexityEstimator.CombineEstimates(typeComplexity, contentComplexity)
+
+	// Priority escalation: P0 tasks get at least medium complexity treatment
+	if bead.Priority == models.BeadPriorityP0 && result < provider.ComplexityMedium {
+		result = provider.ComplexityMedium
+	}
+
+	// Decision beads always require complex reasoning
+	if bead.Type == "decision" {
+		result = provider.ComplexityComplex
+	}
+
+	return result
 }
 
 func normalizeRoleName(role string) string {

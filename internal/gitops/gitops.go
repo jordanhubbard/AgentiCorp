@@ -655,7 +655,9 @@ func (m *Manager) configureAuth(cmd *exec.Cmd, project *models.Project) error {
 		if cmd.Env == nil {
 			cmd.Env = os.Environ()
 		}
-		// Use shell escaping to prevent command injection in GIT_SSH_COMMAND
+		// Use only the per-project deploy key - Loom operates with its own
+		// identity, never the host user's keys. IdentitiesOnly=yes ensures SSH
+		// won't try any other keys from the agent or default paths.
 		escapedKeyPath := shellEscape(sshKeyPath)
 		cmd.Env = append(cmd.Env,
 			"GIT_TERMINAL_PROMPT=0",

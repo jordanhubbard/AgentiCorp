@@ -135,12 +135,43 @@ func New(cfg *config.Config) (*Loom, error) {
 		}
 	}
 
+	// Initialize model catalog from config or use defaults.
+	// Priority: 1) config.yaml preferred_models, 2) database override, 3) hardcoded defaults
 	modelCatalog := modelcatalog.DefaultCatalog()
+	if len(cfg.Models.PreferredModels) > 0 {
+		// Convert config models to ModelSpec
+		specs := make([]internalmodels.ModelSpec, 0, len(cfg.Models.PreferredModels))
+		for _, pm := range cfg.Models.PreferredModels {
+			spec := internalmodels.ModelSpec{
+				Name:      pm.Name,
+				Rank:      pm.Rank,
+				MinVRAMGB: pm.MinVRAMGB,
+			}
+			// Map tier to interactivity
+			switch pm.Tier {
+			case "extended":
+				spec.Interactivity = "slow"
+			case "complex":
+				spec.Interactivity = "medium"
+			case "medium":
+				spec.Interactivity = "medium"
+			case "simple":
+				spec.Interactivity = "fast"
+			default:
+				spec.Interactivity = "medium"
+			}
+			specs = append(specs, spec)
+		}
+		modelCatalog.Replace(specs)
+		log.Printf("[ModelCatalog] Loaded %d preferred models from config.yaml", len(specs))
+	}
+	// Database can override config (for runtime updates via API)
 	if db != nil {
 		if raw, ok, err := db.GetConfigValue(modelCatalogKey); err == nil && ok {
 			var specs []internalmodels.ModelSpec
 			if err := json.Unmarshal([]byte(raw), &specs); err == nil && len(specs) > 0 {
 				modelCatalog.Replace(specs)
+				log.Printf("[ModelCatalog] Overrode with %d models from database", len(specs))
 			}
 		}
 	}
@@ -510,31 +541,70 @@ func (a *Loom) Initialize(ctx context.Context) error {
 				}
 			}
 
-			// Check if already cloned
-			workDir := a.gitopsManager.GetProjectWorkDir(p.ID)
-			p.WorkDir = workDir
-			// Persist WorkDir so maintenance loop and dispatcher can find project files
-			if mgdProject, _ := a.projectManager.GetProject(p.ID); mgdProject != nil {
-				mgdProject.WorkDir = workDir
-			}
-			if _, err := os.Stat(filepath.Join(workDir, ".git")); os.IsNotExist(err) {
-				// Clone the repository
-				fmt.Printf("Cloning project %s from %s...\n", p.ID, p.GitRepo)
-				if err := a.gitopsManager.CloneProject(ctx, p); err != nil {
-					fmt.Fprintf(os.Stderr, "Warning: Failed to clone project %s: %v\n", p.ID, err)
-					continue
+		// Check if already cloned
+		workDir := a.gitopsManager.GetProjectWorkDir(p.ID)
+		p.WorkDir = workDir
+		// Persist WorkDir so maintenance loop and dispatcher can find project files
+		if mgdProject, _ := a.projectManager.GetProject(p.ID); mgdProject != nil {
+			mgdProject.WorkDir = workDir
+		}
+
+		needsClone := false
+		gitDir := filepath.Join(workDir, ".git")
+		if _, err := os.Stat(gitDir); os.IsNotExist(err) {
+			needsClone = true
+		} else {
+			// .git exists, but check if it's a valid clone (has commits)
+			// An empty git-init repo with no commits means clone never succeeded
+			checkCmd := exec.CommandContext(ctx, "git", "rev-parse", "HEAD")
+			checkCmd.Dir = workDir
+			if out, err := checkCmd.CombinedOutput(); err != nil {
+				outStr := strings.TrimSpace(string(out))
+				if strings.Contains(outStr, "does not have any commits") || strings.Contains(outStr, "unknown revision") {
+					fmt.Printf("Project %s has empty repo (prior clone failed), re-cloning...\n", p.ID)
+					// Remove the broken repo so CloneProject can start fresh
+					os.RemoveAll(workDir)
+					needsClone = true
 				}
-				fmt.Printf("Successfully cloned project %s\n", p.ID)
+			}
+		}
+
+		if needsClone {
+			// Clone the repository
+			fmt.Printf("Cloning project %s from %s...\n", p.ID, p.GitRepo)
+			if err := a.gitopsManager.CloneProject(ctx, p); err != nil {
+				errStr := err.Error()
+				fmt.Fprintf(os.Stderr, "Warning: Failed to clone project %s: %v\n", p.ID, err)
+
+				// If SSH auth failed, show the deploy key that needs to be registered
+				if p.GitAuthMethod == models.GitAuthSSH && strings.Contains(errStr, "Permission denied") {
+					if pubKey, keyErr := a.gitopsManager.EnsureProjectSSHKey(p.ID); keyErr == nil {
+						fmt.Fprintf(os.Stderr, "\n"+
+							"╔══════════════════════════════════════════════════════════════════╗\n"+
+							"║  DEPLOY KEY NOT REGISTERED                                      ║\n"+
+							"║                                                                  ║\n"+
+							"║  Add this deploy key to your git remote:                         ║\n"+
+							"║  %s\n"+
+							"║                                                                  ║\n"+
+							"║  For GitHub: Settings → Deploy Keys → Add deploy key             ║\n"+
+							"║  Enable 'Allow write access' if agents need to push.             ║\n"+
+							"╚══════════════════════════════════════════════════════════════════╝\n\n",
+							pubKey)
+					}
+				}
+				continue
+			}
+			fmt.Printf("Successfully cloned project %s\n", p.ID)
+		} else {
+			// Pull latest changes
+			fmt.Printf("Pulling latest changes for project %s...\n", p.ID)
+			if err := a.gitopsManager.PullProject(ctx, p); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: Failed to pull project %s: %v\n", p.ID, err)
+				// Continue anyway with existing checkout
 			} else {
-				// Pull latest changes
-				fmt.Printf("Pulling latest changes for project %s...\n", p.ID)
-				if err := a.gitopsManager.PullProject(ctx, p); err != nil {
-					fmt.Fprintf(os.Stderr, "Warning: Failed to pull project %s: %v\n", p.ID, err)
-					// Continue anyway with existing checkout
-				} else {
-					fmt.Printf("Successfully pulled project %s\n", p.ID)
-				}
+				fmt.Printf("Successfully pulled project %s\n", p.ID)
 			}
+		}
 
 			// Initialize beads database if needed (sqlite only — dolt schema is
 			// created by the entrypoint script before loom starts)
@@ -2129,7 +2199,81 @@ func isLikelyPersona(s string) bool {
 }
 
 func (a *Loom) selectBestProviderForRepl() (*internalmodels.Provider, error) {
-	return a.SelectProvider(context.Background(), nil, "balanced")
+	providers, err := a.database.ListProviders()
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter for chat-capable models (Instruct, Chat, claude, gpt, etc.)
+	// Exclude completion-only models like StarCoder, CodeGen, etc.
+	chatCapable := make([]*internalmodels.Provider, 0)
+	for _, p := range providers {
+		if p == nil || p.Status != "healthy" {
+			continue
+		}
+		if isChatCapableModel(p.SelectedModel) || isChatCapableModel(p.Model) {
+			chatCapable = append(chatCapable, p)
+		}
+	}
+
+	if len(chatCapable) == 0 {
+		return nil, fmt.Errorf("no chat-capable providers available (need Instruct/Chat model)")
+	}
+
+	router := routing.NewRouter(routing.PolicyBalanced)
+	return router.SelectProvider(context.Background(), chatCapable, nil)
+}
+
+// isChatCapableModel checks if a model name indicates chat/instruct capability
+func isChatCapableModel(modelName string) bool {
+	if modelName == "" {
+		return false
+	}
+	lower := strings.ToLower(modelName)
+
+	// Models that ARE chat-capable
+	chatPatterns := []string{
+		"instruct",
+		"chat",
+		"claude",
+		"gpt-",
+		"gpt4",
+		"opus",
+		"sonnet",
+		"haiku",
+		"llama-3",    // Llama 3 has chat templates
+		"qwen",       // Qwen models generally have chat templates
+		"mistral",    // Mistral instruct models
+		"deepseek",   // DeepSeek chat models
+		"gemma",      // Gemma instruct
+		"phi-",       // Phi models with chat
+		"nemotron",   // NVIDIA Nemotron
+	}
+	for _, pattern := range chatPatterns {
+		if strings.Contains(lower, pattern) {
+			return true
+		}
+	}
+
+	// Models that are NOT chat-capable (completion only)
+	completionPatterns := []string{
+		"starcoder",
+		"codegen",
+		"santacoder",
+		"codellama-7b",  // Base CodeLlama without instruct
+		"codellama-13b", // Base CodeLlama without instruct
+		"codellama-34b", // Base CodeLlama without instruct
+		"-base",
+		"-raw",
+	}
+	for _, pattern := range completionPatterns {
+		if strings.Contains(lower, pattern) {
+			return false
+		}
+	}
+
+	// Default: assume chat-capable if not explicitly a completion model
+	return true
 }
 
 // SelectProvider chooses the best provider based on policy and requirements

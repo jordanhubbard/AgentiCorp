@@ -79,6 +79,11 @@ func (s *Server) HandleLogsStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Disable write timeout for SSE - the server's WriteTimeout (30s default)
+	// would kill long-running streams.
+	rc := http.NewResponseController(w)
+	_ = rc.SetWriteDeadline(time.Time{})
+
 	// Set SSE headers
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")

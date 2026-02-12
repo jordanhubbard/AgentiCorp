@@ -94,7 +94,7 @@ services:
       # Persist SQLite database and project clones across container restarts
       - loom-db:/app/data
       # Mount known_hosts for git SSH operations (read-only)
-      # Loom uses its own per-project SSH keys (stored encrypted in DB)
+      # Loom uses its own per-project SSH deploy keys (stored encrypted in DB)
       - ~/.ssh/known_hosts:/home/loom/.ssh/known_hosts:ro
     healthcheck:
       test: ["CMD", "/app/loom", "-version"]
