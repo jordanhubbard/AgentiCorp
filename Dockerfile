@@ -1,6 +1,8 @@
 # Build stage
 FROM golang:1.25-alpine AS builder
 
+ARG GITHUB_TOKEN
+
 # Install build dependencies (including gcc for CGO/sqlite3 and icu-dev for beads)
 RUN apk add --no-cache git ca-certificates tzdata gcc g++ musl-dev openssh-client icu-dev
 
@@ -21,7 +23,10 @@ RUN git clone --depth 1 https://github.com/steveyegge/beads.git /tmp/beads && \
     rm -rf /tmp/beads
 
 # Install Dolt binary for version-controlled beads backend
-RUN DOLT_VERSION=$(wget -qO- https://api.github.com/repos/dolthub/dolt/releases/latest | grep tag_name | cut -d '"' -f 4) && \
+RUN if [ -n "$GITHUB_TOKEN" ]; then \
+        AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"; \
+    fi; \
+    DOLT_VERSION=$(wget -qO- ${AUTH_HEADER:+--header="$AUTH_HEADER"} https://api.github.com/repos/dolthub/dolt/releases/latest | grep tag_name | cut -d '"' -f 4) && \
     wget -q "https://github.com/dolthub/dolt/releases/download/${DOLT_VERSION}/dolt-linux-amd64.tar.gz" && \
     tar -xzf dolt-linux-amd64.tar.gz && \
     mv dolt-linux-amd64/bin/dolt /go/bin/dolt && \

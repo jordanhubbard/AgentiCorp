@@ -1,4 +1,4 @@
-.PHONY: all build build-all start stop restart bootstrap test test-docker test-api coverage fmt vet lint lint-yaml lint-docs deps clean distclean install config dev-setup help release release-major release-minor release-patch
+.PHONY: all build build-all start stop restart bootstrap test test-docker test-api coverage fmt vet lint lint-yaml lint-docs deps deps-go deps-macos deps-linux deps-wsl deps-linux-apt deps-linux-dnf deps-linux-pacman clean distclean install config dev-setup help release release-major release-minor release-patch
 
 # Build variables
 BINARY_NAME=loom
@@ -97,8 +97,90 @@ lint-docs:
 
 # Install dependencies
 deps:
+	@set -e; \
+	os=$$(uname -s); \
+	if [ "$$os" = "Darwin" ]; then \
+		$(MAKE) deps-macos; \
+	elif [ "$$os" = "Linux" ]; then \
+		if grep -qi microsoft /proc/version 2>/dev/null; then \
+			$(MAKE) deps-wsl; \
+		else \
+			$(MAKE) deps-linux; \
+		fi; \
+	else \
+		echo "Unsupported OS: $$os"; \
+		exit 1; \
+	fi; \
+	$(MAKE) deps-go
+
+deps-go:
 	go mod download
 	go mod tidy
+
+deps-macos:
+	@command -v brew >/dev/null || { echo "Homebrew is required: https://brew.sh/"; exit 1; }
+	brew update
+	brew install go git pkg-config icu4c
+	@if ! pkg-config --exists sqlite3 2>/dev/null; then \
+		brew install sqlite; \
+		echo "sqlite is keg-only; set PKG_CONFIG_PATH/LDFLAGS/CPPFLAGS if builds fail."; \
+	fi
+	@if ! command -v docker >/dev/null; then \
+		brew install --cask docker; \
+		echo "Docker Desktop installed. Start it to enable docker compose."; \
+	fi
+
+deps-linux:
+	@if command -v apt-get >/dev/null; then \
+		$(MAKE) deps-linux-apt; \
+	elif command -v dnf >/dev/null; then \
+		$(MAKE) deps-linux-dnf; \
+	elif command -v pacman >/dev/null; then \
+		$(MAKE) deps-linux-pacman; \
+	else \
+		echo "Unsupported Linux distro (no apt-get, dnf, or pacman)"; \
+		exit 1; \
+	fi
+
+deps-wsl:
+	@$(MAKE) deps-linux
+	@if ! command -v docker >/dev/null; then \
+		echo "Docker Desktop with WSL2 integration is required for docker compose."; \
+		exit 1; \
+	fi
+
+deps-linux-apt:
+	sudo apt-get update
+	sudo apt-get install -y build-essential git curl ca-certificates pkg-config libicu-dev libsqlite3-dev golang-go
+	@if ! command -v docker >/dev/null; then \
+		echo "Docker not found; attempting to install docker.io and docker-compose-plugin..."; \
+		sudo apt-get install -y docker.io docker-compose-plugin || { \
+			echo "Docker install failed (possible containerd conflict)."; \
+			echo "If Docker is already installed, ensure it is on PATH and re-run make deps."; \
+			exit 1; \
+		}; \
+	fi
+	@if ! docker compose version >/dev/null 2>&1; then \
+		echo "docker compose plugin missing; attempting to install docker-compose-plugin..."; \
+		sudo apt-get install -y docker-compose-plugin || { \
+			echo "Failed to install docker-compose-plugin. Install via Docker's repo and re-run make deps."; \
+			exit 1; \
+		}; \
+	fi
+
+deps-linux-dnf:
+	sudo dnf install -y gcc gcc-c++ make git curl ca-certificates pkgconf-pkg-config libicu-devel sqlite-devel golang docker docker-compose-plugin
+	@if ! command -v docker >/dev/null; then \
+		echo "Docker install failed or not in PATH."; \
+		exit 1; \
+	fi
+
+deps-linux-pacman:
+	sudo pacman -Sy --noconfirm base-devel git curl ca-certificates pkgconf icu sqlite go docker docker-compose
+	@if ! command -v docker >/dev/null; then \
+		echo "Docker install failed or not in PATH."; \
+		exit 1; \
+	fi
 
 # Clean build artifacts
 clean:
@@ -159,7 +241,7 @@ help:
 	@echo "  make test-api     - Run post-flight API tests"
 	@echo "  make coverage     - Run tests with coverage report"
 	@echo "  make lint         - Run all linters (fmt, vet, yaml, docs)"
-	@echo "  make deps         - Download and tidy dependencies"
+	@echo "  make deps         - Install system dependencies + go module dependencies"
 	@echo "  make clean        - Clean build artifacts"
 	@echo "  make distclean    - Deep clean (docker + build cache)"
 	@echo "  make install      - Install binary to GOPATH/bin"
